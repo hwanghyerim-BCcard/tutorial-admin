@@ -1105,6 +1105,25 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             componentsTab1.forEach((comp, index) => processComp(comp, index, previewBody));
         }
+
+        function createBottomFiller(list) {
+            const filler = document.createElement('div');
+            filler.style.cssText = 'width: 100%; min-height: 1000px; margin-bottom: -1000px; pointer-events: none;';
+            const last = list[list.length - 1];
+            if (last && last.type === 'notice') {
+                filler.style.backgroundColor = '#F4F5F7';
+            } else {
+                filler.style.backgroundColor = 'transparent';
+            }
+            return filler;
+        }
+
+        if (componentsTab2.length > 0) {
+            tab1Container.appendChild(createBottomFiller(componentsTab1));
+            tab2Container.appendChild(createBottomFiller(componentsTab2));
+        } else {
+            previewBody.appendChild(createBottomFiller(componentsTab1));
+        }
     }
 
     // --- State Accessors ---
