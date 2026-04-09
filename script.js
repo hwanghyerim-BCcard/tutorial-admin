@@ -1,3 +1,47 @@
+window.switchPreviewTab = function(tabNum, btn) {
+    if(tabNum === 1) {
+        btn.parentElement.children[0].style.borderBottomColor='#111'; 
+        btn.parentElement.children[0].style.fontWeight='700'; 
+        btn.parentElement.children[0].style.color='#111'; 
+        btn.parentElement.children[1].style.borderBottomColor='transparent'; 
+        btn.parentElement.children[1].style.fontWeight='500'; 
+        btn.parentElement.children[1].style.color='#9ca3af'; 
+        document.getElementById('view-tab-1').style.display='block'; 
+        document.getElementById('view-tab-2').style.display='none';
+    } else {
+        btn.parentElement.children[0].style.borderBottomColor='transparent'; 
+        btn.parentElement.children[0].style.fontWeight='500'; 
+        btn.parentElement.children[0].style.color='#9ca3af'; 
+        btn.parentElement.children[1].style.borderBottomColor='#111'; 
+        btn.parentElement.children[1].style.fontWeight='700'; 
+        btn.parentElement.children[1].style.color='#111'; 
+        document.getElementById('view-tab-1').style.display='none'; 
+        document.getElementById('view-tab-2').style.display='block';
+    }
+    
+    const target = document.getElementById('view-tab-' + tabNum);
+    if (!target) return;
+    const filler = target.querySelector('.smart-bottom-filler');
+    const previewArea = document.querySelector('.preview-area');
+    
+    let tabsMenu = null;
+    const allSticky = target.querySelectorAll('div');
+    for (let i=0; i<allSticky.length; i++) {
+        if (window.getComputedStyle(allSticky[i]).position === 'sticky') {
+            tabsMenu = allSticky[i]; break;
+        }
+    }
+    
+    if (filler && tabsMenu && previewArea) {
+        filler.style.height = '0px'; 
+        const vh = previewArea.clientHeight;
+        const diff = target.getBoundingClientRect().bottom - tabsMenu.getBoundingClientRect().bottom;
+        if (diff < vh) {
+            filler.style.height = (vh - diff) + 'px';
+        }
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- IndexedDB Storage Setup ---
@@ -866,8 +910,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tabSwitcherHtml = `
                 <div style="display: flex; gap: 20px; border-bottom: 1px solid #e5e7eb; background: white; position: sticky; top: 0; z-index: 10;">
-                    <div class="view-tab-btn active" onclick="this.parentElement.children[0].style.borderBottomColor='#111'; this.parentElement.children[0].style.fontWeight='700'; this.parentElement.children[0].style.color='#111'; this.parentElement.children[1].style.borderBottomColor='transparent'; this.parentElement.children[1].style.fontWeight='500'; this.parentElement.children[1].style.color='#9ca3af'; document.getElementById('view-tab-1').style.display='block'; document.getElementById('view-tab-2').style.display='none';" style="font-size: 16px; font-weight: 700; color: #111; padding: 16px 0; border-bottom: 2px solid #111; cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
-                    <div class="view-tab-btn" onclick="this.parentElement.children[0].style.borderBottomColor='transparent'; this.parentElement.children[0].style.fontWeight='500'; this.parentElement.children[0].style.color='#9ca3af'; this.parentElement.children[1].style.borderBottomColor='#111'; this.parentElement.children[1].style.fontWeight='700'; this.parentElement.children[1].style.color='#111'; document.getElementById('view-tab-1').style.display='none'; document.getElementById('view-tab-2').style.display='block';" style="font-size: 16px; font-weight: 500; color: #9ca3af; padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
+                    <div class="view-tab-btn active" onclick="window.switchPreviewTab(1, this);" style="font-size: 16px; font-weight: 700; color: #111; padding: 16px 0; border-bottom: 2px solid #111; cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
+                    <div class="view-tab-btn" onclick="window.switchPreviewTab(2, this);" style="font-size: 16px; font-weight: 500; color: #9ca3af; padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
                 </div>
             `;
             const switcherDiv = document.createElement('div');
@@ -1108,7 +1152,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function createBottomFiller(list) {
             const filler = document.createElement('div');
-            filler.style.cssText = 'width: 100%; min-height: 1000px; margin-bottom: -1000px; pointer-events: none;';
+            filler.className = 'smart-bottom-filler';
+            filler.style.cssText = 'width: 100%; pointer-events: none;';
             const last = list[list.length - 1];
             if (last && last.type === 'notice') {
                 filler.style.backgroundColor = '#F4F5F7';
@@ -1121,6 +1166,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (componentsTab2.length > 0) {
             tab1Container.appendChild(createBottomFiller(componentsTab1));
             tab2Container.appendChild(createBottomFiller(componentsTab2));
+            // Trigger measurement for Tab 1 initially
+            setTimeout(() => {
+                const dummyBtn = { parentElement: { children: [{}, {}] } }; // Mock for initial call
+                // Don't call switchPreviewTab since it changes UI colors. Just set height.
+                const target = document.getElementById('view-tab-1');
+                if(!target) return;
+                const fill = target.querySelector('.smart-bottom-filler');
+                const tMenu = target.querySelector('[style*="position: sticky"]');
+                const pArea = document.querySelector('.preview-area');
+                if(fill && tMenu && pArea) {
+                    fill.style.height = '0px';
+                    const diff = target.getBoundingClientRect().bottom - tMenu.getBoundingClientRect().bottom;
+                    if (diff < pArea.clientHeight) fill.style.height = (pArea.clientHeight - diff) + 'px';
+                }
+            }, 50);
         } else {
             previewBody.appendChild(createBottomFiller(componentsTab1));
         }
