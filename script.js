@@ -1105,15 +1105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             componentsTab1.forEach((comp, index) => processComp(comp, index, previewBody));
         }
-
-        const scrollSpacer = document.createElement('div');
-        scrollSpacer.style.cssText = 'width: 100%; height: 50vh; pointer-events: none; background: transparent;';
-        if (componentsTab2.length > 0) {
-            tab1Container.appendChild(scrollSpacer.cloneNode(true));
-            tab2Container.appendChild(scrollSpacer.cloneNode(true));
-        } else {
-            previewBody.appendChild(scrollSpacer);
-        }
     }
 
     // --- State Accessors ---
