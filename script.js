@@ -1317,12 +1317,18 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadHtmlBtn.addEventListener('click', () => {
         let previewCanvasHtml = document.getElementById('previewCanvas').innerHTML;
         
-        components.forEach(comp => {
-            if (comp && comp.data && comp.data.exportStr) {
-                const blobUrl = dataURItoBlobUrl(comp.data.exportStr);
-                if (comp.type === 'video') comp.data.url = blobUrl;
-                if (comp.type === 'explanation') comp.data.imageUrl = blobUrl;
-            }
+        [componentsTab1, componentsTab2].forEach(arr => {
+            arr.forEach(comp => {
+                if (comp && comp.data && comp.data.exportStr) {
+                    let currentUrl = '';
+                    if (comp.type === 'video') currentUrl = comp.data.url;
+                    if (comp.type === 'explanation') currentUrl = comp.data.imageUrl;
+                    
+                    if (currentUrl && currentUrl.startsWith('blob:')) {
+                        previewCanvasHtml = previewCanvasHtml.split(currentUrl).join(comp.data.exportStr);
+                    }
+                }
+            });
         });
         
         const currentWidth = document.getElementById('previewContainer') ? document.getElementById('previewContainer').offsetWidth : 390;
