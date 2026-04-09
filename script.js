@@ -1317,15 +1317,13 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadHtmlBtn.addEventListener('click', () => {
         let previewCanvasHtml = document.getElementById('previewCanvas').innerHTML;
         
-        [componentsTab1, componentsTab2].forEach(arr => {
-                            arr.forEach(comp => {
-                                if (comp && comp.data && comp.data.exportStr) {
-                                    const blobUrl = dataURItoBlobUrl(comp.data.exportStr);
-                                    if (comp.type === 'video') comp.data.url = blobUrl;
-                                    if (comp.type === 'explanation') comp.data.imageUrl = blobUrl;
-                                }
-                            });
-                        });
+        components.forEach(comp => {
+            if (comp && comp.data && comp.data.exportStr) {
+                const blobUrl = dataURItoBlobUrl(comp.data.exportStr);
+                if (comp.type === 'video') comp.data.url = blobUrl;
+                if (comp.type === 'explanation') comp.data.imageUrl = blobUrl;
+            }
+        });
         
         const currentWidth = widthSlider.value;
         
