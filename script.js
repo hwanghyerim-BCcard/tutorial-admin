@@ -1325,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        const currentWidth = widthSlider.value;
+        const currentWidth = document.getElementById('previewContainer') ? document.getElementById('previewContainer').offsetWidth : 390;
         
         const htmlContent = `<!DOCTYPE html>
 <html lang="ko">
@@ -1363,6 +1363,28 @@ document.addEventListener('DOMContentLoaded', () => {
         ${previewCanvasHtml}
     </div>
     <script>
+        window.switchPreviewTab = function(tabNum, btn) {
+            if(tabNum === 1) {
+                btn.parentElement.children[0].style.borderBottomColor='#111'; 
+                btn.parentElement.children[0].style.fontWeight='700'; 
+                btn.parentElement.children[0].style.color='#111'; 
+                btn.parentElement.children[1].style.borderBottomColor='transparent'; 
+                btn.parentElement.children[1].style.fontWeight='500'; 
+                btn.parentElement.children[1].style.color='#9ca3af'; 
+                document.getElementById('view-tab-1').style.display='block'; 
+                document.getElementById('view-tab-2').style.display='none';
+            } else {
+                btn.parentElement.children[0].style.borderBottomColor='transparent'; 
+                btn.parentElement.children[0].style.fontWeight='500'; 
+                btn.parentElement.children[0].style.color='#9ca3af'; 
+                btn.parentElement.children[1].style.borderBottomColor='#111'; 
+                btn.parentElement.children[1].style.fontWeight='700'; 
+                btn.parentElement.children[1].style.color='#111'; 
+                document.getElementById('view-tab-1').style.display='none'; 
+                document.getElementById('view-tab-2').style.display='block';
+            }
+        };
+
         document.addEventListener('click', function(e) {
             var muteBtn = e.target.closest('.mute-toggle-btn');
             if (muteBtn) {
