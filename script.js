@@ -1313,8 +1313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         previewContainer.style.overflowY = 'auto';
     });
     
-    // --- Download HTML Logic ---
-    downloadHtmlBtn.addEventListener('click', () => {
+    // --- Export HTML Generator ---
+    function generateExportHtml() {
         let previewCanvasHtml = document.getElementById('previewCanvas').innerHTML;
         
         [componentsTab1, componentsTab2].forEach(arr => {
@@ -1333,7 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const currentWidth = document.getElementById('previewContainer') ? document.getElementById('previewContainer').offsetWidth : 390;
         
-        const htmlContent = `<!DOCTYPE html>
+        return `<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -1428,6 +1428,48 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
 </body>
 </html>`;
+    }
+
+    // --- View Source Modal Logic ---
+    const viewSourceBtn = document.getElementById('viewSourceBtn');
+    const sourceModal = document.getElementById('sourceModal');
+    const closeSourceModalBtn = document.getElementById('closeSourceModalBtn');
+    const copySourceBtn = document.getElementById('copySourceBtn');
+    const sourceCodeArea = document.getElementById('sourceCodeArea');
+
+    if (viewSourceBtn) {
+        viewSourceBtn.addEventListener('click', () => {
+            const htmlContent = generateExportHtml();
+            sourceCodeArea.value = htmlContent;
+            sourceModal.style.display = 'flex';
+        });
+    }
+
+    if (closeSourceModalBtn) {
+        closeSourceModalBtn.addEventListener('click', () => {
+            sourceModal.style.display = 'none';
+        });
+    }
+
+    if (copySourceBtn) {
+        copySourceBtn.addEventListener('click', () => {
+            sourceCodeArea.select();
+            document.execCommand('copy');
+            
+            const originalText = copySourceBtn.textContent;
+            copySourceBtn.textContent = '복사 완료!';
+            copySourceBtn.style.backgroundColor = '#10b981';
+            
+            setTimeout(() => {
+                copySourceBtn.textContent = originalText;
+                copySourceBtn.style.backgroundColor = '#27a8f5';
+            }, 2000);
+        });
+    }
+
+    // --- Download HTML Logic ---
+    downloadHtmlBtn.addEventListener('click', () => {
+        const htmlContent = generateExportHtml();
 
         const blob = new Blob([htmlContent], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
