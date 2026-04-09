@@ -934,8 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prevComp = index > 0 ? components[index - 1] : null;
                 let topPad = 0;
                 const alignStyle = comp.data.align === 'center' ? 'center' : 'left';
-                const leftPad = alignStyle === 'center' ? 20 : 24;
-                div.style.cssText = `width: 100%; text-align: ${alignStyle}; padding: ${topPad}px 20px 16px ${leftPad}px; margin-top: -10px; box-sizing: border-box;`;
+                div.style.cssText = `width: 100%; text-align: ${alignStyle}; padding: ${topPad}px 20px 16px 20px; margin-top: -10px; box-sizing: border-box;`;
                 
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim()) {
