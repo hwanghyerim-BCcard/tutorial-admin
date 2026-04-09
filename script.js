@@ -54,6 +54,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const StorageTrash = {
+        save(data) {
+            if (!StorageDB.db) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const transaction = StorageDB.db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.put(JSON.parse(JSON.stringify(data)), 'trashScreens');
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (e) => reject(e);
+            });
+        },
+        load() {
+            if (!StorageDB.db) return Promise.resolve([]);
+            return new Promise((resolve, reject) => {
+                const transaction = StorageDB.db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get('trashScreens');
+                request.onsuccess = (e) => resolve(e.target.result || []);
+                request.onerror = (e) => reject(e);
+            });
+        }
+    };
+
     function dataURItoBlobUrl(dataURI) {
         try {
             const byteString = atob(dataURI.split(',')[1]);
@@ -1509,13 +1532,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     dropdown.style.display = 'none';
-                    if (confirm('삭제하시겠습니까?')) {
+                    if (confirm('휴지통으로 이동하시겠습니까?')) {
                         StorageDB.load().then(currentList => {
+                            const target = (currentList || []).find(x => x && x.id === safeId);
                             const updated = (currentList || []).filter(x => x && x.id !== safeId);
-                            StorageDB.save(updated).then(() => {
-                                if (currentScreenId === safeId) currentScreenId = null;
-                                renderSidebarLibraryList(updated);
-                            });
+                            if (target) {
+                                StorageTrash.load().then(trashList => {
+                                    trashList.push(target);
+                                    StorageTrash.save(trashList).then(() => {
+                                        StorageDB.save(updated).then(() => {
+                                            if (currentScreenId === safeId) currentScreenId = null;
+                                            renderSidebarLibraryList(updated);
+                                            if (typeof renderTrashList === 'function') renderTrashList();
+                                        });
+                                    });
+                                });
+                            }
                         });
                     }
                 });
@@ -1530,6 +1562,93 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSidebarLibrary() {
         StorageDB.load().then(saved => {
             renderSidebarLibraryList(saved || []);
+        });
+    }
+
+    function renderTrashList() {
+        const listEl = document.getElementById('trashScreensList');
+        if (!listEl) return;
+        
+        StorageTrash.load().then(trash => {
+            listEl.innerHTML = '';
+            
+            if (!trash || trash.length === 0) {
+                listEl.innerHTML = '<li style="color: #6b7280; font-size: 12px; text-align: center; padding: 12px 0;">휴지통이 비어있습니다.</li>';
+                return;
+            }
+            
+            trash.forEach(screen => {
+                const li = document.createElement('li');
+                li.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: #374151; border-radius: 6px; margin-bottom: 6px;';
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = screen.title;
+                titleSpan.style.cssText = 'color: #d1d5db; font-size: 12px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px;';
+                titleSpan.title = screen.title;
+                
+                const actionDiv = document.createElement('div');
+                actionDiv.style.cssText = 'display: flex; gap: 6px; align-items: center;';
+                
+                const restoreBtn = document.createElement('button');
+                restoreBtn.textContent = '복원';
+                restoreBtn.title = '리스트로 복원';
+                restoreBtn.style.cssText = 'background: #4b5563; color: #fff; border: 1px solid #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.2s;';
+                restoreBtn.onmouseover = () => restoreBtn.style.background = '#6b7280';
+                restoreBtn.onmouseout = () => restoreBtn.style.background = '#4b5563';
+                restoreBtn.onclick = () => {
+                    StorageTrash.load().then(currentTrash => {
+                        const target = currentTrash.find(x => x && x.id === screen.id);
+                        const updatedTrash = currentTrash.filter(x => x && x.id !== screen.id);
+                        if (target) {
+                            StorageDB.load().then(mainDb => {
+                                const db = mainDb || [];
+                                db.push(target);
+                                StorageDB.save(db).then(() => {
+                                    StorageTrash.save(updatedTrash).then(() => {
+                                        renderSidebarLibraryList(db);
+                                        renderTrashList();
+                                    });
+                                });
+                            });
+                        }
+                    });
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>';
+                deleteBtn.title = '영구 삭제';
+                deleteBtn.style.cssText = 'background: #ef4444; color: white; border: none; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;';
+                deleteBtn.onmouseover = () => deleteBtn.style.opacity = '1';
+                deleteBtn.onmouseout = () => deleteBtn.style.opacity = '0.8';
+                deleteBtn.onclick = () => {
+                    if (confirm('영구 삭제하면 다시는 되돌릴 수 없습니다.\\n정확히 지우시겠습니까?')) {
+                        StorageTrash.load().then(currentTrash => {
+                            const updatedTrash = currentTrash.filter(x => x && x.id !== screen.id);
+                            StorageTrash.save(updatedTrash).then(() => renderTrashList());
+                        });
+                    }
+                };
+                
+                actionDiv.appendChild(restoreBtn);
+                actionDiv.appendChild(deleteBtn);
+                
+                li.appendChild(titleSpan);
+                li.appendChild(actionDiv);
+                
+                listEl.appendChild(li);
+            });
+        });
+    }
+
+    const emptyTrashBtn = document.getElementById('emptyTrashBtn');
+    if (emptyTrashBtn) {
+        emptyTrashBtn.addEventListener('click', () => {
+            StorageTrash.load().then(trash => {
+                if (!trash || trash.length === 0) return alert('이미 휴지통이 비어있습니다.');
+                if (confirm('휴지통을 모두 비우시겠습니까?\\n이 작업은 원래대로 복구할 수 없습니다!')) {
+                    StorageTrash.save([]).then(() => renderTrashList());
+                }
+            });
         });
     }
 
@@ -1751,6 +1870,7 @@ document.addEventListener('DOMContentLoaded', () => {
     StorageDB.init().then(() => {
         renderThemeSelector();
         renderSidebarLibrary();
+        renderTrashList();
         addComponent('video');
         addComponent('title');
         addComponent('explanation');
@@ -1765,59 +1885,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.syncTabVisibility) window.syncTabVisibility();
         deviceSelect.dispatchEvent(new Event('change'));
     });
-
-    const exportDataBtn = document.getElementById('exportDataBtn');
-    if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', () => {
-            StorageDB.load().then(data => {
-                const str = JSON.stringify(data, null, 2);
-                const blob = new Blob([str], {type: 'application/json'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `tutorial_backup.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-        });
-    }
-
-    const importDataBtn = document.getElementById('importDataBtn');
-    const importDataInput = document.getElementById('importDataInput');
-    if (importDataBtn && importDataInput) {
-        importDataBtn.addEventListener('click', () => importDataInput.click());
-        importDataInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (re) => {
-                try {
-                    const data = JSON.parse(re.target.result);
-                    if (Array.isArray(data)) {
-                        StorageDB.load().then(existing => {
-                            let updated = data;
-                            if (existing && existing.length > 0) {
-                                if (!confirm('⚠️ 무시하고 덮어쓰시겠습니까?\n[확인] 백업 파일로 모두 덮어쓰기\n[취소] 기존 데이터에 붙여넣기(합치기)')) {
-                                    updated = [...existing, ...data];
-                                }
-                            }
-                            StorageDB.save(updated).then(() => {
-                                renderSidebarLibraryList(updated);
-                                alert('✅ 데이터 복구가 완료되었습니다!');
-                                window.location.reload();
-                            });
-                        });
-                    } else {
-                        alert('잘못된 백업 파일 형식입니다.');
-                    }
-                } catch(err) {
-                    alert('파일을 읽는 중 오류가 발생했습니다.');
-                }
-                e.target.value = '';
-            };
-            reader.readAsText(file);
-        });
-    }
 });
