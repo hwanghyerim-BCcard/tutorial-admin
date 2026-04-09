@@ -20,9 +20,14 @@
             <div class="content-wrapper">
                 <!-- Library Section -->
                 <aside class="library-sidebar">
-                    <div class="lib-header">
+                    <div class="lib-header" style="padding-bottom: 8px;">
                         <h2>화면 리스트</h2>
                         <button class="new-project-btn" id="newProjectBtn" title="새 프로젝트 생성" style="background: none; border: 1px solid #4b5563; color: #9ca3af; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; transition: all 0.2s;">New project +</button>
+                    </div>
+                    <div style="display: flex; gap: 8px; padding: 0 20px 16px; border-bottom: 1px solid #374151; margin-bottom: 16px;">
+                        <button id="exportDataBtn" style="flex:1; background: #374151; color: #d1d5db; border: 1px solid #4b5563; padding: 6px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">출력(백업)</button>
+                        <button id="importDataBtn" style="flex:1; background: #374151; color: #d1d5db; border: 1px solid #4b5563; padding: 6px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">입력(복구)</button>
+                        <input type="file" id="importDataInput" accept=".json" style="display: none;">
                     </div>
                     <ul class="saved-list" id="savedScreensList">
                         <!-- Injected via JS -->

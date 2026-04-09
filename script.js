@@ -1765,4 +1765,59 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.syncTabVisibility) window.syncTabVisibility();
         deviceSelect.dispatchEvent(new Event('change'));
     });
+
+    const exportDataBtn = document.getElementById('exportDataBtn');
+    if (exportDataBtn) {
+        exportDataBtn.addEventListener('click', () => {
+            StorageDB.load().then(data => {
+                const str = JSON.stringify(data, null, 2);
+                const blob = new Blob([str], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tutorial_backup.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+    }
+
+    const importDataBtn = document.getElementById('importDataBtn');
+    const importDataInput = document.getElementById('importDataInput');
+    if (importDataBtn && importDataInput) {
+        importDataBtn.addEventListener('click', () => importDataInput.click());
+        importDataInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (re) => {
+                try {
+                    const data = JSON.parse(re.target.result);
+                    if (Array.isArray(data)) {
+                        StorageDB.load().then(existing => {
+                            let updated = data;
+                            if (existing && existing.length > 0) {
+                                if (!confirm('⚠️ 무시하고 덮어쓰시겠습니까?\n[확인] 백업 파일로 모두 덮어쓰기\n[취소] 기존 데이터에 붙여넣기(합치기)')) {
+                                    updated = [...existing, ...data];
+                                }
+                            }
+                            StorageDB.save(updated).then(() => {
+                                renderSidebarLibraryList(updated);
+                                alert('✅ 데이터 복구가 완료되었습니다!');
+                                window.location.reload();
+                            });
+                        });
+                    } else {
+                        alert('잘못된 백업 파일 형식입니다.');
+                    }
+                } catch(err) {
+                    alert('파일을 읽는 중 오류가 발생했습니다.');
+                }
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+    }
 });
