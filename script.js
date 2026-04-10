@@ -45,79 +45,52 @@ window.switchPreviewTab = function(tabNum, btn) {
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- IndexedDB Storage Setup ---
-    const DB_NAME = 'FusionBuilderDB';
-    const STORE_NAME = 'workspace';
-    
+    // --- Cloud Storage Setup (Free Sync) ---
+    const BIN_COMPONENTS = '019d75bb-de6f-7687-ac4c-b247e499d4a6';
+    const BIN_TRASH = '019d75bc-d674-7946-be6d-41f9ea74369f';
+    const API_BASE = 'https://jsonblob.com/api/jsonBlob/';
+
     const StorageDB = {
-        db: null,
         init() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, 1);
-                request.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-                request.onsuccess = (e) => {
-                    this.db = e.target.result;
-                    resolve();
-                };
-                request.onerror = (e) => reject(e);
-            });
+            return Promise.resolve();
         },
         save(data) {
-            if (!this.db) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-                const transaction = this.db.transaction(STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                store.put(JSON.parse(JSON.stringify(data)), 'components');
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + BIN_COMPONENTS, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         },
         load() {
-            if (!this.db) return Promise.resolve(null);
-            return new Promise((resolve, reject) => {
-                const transaction = this.db.transaction(STORE_NAME, 'readonly');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.get('components');
-                request.onsuccess = (e) => resolve(e.target.result || null);
-                request.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + BIN_COMPONENTS, {
+                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+            })
+                .then(res => res.json())
+                .catch(err => { console.error('Sync Error', err); return null; });
         },
         clear() {
-            if (!this.db) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-                const transaction = this.db.transaction(STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                store.clear();
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + BIN_COMPONENTS, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify([])
+            }).then(res => res.json()).catch(e=>e);
         }
     };
 
     const StorageTrash = {
         save(data) {
-            if (!StorageDB.db) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-                const transaction = StorageDB.db.transaction(STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                store.put(JSON.parse(JSON.stringify(data)), 'trashScreens');
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + BIN_TRASH, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         },
         load() {
-            if (!StorageDB.db) return Promise.resolve([]);
-            return new Promise((resolve, reject) => {
-                const transaction = StorageDB.db.transaction(STORE_NAME, 'readonly');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.get('trashScreens');
-                request.onsuccess = (e) => resolve(e.target.result || []);
-                request.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + BIN_TRASH, {
+                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+            })
+                .then(res => res.json())
+                .catch(err => { console.error('Sync Error', err); return []; });
         }
     };
 
