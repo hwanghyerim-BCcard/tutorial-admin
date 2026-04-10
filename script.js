@@ -45,88 +45,81 @@ window.switchPreviewTab = function(tabNum, btn) {
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- IndexedDB Storage Setup ---
-    // --- Cloud Storage Setup (Free Sync) ---
-    const BIN_COMPONENTS = '019d75bb-de6f-7687-ac4c-b247e499d4a6';
-    const BIN_TRASH = '019d75bc-d674-7946-be6d-41f9ea74369f';
-    const API_BASE = 'https://jsonblob.com/api/jsonBlob/';
-
+    const DB_NAME = 'FusionBuilderDB';
+    const STORE_NAME = 'workspace';
+    
     const StorageDB = {
+        db: null,
         init() {
-            return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                request.onsuccess = (e) => {
+                    this.db = e.target.result;
+                    resolve();
+                };
+                request.onerror = (e) => reject(e);
+            });
         },
         save(data) {
-            return fetch(API_BASE + BIN_COMPONENTS, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
+            if (!this.db) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const transaction = this.db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.put(JSON.parse(JSON.stringify(data)), 'components');
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (e) => reject(e);
+            });
         },
         load() {
-            return fetch(API_BASE + BIN_COMPONENTS, {
-                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
-            })
-                .then(res => res.json())
-                .catch(err => { console.error('Sync Error', err); return null; });
+            if (!this.db) return Promise.resolve(null);
+            return new Promise((resolve, reject) => {
+                const transaction = this.db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get('components');
+                request.onsuccess = (e) => resolve(e.target.result || null);
+                request.onerror = (e) => reject(e);
+            });
         },
         clear() {
-            return fetch(API_BASE + BIN_COMPONENTS, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify([])
-            }).then(res => res.json()).catch(e=>e);
+            if (!this.db) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const transaction = this.db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.clear();
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (e) => reject(e);
+            });
         }
     };
 
     const StorageTrash = {
         save(data) {
-            return fetch(API_BASE + BIN_TRASH, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
+            if (!StorageDB.db) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const transaction = StorageDB.db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.put(JSON.parse(JSON.stringify(data)), 'trashScreens');
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (e) => reject(e);
+            });
         },
         load() {
-            return fetch(API_BASE + BIN_TRASH, {
-                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
-            })
-                .then(res => res.json())
-                .catch(err => { console.error('Sync Error', err); return []; });
+            if (!StorageDB.db) return Promise.resolve([]);
+            return new Promise((resolve, reject) => {
+                const transaction = StorageDB.db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get('trashScreens');
+                request.onsuccess = (e) => resolve(e.target.result || []);
+                request.onerror = (e) => reject(e);
+            });
         }
     };
-
-    // --- Auto Migration from Old Local DB ---
-    function executeLocalMigration() {
-        try {
-            const req = indexedDB.open('FusionBuilderDB', 1);
-            req.onsuccess = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains('workspace')) return;
-                const tx = db.transaction('workspace', 'readwrite');
-                const store = tx.objectStore('workspace');
-                const getReq = store.get('components');
-                getReq.onsuccess = (ev) => {
-                    const localData = ev.target.result;
-                    if (localData && Array.isArray(localData) && localData.length > 0) {
-                        StorageDB.load().then(cloudData => {
-                            const cloudList = cloudData || [];
-                            const cloudIds = new Set(cloudList.map(x => x.id));
-                            const uniqueLocal = localData.filter(x => !cloudIds.has(x.id));
-                            
-                            if (uniqueLocal.length > 0) {
-                                const merged = cloudList.concat(uniqueLocal);
-                                StorageDB.save(merged).then(() => {
-                                    renderSidebarLibraryList(merged);
-                                    if(typeof showToast === 'function') showToast('오프라인에 임시 저장되어있던 프로젝트들이 클라우드로 자동 복구되었습니다! ✨');
-                                });
-                            }
-                        });
-                        // Clear to prevent duplicate migrations in future
-                        store.delete('components');
-                    }
-                };
-            };
-        } catch(e) { console.warn("Migration skip"); }
-    }
 
     function dataURItoBlobUrl(dataURI) {
         try {
@@ -2002,11 +1995,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     const current = list.find(x => x.id === currentScreenId);
                     if (current) {
                         current.componentsTab1 = JSON.parse(JSON.stringify(componentsTab1));
-                                current.componentsTab2 = JSON.parse(JSON.stringify(componentsTab2));
-                                current.tab1Name = document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드';
-                                current.tab2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
+                        current.componentsTab2 = JSON.parse(JSON.stringify(componentsTab2));
+                        current.tab1Name = document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드';
+                        current.tab2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
                         current.themeColor = currentThemeColor;
                         current.date = new Date().toISOString();
+                    } else {
+                        // Item was lost due to sync race conditions or overwritten by another user, recreate it:
+                        const newItem = {
+                            id: currentScreenId,
+                            title: '내 화면 (' + new Date().toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute:'2-digit' }) + ')',
+                            date: new Date().toISOString(),
+                            themeColor: currentThemeColor,
+                            componentsTab1: JSON.parse(JSON.stringify(componentsTab1)),
+                            componentsTab2: JSON.parse(JSON.stringify(componentsTab2)),
+                            tab1Name: document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드',
+                            tab2Name: document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항'
+                        };
+                        list.push(newItem);
                     }
                 } else {
                     const newItem = {
@@ -2015,10 +2021,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         date: new Date().toISOString(),
                         themeColor: currentThemeColor,
                         componentsTab1: JSON.parse(JSON.stringify(componentsTab1)),
-                                    componentsTab2: JSON.parse(JSON.stringify(componentsTab2)),
-                                    tab1Name: document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드',
-                                    tab2Name: document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항'
-
+                        componentsTab2: JSON.parse(JSON.stringify(componentsTab2)),
+                        tab1Name: document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드',
+                        tab2Name: document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항'
                     };
                     list.push(newItem);
                     currentScreenId = newItem.id;
@@ -2037,7 +2042,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     StorageDB.init().then(() => {
-        executeLocalMigration();
         renderThemeSelector();
         renderSidebarLibrary();
         renderTrashList();
