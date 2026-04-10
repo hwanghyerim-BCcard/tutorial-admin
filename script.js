@@ -1670,6 +1670,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         dropdown.style.display = 'block';
                         li.style.zIndex = '50';
                         li.classList.add('menu-open');
+                        
+                        const rect = moreBtn.getBoundingClientRect();
+                        if (window.innerHeight - rect.bottom < 150) {
+                            dropdown.style.top = 'auto';
+                            dropdown.style.bottom = '32px';
+                        } else {
+                            dropdown.style.top = '32px';
+                            dropdown.style.bottom = 'auto';
+                        }
                     } else {
                         dropdown.style.display = 'none';
                         li.style.zIndex = '';
