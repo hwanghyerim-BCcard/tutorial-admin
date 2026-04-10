@@ -3,7 +3,11 @@ export default async function handler(req, res) {
   const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
 
   if (!url || !token) {
-    return res.status(500).json({ error: "Vercel KV Settings Missing. Please connect Vercel KV in the Storage tab." });
+    const keys = Object.keys(process.env).filter(k => k.includes('REST_API'));
+    return res.status(500).json({ 
+        error: "Vercel KV Settings Missing. Please connect Vercel KV in the Storage tab.",
+        foundKeys: keys
+    });
   }
 
   const key = req.query.key || 'workspace_components';
