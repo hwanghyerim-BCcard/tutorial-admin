@@ -162,7 +162,7 @@ body {
 }
 .saved-list {
     list-style: none;
-    padding: 12px 0;
+    padding: 12px 0 150px 0;
     margin: 0;
     overflow-y: auto;
     flex: 1;
