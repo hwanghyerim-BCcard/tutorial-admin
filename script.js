@@ -198,7 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.lib-dropdown-menu').forEach(menu => {
                 menu.style.display = 'none';
                 const parentLi = menu.closest('.saved-item');
-                if (parentLi) parentLi.style.zIndex = '';
+                if (parentLi) {
+                    parentLi.style.zIndex = '';
+                    parentLi.classList.remove('menu-open');
+                }
             });
         }
         
@@ -1493,9 +1496,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveScreenBtn = document.getElementById('saveScreenBtn');
     const savedScreensList = document.getElementById('savedScreensList');
     const newProjectBtn = document.getElementById('newProjectBtn');
-    const exportDataBtn = document.getElementById('exportDataBtn');
-    const importDataBtn = document.getElementById('importDataBtn');
-    const importDataInput = document.getElementById('importDataInput');
 
     let currentScreenId = null;
 
@@ -1627,15 +1627,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (menu !== dropdown) {
                             menu.style.display = 'none';
                             const parentLi = menu.closest('.saved-item');
-                            if (parentLi) parentLi.style.zIndex = '';
+                            if (parentLi) {
+                                parentLi.style.zIndex = '';
+                                parentLi.classList.remove('menu-open');
+                            }
                         }
                     });
-                    if (dropdown.style.display === 'none') {
+                    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
                         dropdown.style.display = 'block';
                         li.style.zIndex = '50';
+                        li.classList.add('menu-open');
                     } else {
                         dropdown.style.display = 'none';
                         li.style.zIndex = '';
+                        li.classList.remove('menu-open');
                     }
                 });
 
@@ -2022,68 +2027,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    // --- Data Export / Import Logic ---
-    if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', () => {
-            StorageDB.load().then(saved => {
-                if (!saved || saved.length === 0) {
-                    showToast('내보낼 화면 리스트 데이터가 없습니다.');
-                    return;
-                }
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saved, null, 2));
-                const downloadAnchorNode = document.createElement('a');
-                downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", "workspace_backup.json");
-                document.body.appendChild(downloadAnchorNode);
-                downloadAnchorNode.click();
-                downloadAnchorNode.remove();
-            });
-        });
-    }
-
-    if (importDataBtn) {
-        importDataBtn.addEventListener('click', () => {
-            importDataInput.click();
-        });
-    }
-
-    if (importDataInput) {
-        importDataInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const importedData = JSON.parse(event.target.result);
-                    if (Array.isArray(importedData)) {
-                        if(confirm('기존 데이터를 유지한 채 불러온 데이터를 추가하시겠습니까?\\n[확인] : 기존 항목들 아래에 추가\\n[취소] : 기존 항목 제거하고 덮어쓰기')) {
-                            StorageDB.load().then(existing => {
-                                const list = existing || [];
-                                const merged = list.concat(importedData);
-                                StorageDB.save(merged).then(() => {
-                                    renderSidebarLibraryList(merged);
-                                    showToast('데이터가 성공적으로 추가되었습니다! 🎉');
-                                });
-                            });
-                        } else {
-                            StorageDB.save(importedData).then(() => {
-                                renderSidebarLibraryList(importedData);
-                                showToast('데이터가 덮어씌워졌습니다! 🎉');
-                            });
-                        }
-                    } else {
-                        showToast('올바른 백업 파일(JSON)이 아닙니다. 🚫');
-                    }
-                } catch (err) {
-                    showToast('파일을 파싱하는 중 오류가 발생했습니다. 🚫');
-                    console.error(err);
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        });
-    }
-
 
     // --- Initialization ---
     StorageDB.init().then(() => {

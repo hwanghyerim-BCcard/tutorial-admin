@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>신규 서비스 이용방법 화면 제작하기</title>
-    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="style.css?v=17">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,14 +20,9 @@
             <div class="content-wrapper">
                 <!-- Library Section -->
                 <aside class="library-sidebar">
-                    <div class="lib-header" style="padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0;">화면 리스트</h2>
-                        <div style="display: flex; gap: 4px;">
-                            <button id="exportDataBtn" title="데이터 백업/공유" style="background: none; border: 1px solid #4b5563; color: #9ca3af; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer; transition: all 0.2s;">내보내기</button>
-                            <button id="importDataBtn" title="공유받은 데이터 열기" style="background: none; border: 1px solid #4b5563; color: #9ca3af; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer; transition: all 0.2s;">불러오기</button>
-                            <input type="file" id="importDataInput" style="display: none;" accept=".json">
-                            <button class="new-project-btn" id="newProjectBtn" title="새 프로젝트 생성" style="background: none; border: 1px solid #4b5563; color: #ffffff; background-color: #374151; border-radius: 4px; padding: 3px 8px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;">+</button>
-                        </div>
+                    <div class="lib-header" style="padding-bottom: 8px;">
+                        <h2>화면 리스트</h2>
+                        <button class="new-project-btn" id="newProjectBtn" title="새 프로젝트 생성" style="background: none; border: 1px solid #4b5563; color: #9ca3af; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; transition: all 0.2s;">New project +</button>
                     </div>
                     <div style="flex: 1; overflow-y: auto;">
                         <ul class="saved-list" id="savedScreensList">
@@ -183,6 +178,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=15"></script>
+    <script src="script.js?v=17"></script>
 </body>
 </html>
