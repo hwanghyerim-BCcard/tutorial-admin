@@ -94,6 +94,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Auto Migration from Old Local DB ---
+    function executeLocalMigration() {
+        try {
+            const req = indexedDB.open('FusionBuilderDB', 1);
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('workspace')) return;
+                const tx = db.transaction('workspace', 'readwrite');
+                const store = tx.objectStore('workspace');
+                const getReq = store.get('components');
+                getReq.onsuccess = (ev) => {
+                    const localData = ev.target.result;
+                    if (localData && Array.isArray(localData) && localData.length > 0) {
+                        StorageDB.load().then(cloudData => {
+                            const cloudList = cloudData || [];
+                            const cloudIds = new Set(cloudList.map(x => x.id));
+                            const uniqueLocal = localData.filter(x => !cloudIds.has(x.id));
+                            
+                            if (uniqueLocal.length > 0) {
+                                const merged = cloudList.concat(uniqueLocal);
+                                StorageDB.save(merged).then(() => {
+                                    renderSidebarLibraryList(merged);
+                                    if(typeof showToast === 'function') showToast('오프라인에 임시 저장되어있던 프로젝트들이 클라우드로 자동 복구되었습니다! ✨');
+                                });
+                            }
+                        });
+                        // Clear to prevent duplicate migrations in future
+                        store.delete('components');
+                    }
+                };
+            };
+        } catch(e) { console.warn("Migration skip"); }
+    }
+
     function dataURItoBlobUrl(dataURI) {
         try {
             const byteString = atob(dataURI.split(',')[1]);
@@ -2003,6 +2037,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     StorageDB.init().then(() => {
+        executeLocalMigration();
         renderThemeSelector();
         renderSidebarLibrary();
         renderTrashList();
