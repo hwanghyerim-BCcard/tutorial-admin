@@ -1388,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <style>
         :root { --theme-color: ${currentThemeColor}; }
         body { margin: 0; padding: 0; background-color: #f0f0f0; display: flex; justify-content: center; }
-        .canvas-container { width: 100%; max-width: ${currentWidth}px; background-color: white; min-height: 100vh; }
+        .canvas-container { width: 100%; max-width: 768px; background-color: white; min-height: 100vh; box-sizing: border-box; }
         .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: white; text-align: left; scroll-margin-top: 64px; }
         .explanation-component:not(.standalone) { padding-right: 22px; }
         .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
@@ -2069,6 +2069,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                     list.push(newItem);
                     currentScreenId = newItem.id;
+                }
+                const payloadSize = new Blob([JSON.stringify(list)]).size;
+                if (payloadSize > 800000) { // Over 800KB
+                    showToast('⚠️ 클라우드 용량 초과! 영상을 직접 첨부하지 마시고 [URL 링크]를 입력해주세요.', 5000);
+                    return; // Abort save
                 }
                 
                 StorageDB.save(list).then(() => {
