@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+  const url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
 
   if (!url || !token) {
     return res.status(500).json({ error: "Vercel KV Settings Missing. Please connect Vercel KV in the Storage tab." });

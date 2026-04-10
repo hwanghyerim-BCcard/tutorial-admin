@@ -44,82 +44,115 @@ window.switchPreviewTab = function(tabNum, btn) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- IndexedDB Storage Setup ---
-    const DB_NAME = 'FusionBuilderDB';
-    const STORE_NAME = 'workspace';
-    
+    const API_BASE = '/api/sync';
+
     const StorageDB = {
-        db: null,
         init() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, 1);
-                request.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-                request.onsuccess = (e) => {
-                    this.db = e.target.result;
-                    resolve();
-                };
-                request.onerror = (e) => reject(e);
-            });
+            return Promise.resolve();
         },
         save(data) {
-            if (!this.db) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-                const transaction = this.db.transaction(STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                store.put(JSON.parse(JSON.stringify(data)), 'components');
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + '?key=workspace_components', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         },
         load() {
-            if (!this.db) return Promise.resolve(null);
-            return new Promise((resolve, reject) => {
-                const transaction = this.db.transaction(STORE_NAME, 'readonly');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.get('components');
-                request.onsuccess = (e) => resolve(e.target.result || null);
-                request.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + '?key=workspace_components', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => {
+                    if(!res.ok) throw new Error("API not connected");
+                    return res.json();
+                })
+                .catch(err => { 
+                    console.error('Sync Error', err); 
+                    // Fallback to local array just to avoid crashing if KV is missing
+                    return null; 
+                });
         },
         clear() {
-            if (!this.db) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-                const transaction = this.db.transaction(STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                store.clear();
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + '?key=workspace_components', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify([])
+            }).then(res => res.json()).catch(e=>e);
         }
     };
 
     const StorageTrash = {
         save(data) {
-            if (!StorageDB.db) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-                const transaction = StorageDB.db.transaction(STORE_NAME, 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                store.put(JSON.parse(JSON.stringify(data)), 'trashScreens');
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + '?key=workspace_trash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         },
         load() {
-            if (!StorageDB.db) return Promise.resolve([]);
-            return new Promise((resolve, reject) => {
-                const transaction = StorageDB.db.transaction(STORE_NAME, 'readonly');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.get('trashScreens');
-                request.onsuccess = (e) => resolve(e.target.result || []);
-                request.onerror = (e) => reject(e);
-            });
+            return fetch(API_BASE + '?key=workspace_trash', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => {
+                    if(!res.ok) throw new Error("API not connected");
+                    return res.json();
+                })
+                .catch(err => { console.error('Sync Error', err); return []; });
         }
     };
+
+    // --- Auto Migration from Old Local DB (IndexedDB -> KV) ---
+    function executeLocalMigration() {
+        try {
+            const req = indexedDB.open('FusionBuilderDB', 1);
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('workspace')) return;
+                const tx = db.transaction('workspace', 'readwrite');
+                const store = tx.objectStore('workspace');
+                const getReq = store.get('components');
+                getReq.onsuccess = (ev) => {
+                    const localData = ev.target.result;
+                    if (localData && Array.isArray(localData) && localData.length > 0) {
+                        StorageDB.load().then(cloudData => {
+                            const cloudList = cloudData || [];
+                            const cloudIds = new Set(cloudList.map(x => x.id));
+                            const uniqueLocal = localData.filter(x => !cloudIds.has(x.id));
+                            
+                            if (uniqueLocal.length > 0) {
+                                const merged = cloudList.concat(uniqueLocal);
+                                StorageDB.save(merged).then(() => {
+                                    renderSidebarLibraryList(merged);
+                                    if(typeof showToast === 'function') {
+                                        showToast('내 컴퓨터에 있던 프로젝트가 Vercel KV로 이관되었습니다! ✨');
+                                    }
+                                    
+                                    // SAFELY delete local ONLY after successful upload
+                                    try {
+                                        const req2 = indexedDB.open('FusionBuilderDB', 1);
+                                        req2.onsuccess = (e2) => {
+                                            const db2 = e2.target.result;
+                                            const tx2 = db2.transaction('workspace', 'readwrite');
+                                            tx2.objectStore('workspace').delete('components');
+                                        };
+                                    } catch(e) {}
+                                });
+                            } else {
+                                // If already migrated, clean up local
+                                try {
+                                    const req2 = indexedDB.open('FusionBuilderDB', 1);
+                                    req2.onsuccess = (e2) => {
+                                        const db2 = e2.target.result;
+                                        const tx2 = db2.transaction('workspace', 'readwrite');
+                                        tx2.objectStore('workspace').delete('components');
+                                    };
+                                } catch(e) {}
+                            }
+                        });
+                    }
+                };
+            };
+        } catch(e) { console.warn("Migration skip"); }
+    }
 
     function dataURItoBlobUrl(dataURI) {
         try {
@@ -2042,6 +2075,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     StorageDB.init().then(() => {
+        executeLocalMigration();
         renderThemeSelector();
         renderSidebarLibrary();
         renderTrashList();
