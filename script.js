@@ -197,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!e.target.closest('.saved-item-actions')) {
             document.querySelectorAll('.lib-dropdown-menu').forEach(menu => {
                 menu.style.display = 'none';
+                const parentLi = menu.closest('.saved-item');
+                if (parentLi) parentLi.style.zIndex = '';
             });
         }
         
@@ -1622,9 +1624,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 moreBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     document.querySelectorAll('.lib-dropdown-menu').forEach(menu => {
-                        if (menu !== dropdown) menu.style.display = 'none';
+                        if (menu !== dropdown) {
+                            menu.style.display = 'none';
+                            const parentLi = menu.closest('.saved-item');
+                            if (parentLi) parentLi.style.zIndex = '';
+                        }
                     });
-                    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                    if (dropdown.style.display === 'none') {
+                        dropdown.style.display = 'block';
+                        li.style.zIndex = '50';
+                    } else {
+                        dropdown.style.display = 'none';
+                        li.style.zIndex = '';
+                    }
                 });
 
                 renameBtn.addEventListener('click', (e) => {
