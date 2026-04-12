@@ -1,33 +1,56 @@
 export default async function handler(req, res) {
-  const BIN_COMPONENTS = '019d75bb-de6f-7687-ac4c-b247e499d4a6';
-  const BIN_TRASH = '019d75bc-d674-7946-be6d-41f9ea74369f';
-  const API_BASE = 'https://jsonblob.com/api/jsonBlob/';
+  const url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
+
+  if (!url || !token) {
+    const keys = Object.keys(process.env).filter(k => k.includes('REST_API'));
+    return res.status(500).json({ 
+        error: "Vercel KV Settings Missing. Please connect Vercel KV in the Storage tab.",
+        foundKeys: keys
+    });
+  }
 
   const key = req.query.key || 'workspace_components';
-  const targetBin = key === 'workspace_trash' ? BIN_TRASH : BIN_COMPONENTS;
 
   if (req.method === 'GET') {
     try {
-      const response = await fetch(API_BASE + targetBin, {
-        headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+      const response = await fetch(`${url}/get/${key}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
-      return res.status(200).json(data);
-    } catch(err) {
-      return res.status(500).json({ error: err.message, fallback: [] });
+      let parsed = [];
+      if (data.result) {
+        try {
+          if (typeof data.result === 'string') {
+              parsed = JSON.parse(data.result);
+          } else {
+              parsed = data.result;
+          }
+        } catch (e) {
+          console.error("JSON parse error:", e);
+        }
+      }
+      return res.status(200).json(parsed);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   }
 
   if (req.method === 'POST') {
     try {
-      const response = await fetch(API_BASE + targetBin, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(req.body || [])
+      // Vercel serverless request limits check
+      const bodyStr = JSON.stringify(req.body || []);
+      const response = await fetch(`${url}/set/${key}`, {
+        method: 'POST',
+        headers: { 
+          Authorization: `Bearer ${token}`, 
+          "Content-Type": "application/json" 
+        },
+        body: bodyStr
       });
       const data = await response.json();
       return res.status(200).json(data);
-    } catch(err) {
+    } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   }
