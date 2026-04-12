@@ -1,12 +1,16 @@
 export default async function handler(req, res) {
-  const url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
+  // Dynamically find any Vercel KV or Upstash Redis URL/Token
+  const envKeys = Object.keys(process.env);
+  const urlKey = envKeys.find(k => k.endsWith('_REST_API_URL') || k.endsWith('_REST_URL'));
+  const tokenKey = envKeys.find(k => k.endsWith('_REST_API_TOKEN') || k.endsWith('_REST_TOKEN'));
+
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || (urlKey ? process.env[urlKey] : null);
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || (tokenKey ? process.env[tokenKey] : null);
 
   if (!url || !token) {
-    const keys = Object.keys(process.env).filter(k => k.includes('REST_API'));
     return res.status(500).json({ 
-        error: "Vercel KV Settings Missing. Please connect Vercel KV in the Storage tab.",
-        foundKeys: keys
+        error: "Vercel KV / Upstash Settings Missing. Please connect Vercel KV in the Storage tab.",
+        foundKeys: envKeys.filter(k => k.includes('REDIS') || k.includes('KV') || k.includes('UPSTASH'))
     });
   }
 

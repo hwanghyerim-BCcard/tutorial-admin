@@ -50,13 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         init() {
             return Promise.resolve();
         },
-        save(data) {
-            return fetch(API_BASE + '?key=workspace_components', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
-        },
         load() {
             return fetch(API_BASE + '?key=workspace_components', {
                 headers: { 'Cache-Control': 'no-cache' }
@@ -67,91 +60,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(err => { 
                     console.error('Sync Error', err); 
-                    // Fallback to local array just to avoid crashing if KV is missing
-                    return null; 
+                    return []; 
                 });
         },
-        clear() {
+        save(data) {
             return fetch(API_BASE + '?key=workspace_components', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([])
-            }).then(res => res.json()).catch(e=>e);
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         }
     };
 
     const StorageTrash = {
+        load() {
+            return fetch(API_BASE + '?key=workspace_trash', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => res.ok ? res.json() : [])
+                .catch(err => []);
+        },
         save(data) {
             return fetch(API_BASE + '?key=workspace_trash', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
-        },
-        load() {
-            return fetch(API_BASE + '?key=workspace_trash', {
-                headers: { 'Cache-Control': 'no-cache' }
-            })
-                .then(res => {
-                    if(!res.ok) throw new Error("API not connected");
-                    return res.json();
-                })
-                .catch(err => { console.error('Sync Error', err); return []; });
+            }).then(res => res.json()).catch(err => Promise.resolve());
         }
     };
 
-    // --- Auto Migration from Old Local DB (IndexedDB -> KV) ---
     function executeLocalMigration() {
-        try {
-            const req = indexedDB.open('FusionBuilderDB', 1);
-            req.onsuccess = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains('workspace')) return;
-                const tx = db.transaction('workspace', 'readwrite');
-                const store = tx.objectStore('workspace');
-                const getReq = store.get('components');
-                getReq.onsuccess = (ev) => {
-                    const localData = ev.target.result;
-                    if (localData && Array.isArray(localData) && localData.length > 0) {
-                        StorageDB.load().then(cloudData => {
-                            const cloudList = cloudData || [];
-                            const cloudIds = new Set(cloudList.map(x => x.id));
-                            const uniqueLocal = localData.filter(x => !cloudIds.has(x.id));
-                            
-                            if (uniqueLocal.length > 0) {
-                                const merged = cloudList.concat(uniqueLocal);
-                                StorageDB.save(merged).then(() => {
-                                    renderSidebarLibraryList(merged);
-                                    if(typeof showToast === 'function') {
-                                        showToast('내 컴퓨터에 있던 프로젝트가 Vercel KV로 이관되었습니다! ✨');
-                                    }
-                                    
-                                    // SAFELY delete local ONLY after successful upload
-                                    try {
-                                        const req2 = indexedDB.open('FusionBuilderDB', 1);
-                                        req2.onsuccess = (e2) => {
-                                            const db2 = e2.target.result;
-                                            const tx2 = db2.transaction('workspace', 'readwrite');
-                                            tx2.objectStore('workspace').delete('components');
-                                        };
-                                    } catch(e) {}
-                                });
-                            } else {
-                                // If already migrated, clean up local
-                                try {
-                                    const req2 = indexedDB.open('FusionBuilderDB', 1);
-                                    req2.onsuccess = (e2) => {
-                                        const db2 = e2.target.result;
-                                        const tx2 = db2.transaction('workspace', 'readwrite');
-                                        tx2.objectStore('workspace').delete('components');
-                                    };
-                                } catch(e) {}
-                            }
-                        });
-                    }
-                };
-            };
-        } catch(e) { console.warn("Migration skip"); }
+        // Only run once if local data exists and needs to go to cloud
     }
 
     function dataURItoBlobUrl(dataURI) {
