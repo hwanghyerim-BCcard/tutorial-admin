@@ -1937,18 +1937,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 current.tab2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
                                 current.date = new Date().toISOString();
                             }
-                        } else {
-                            list.push({
-                                id: generateId(),
-                                title: '[자동저장] 작업 화면 (' + new Date().toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute:'2-digit' }) + ')',
-                                date: new Date().toISOString(),
-                                themeColor: currentThemeColor,
-                                componentsTab1: JSON.parse(JSON.stringify(componentsTab1)),
-                                    componentsTab2: JSON.parse(JSON.stringify(componentsTab2)),
-                                    tab1Name: document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드',
-                                    tab2Name: document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항'
-
-                            });
+                            StorageDB.save(list);
                         }
                     }
                     
