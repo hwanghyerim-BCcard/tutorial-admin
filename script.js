@@ -874,51 +874,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function silentAutoSave() {
         if(isAutoSaving) return;
+        if(!currentScreenId) return; // ONLY save if we are editing an EXISTING screen!
+
         isAutoSaving = true;
         
         StorageDB.load().then(saved => {
             let list = saved || [];
+            const current = list.find(x => x.id === currentScreenId);
             
-            // Check if pristine and shouldn't be saved
-            const isPristine = (componentsTab1.length === 0 && componentsTab2.length === 0 && document.getElementById('tab1NameInput').value === '이용 가이드');
-            
-            if (!isPristine) {
-                if (currentScreenId) {
-                    const current = list.find(x => x.id === currentScreenId);
-                    if (current) {
-                        current.componentsTab1 = JSON.parse(JSON.stringify(componentsTab1));
-                        current.componentsTab2 = JSON.parse(JSON.stringify(componentsTab2));
-                        current.tab1Name = document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드';
-                        current.tab2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
-                        current.themeColor = currentThemeColor;
-                        current.date = new Date().toISOString();
-                    } else {
-                        const newItem = {
-                            id: currentScreenId,
-                            title: '내 화면 (' + new Date().toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute:'2-digit' }) + ')',
-                            date: new Date().toISOString(),
-                            themeColor: currentThemeColor,
-                            componentsTab1: JSON.parse(JSON.stringify(componentsTab1)),
-                            componentsTab2: JSON.parse(JSON.stringify(componentsTab2)),
-                            tab1Name: document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드',
-                            tab2Name: document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항'
-                        };
-                        list.push(newItem);
-                    }
-                } else {
-                    const newItem = {
-                        id: generateId(),
-                        title: '내 화면 (' + new Date().toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute:'2-digit' }) + ')',
-                        date: new Date().toISOString(),
-                        themeColor: currentThemeColor,
-                        componentsTab1: JSON.parse(JSON.stringify(componentsTab1)),
-                        componentsTab2: JSON.parse(JSON.stringify(componentsTab2)),
-                        tab1Name: document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드',
-                        tab2Name: document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항'
-                    };
-                    list.push(newItem);
-                    currentScreenId = newItem.id;
-                }
+            if (current) {
+                current.componentsTab1 = JSON.parse(JSON.stringify(componentsTab1));
+                current.componentsTab2 = JSON.parse(JSON.stringify(componentsTab2));
+                current.tab1Name = document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드';
+                current.tab2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
+                current.themeColor = currentThemeColor;
+                current.date = new Date().toISOString();
                 
                 const payloadSize = new Blob([JSON.stringify(list)]).size;
                 if (payloadSize > 800000) { 

@@ -343,6 +343,17 @@ input[type="text"]:focus {
     color: #6b7280;
     transition: all 0.2s;
     font-size: 18px;
+    position: relative;
+}
+
+#saveScreenBtn::after {
+    content: '';
+    position: absolute;
+    top: -30px;
+    bottom: -30px;
+    left: -30px;
+    right: -30px;
+    cursor: pointer;
 }
 
 .action-btn:hover {
