@@ -1,15 +1,23 @@
 export default async function handler(req, res) {
-  // Dynamically find any Vercel KV or Upstash Redis URL/Token
-  const envKeys = Object.keys(process.env);
-  const urlKey = envKeys.find(k => k.endsWith('_REST_API_URL') || k.endsWith('_REST_URL'));
-  const tokenKey = envKeys.find(k => k.endsWith('_REST_API_TOKEN') || k.endsWith('_REST_TOKEN'));
+  let url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  let token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || (urlKey ? process.env[urlKey] : null);
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || (tokenKey ? process.env[tokenKey] : null);
+  // Fallback: If only REDIS_URL is provided (e.g. rediss://default:PASSWORD@endpoint:port)
+  if ((!url || !token) && process.env.REDIS_URL) {
+    try {
+      const redisUrl = new URL(process.env.REDIS_URL);
+      // REST API for Upstash replaces rediss:// with https://
+      url = `https://${redisUrl.host}`;
+      token = redisUrl.password;
+    } catch(e) {
+      console.error("REDIS_URL parse error", e);
+    }
+  }
 
   if (!url || !token) {
+    const envKeys = Object.keys(process.env);
     return res.status(500).json({ 
-        error: "Vercel KV / Upstash Settings Missing. Please connect Vercel KV in the Storage tab.",
+        error: "Vercel KV / Upstash Settings Missing.",
         foundKeys: envKeys.filter(k => k.includes('REDIS') || k.includes('KV') || k.includes('UPSTASH'))
     });
   }
