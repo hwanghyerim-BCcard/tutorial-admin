@@ -402,9 +402,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 6px;">메인타이틀</label>
-                        <textarea class="bind-area" data-field="title" placeholder="메인타이틀 (<b>태그로 굵게 표기 가능)" rows="2" style="width: 100%; margin-bottom: 12px; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요. (<b>태그로 굵게 표기 가능)" rows="2" style="width: 100%; margin-bottom: 12px; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                         <label style="display: block; margin-bottom: 6px;">서브타이틀 (옵션)</label>
-                        <textarea class="bind-area" data-field="subtitle" placeholder="메인타이틀 아래 작은 글씨로 표시됩니다" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="subtitle" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>이미지 주소 또는 파일 첨부 (옵션)</label>
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${(comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : [''])).map((line) => `
                                 <div class="bullet-input-row" style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px;">
                                     <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
-                                    <textarea class="bind-bullet-txt" placeholder="설명 항목을 입력하세요 (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                                    <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                                     <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; color: #ef4444; margin-top: 2px;" title="삭제">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                                     </button>
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${(comp.data.tabList || []).map((tab) => `
                                 <div class="tab-input-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
                                     <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
-                                    <input type="text" class="bind-tab-name" value="${tab.name.replace(/"/g, '&quot;')}" placeholder="탭 이름 (예: 여행 준비)" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111;">
+                                    <input type="text" class="bind-tab-name" value="${tab.name.replace(/"/g, '&quot;')}" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111;">
                                     <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 12px; border: 1px solid #D1D5DB; font-size: 13px; color: #111;">
                                         <option value="">대상 선택...</option>
                                         ${components.filter(c => c.id !== comp.id).map(c => `<option value="${c.id}" ${tab.targetStep === c.id ? 'selected' : ''}>${getComponentLabel(c).replace(/"/g, '&quot;')}</option>`).join('')}
@@ -501,11 +501,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <button class="seg-btn ${comp.data.titleColor === 'theme' ? 'active' : ''}" data-val="theme" style="font-size: 12px; padding: 4px 10px;">테마컬러</button>
                             </div>
                         </div>
-                        <textarea class="bind-area" data-field="title" placeholder="입력 시 레이아웃 상단에 표시됩니다 (예: 트래블월렛이란?)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>본문 내용 (필수)</label>
-                        <textarea class="bind-area" data-field="bodyText" placeholder="본문 내용 입력 (엔터로 줄바꿈, <b>태그로 굵게 표기 가능)" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bodyText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="bodyText" placeholder="항목을 입력해주세요. (엔터로 줄바꿈, <b>태그로 굵게 표기 가능)" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bodyText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-row two-cols">
                         <div class="form-group">
@@ -542,11 +542,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.innerHTML = `
                     <div class="form-group">
                         <label>질문 (Q)</label>
-                        <textarea class="bind-area" data-field="question" placeholder="예: Q. 외화 머니는 어디서 쓸 수 있나요?" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="question" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>답변 내용 (A) (필수)</label>
-                        <textarea class="bind-area" data-field="answer" placeholder="답변 내용 입력 (엔터로 줄바꿈)" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.answer || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="answer" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.answer || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                 `;
             } else if (comp.type === 'notice') {
@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="form-group">
                         <label>유의사항 목록</label>
-                        <textarea class="bind-area" data-field="bullets" placeholder="유의사항 목록을 엔터로 구분하여 입력해주세요." rows="5" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bullets || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="bullets" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="5" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bullets || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                 `;
             }
@@ -705,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     newRow.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px;';
                     newRow.innerHTML = `
                         <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
-                        <textarea class="bind-bullet-txt" placeholder="설명 항목을 입력하세요 (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                        <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;"></textarea>
                         <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; color: #ef4444; margin-top: 2px;" title="삭제">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                         </button>
@@ -764,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     newRow.style.cssText = 'display: flex; align-items: center; gap: 8px; margin-bottom: 2px;';
                     newRow.innerHTML = `
                         <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
-                        <input type="text" class="bind-tab-name" value="" placeholder="탭 이름 (예: 여행 준비)" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111;">
+                        <input type="text" class="bind-tab-name" value="" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111;">
                         <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 12px; border: 1px solid #D1D5DB; font-size: 13px; color: #111;">
                             <option value="" selected>대상 선택...</option>
                             ${components.filter(c => c.id !== comp.id).map(c => `<option value="${c.id}">${getComponentLabel(c).replace(/"/g, '&quot;')}</option>`).join('')}
@@ -998,9 +998,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const leftPad = comp.data.align === 'center' ? 20 : 24;
                 div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: white; padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
+                
+                const subT = comp.data.subtitle ? comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요.</span>';
+                const mainT = comp.data.mainTitle ? comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: ${currentThemeColor};">$1</span>`) : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요. (*볼드 기호 포함)</span>';
+
                 html = `
-                    <p style="font-size: 16px; color: #626A7A; margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>
-                    <h3 style="font-size: 28px; font-weight: 700; color: #191B1E; margin: 0; word-break: keep-all; line-height: 1.3;">${(comp.data.mainTitle || ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: ${currentThemeColor};">$1</span>`)}</h3>
+                    <p style="font-size: 16px; color: #626A7A; margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${subT}</p>
+                    <h3 style="font-size: 28px; font-weight: 700; color: #191B1E; margin: 0; word-break: keep-all; line-height: 1.3;">${mainT}</h3>
                 `;
             } else if (comp.type === 'concept') {
                 const prevComp = index > 0 ? components[index - 1] : null;
@@ -1009,10 +1013,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.style.cssText = `width: 100%; text-align: ${alignStyle}; padding: ${topPad}px 20px 16px 20px; margin-top: -10px; box-sizing: border-box;`;
                 
                 let titleHtml = '';
-                if (comp.data.title && comp.data.title.trim()) {
-                    const tColor = (comp.data.titleColor === 'black' || comp.data.titleColor === 'gray') ? '#5F5F5F' : currentThemeColor;
-                    titleHtml = `<h4 style="color: ${tColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h4>`;
-                }
+                const conceptTitle = (comp.data.title && comp.data.title.trim() !== '') ? comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요.</span>';
+                const tColor = (comp.data.titleColor === 'black' || comp.data.titleColor === 'gray') ? '#5F5F5F' : currentThemeColor;
+                titleHtml = `<h4 style="color: ${tColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
 
                 let bodyHtml = '';
                 if (comp.data.bodyText && comp.data.bodyText.trim()) {
@@ -1047,7 +1050,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ? "font-size: 16px; font-weight: 700; color: #111; padding-bottom: 12px; border-bottom: 2px solid #111; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s;"
                         : "font-size: 16px; font-weight: 500; color: #9ca3af; padding-bottom: 12px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s;";
                     const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = '#9ca3af'; e.style.fontWeight = '500'; e.style.borderBottomColor = 'transparent'; }); this.style.color = '#111'; this.style.fontWeight = '700'; this.style.borderBottomColor = '#111';`;
-                    return `<a href="#${tab.targetStep}" class="tab-item" style="${style}" onclick="${onclickStr}">${tab.name.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</a>`;
+                    const tabName = (tab.name && tab.name.trim() !== '') ? tab.name.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요.</span>';
+                    return `<a href="#${tab.targetStep}" class="tab-item" style="${style}" onclick="${onclickStr}">${tabName}</a>`;
                 }).join('');
                 
                 html = `
@@ -1115,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="explanation-content" style="width: 100%; text-align: ${contentTextAlign}; ${standalonePaddingLeft}">
                         ${badgeHtml}
-                        <h3 class="explanation-title" style="margin-bottom: ${(comp.data.subtitle && comp.data.subtitle.trim()) ? '4px' : '16px'}; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.title || ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/&lt;b&gt;/gi, '<b style="font-weight: 700;">').replace(/&lt;\/b&gt;/gi, '</b>')}</h3>
+                        <h3 class="explanation-title" style="margin-bottom: ${(comp.data.subtitle && comp.data.subtitle.trim()) ? '4px' : '16px'}; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.title && comp.data.title.trim() !== '') ? comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/&lt;b&gt;/gi, '<b style="font-weight: 700;">').replace(/&lt;\/b&gt;/gi, '</b>') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요. (엔터로 줄바꿈 가능)</span>'}</h3>
                         ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: #6b7280; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
                         ${imageHtml}
                         ${bulletsHtml}
@@ -1129,17 +1133,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 html = `
                     <div style="padding: 16px 20px 16px 24px; box-sizing: border-box;">
                         <div class="faq-question" onclick="const ans = this.nextElementSibling; const icon = this.querySelector('svg'); if(ans.style.display === 'none'){ ans.style.display = 'block'; icon.style.transform = 'rotate(180deg)'; } else { ans.style.display = 'none'; icon.style.transform = 'rotate(0deg)'; }" style="display: flex; justify-content: space-between; align-items: flex-start; cursor: pointer; background: transparent;">
-                            <h4 style="font-size: 15px; font-weight: 700; color: #111; margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</h4>
+                            <h4 style="font-size: 15px; font-weight: 700; color: #111; margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question && comp.data.question.trim() !== '') ? comp.data.question.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요. (엔터로 줄바꿈 가능)</span>'}</h4>
                             <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transition: transform 0.3s; margin-left: 8px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
                         <div class="faq-answer" style="display: none; padding-top: 12px;">
-                            <p style="font-size: 14px; color: #4b5563; margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${formattedAnswer}</p>
+                            <p style="font-size: 14px; color: #4b5563; margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${(comp.data.answer && comp.data.answer.trim() !== '') ? (comp.data.answer).replace(/\n/g, '<br>') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요. (엔터로 줄바꿈 가능)</span>'}</p>
                         </div>
                     </div>
                     </div>
                 `;
             } else if (comp.type === 'notice') {
-                const titleText = (comp.data.title || '유의사항').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const titleText = (comp.data.title && comp.data.title.trim() !== '') ? comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '<span style="color: #A0AABF; font-weight: 400;">항목을 입력해주세요.</span>';
                 const bList = comp.data.bullets ? comp.data.bullets.split('\n') : [];
                 let bulletsHtml = '';
                 if (bList.length > 0) {
@@ -1253,13 +1257,13 @@ document.addEventListener('DOMContentLoaded', () => {
             base.data.url = '';
             base.data.moreLink = '';
         } else if (type === 'title') {
-            base.data.subtitle = '서브타이틀';
-            base.data.mainTitle = '메인타이틀';
+            base.data.subtitle = '';
+            base.data.mainTitle = '';
             base.data.align = 'left';
         } else if (type === 'tabs') {
             base.data.tabList = [
-                { name: '여행 준비', targetStep: '1' },
-                { name: '여행 중', targetStep: '2' }
+                { name: '', targetStep: '1' },
+                { name: '', targetStep: '2' }
             ];
         } else if (type === 'explanation') {
             base.data.isStep = true;
@@ -1268,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             base.data.badgeAlign = 'center';
             base.data.titleWeight = 'bold';
             base.data.subtitle = '';
-            base.data.title = '메인문구';
+            base.data.title = '';
             base.data.imageUrl = '';
             base.data.bulletList = [''];
             base.data.btn1 = '';
@@ -1281,11 +1285,11 @@ document.addEventListener('DOMContentLoaded', () => {
             base.data.tab1Name = '기존 컴포넌트들';
             base.data.tab2Name = '새로운 영역';
         } else if (type === 'notice') {
-            base.data.title = '유의사항';
+            base.data.title = '';
             base.data.bullets = '';
         } else if (type === 'faq') {
-            base.data.question = '질문을 입력하세요';
-            base.data.answer = '답변 내용을 입력하세요';
+            base.data.question = '';
+            base.data.answer = '';
         } else if (type === 'concept') {
             base.data.align = 'left';
             base.data.titleColor = 'theme';
