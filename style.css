@@ -610,7 +610,8 @@ input:checked + .slider:before {
 
 .step-line {
     flex: 1;
-    width: 1px;
+    width: 2px;
+    border-radius: 1px;
     background-color: rgba(219, 226, 240, 0.4);
     margin-top: 4px;
     min-height: 20px;
@@ -648,6 +649,8 @@ input:checked + .slider:before {
     background-color: transparent;
     margin-bottom: 16px;
     display: block;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
 .explanation-bullets {
@@ -663,10 +666,15 @@ input:checked + .slider:before {
     font-size: 16px;
     font-weight: 400;
     font-family: Pretendard, sans-serif;
-    color: #4b5563;
+    color: #343841;
     line-height: 24px;
     word-break: keep-all;
     text-align: left;
+}
+
+#previewCanvas b, #previewCanvas strong {
+    font-weight: 700;
+    color: #111;
 }
 
 .explanation-bullets li::before {

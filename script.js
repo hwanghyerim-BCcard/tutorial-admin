@@ -1054,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).join('');
                 
                 html = `
-                    <div class="tabs-container" style="display: flex; gap: 20px; border-bottom: 1px solid #e5e7eb; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                    <div class="tabs-container" style="display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;">
                         <style>.tabs-container::-webkit-scrollbar { display: none; }</style>
                         ${tabHtml}
                     </div>
@@ -1397,18 +1397,19 @@ document.addEventListener('DOMContentLoaded', () => {
         .explanation-component:not(.standalone) { padding-right: 22px; }
         .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .step-circle { width: 28px; height: 28px; background-color: var(--theme-color, #27a8f5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
-        .step-line { flex: 1; width: 1px; background-color: rgba(219, 226, 240, 0.4); margin-top: 4px; min-height: 20px; }
+        .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: rgba(219, 226, 240, 0.4); margin-top: 4px; min-height: 20px; }
         .explanation-content { flex: 1; min-width: 0; padding-bottom: 20px; }
         .explanation-content > *:last-child { margin-bottom: 0 !important; }
         .explanation-component.standalone .explanation-indicator { display: none; }
         .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: #191B1E; margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
-        .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; }
+        .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; border: 1px solid rgba(0, 0, 0, 0.1); box-sizing: border-box; }
         .explanation-bullets { list-style: none; padding: 0; margin: 0 0 16px 0; }
-        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: #4b5563; line-height: 24px; word-break: keep-all; text-align: left; }
+        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 24px; word-break: keep-all; text-align: left; }
         .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
         .notice-bullets li::before { content: ""; position: absolute; left: 0; top: 10px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
         .explanation-buttons { display: flex; flex-direction: column; gap: 8px; }
-        .explanation-btn { width: 100%; background-color: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; font-size: 14px; font-weight: 600; color: #111; text-align: center; cursor: pointer; }
+        .explanation-btn { width: 100%; background-color: white; border: 1px solid #E7E0EF; border-radius: 8px; padding: 0 16px; height: 40px; font-size: 14px; font-weight: 700; color: #22252A; text-align: center; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+        .canvas-container b, .canvas-container strong { font-weight: 700; color: #111; }
     </style>
 </head>
 <body>
