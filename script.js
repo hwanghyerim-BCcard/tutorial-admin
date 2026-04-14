@@ -494,13 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <div class="form-group">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
-                            <label style="margin: 0;">타이틀 (옵션)</label>
-                            <div class="segmented-control title-color-toggle-control" style="background: white; border: 1px solid #d1d5db; padding: 2px;">
-                                <button class="seg-btn ${comp.data.titleColor === 'gray' || comp.data.titleColor === 'black' ? 'active' : ''}" data-val="gray" style="font-size: 12px; padding: 4px 10px;">그레이</button>
-                                <button class="seg-btn ${comp.data.titleColor !== 'gray' && comp.data.titleColor !== 'black' ? 'active' : ''}" data-val="theme" style="font-size: 12px; padding: 4px 10px;">테마컬러</button>
-                            </div>
-                        </div>
+                        <label>타이틀 (옵션)</label>
                         <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
@@ -634,16 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            const titleColorBtns = card.querySelectorAll('.title-color-toggle-control .seg-btn');
-            titleColorBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    comp.data.titleColor = e.target.dataset.val;
-                    titleColorBtns.forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    renderPreview();
-                });
-            });
+
 
 
             const stepToggleBtns = card.querySelectorAll('.step-toggle-control .seg-btn');
@@ -1022,8 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim() !== '') {
                     const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    const tColor = (comp.data.titleColor === 'gray' || comp.data.titleColor === 'black') ? '#191B1E' : currentThemeColor;
-                    titleHtml = `<h4 style="color: ${tColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
+                    titleHtml = `<h4 style="color: ${currentThemeColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
                 }
 
                 let bodyHtml = '';
