@@ -497,8 +497,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
                             <label style="margin: 0;">타이틀 (옵션)</label>
                             <div class="segmented-control title-color-toggle-control" style="background: white; border: 1px solid #d1d5db; padding: 2px;">
-                                <button class="seg-btn ${comp.data.titleColor !== 'theme' ? 'active' : ''}" data-val="gray" style="font-size: 12px; padding: 4px 10px;">그레이</button>
-                                <button class="seg-btn ${comp.data.titleColor === 'theme' ? 'active' : ''}" data-val="theme" style="font-size: 12px; padding: 4px 10px;">테마컬러</button>
+                                <button class="seg-btn ${comp.data.titleColor === 'gray' || comp.data.titleColor === 'black' ? 'active' : ''}" data-val="gray" style="font-size: 12px; padding: 4px 10px;">그레이</button>
+                                <button class="seg-btn ${comp.data.titleColor !== 'gray' && comp.data.titleColor !== 'black' ? 'active' : ''}" data-val="theme" style="font-size: 12px; padding: 4px 10px;">테마컬러</button>
                             </div>
                         </div>
                         <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
@@ -1022,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim() !== '') {
                     const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    const tColor = (comp.data.titleColor === 'black' || comp.data.titleColor === 'gray') ? '#5F5F5F' : currentThemeColor;
+                    const tColor = (comp.data.titleColor === 'gray' || comp.data.titleColor === 'black') ? '#191B1E' : currentThemeColor;
                     titleHtml = `<h4 style="color: ${tColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
                 }
 
@@ -1038,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="margin-top: 12px; width: 100%;">
                             <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #E7E9EF; color: #191B1E; font-size: 14px; font-weight: 600; padding: 0; height: 44px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 2px;">
                                 <span>${comp.data.buttonText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transform: translateY(-1px);"><path d="M9 18l6-6-6-6"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transform: translateY(0);"><path d="M9 18l6-6-6-6"/></svg>
                             </a>
                         </div>
                     `;
@@ -1092,16 +1092,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 let buttonsHtml = '';
                 if (comp.data.btn1 || comp.data.btn2) {
                     buttonsHtml = '<div class="explanation-buttons" style="display: flex;">';
-                    const arrowSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transform: translateY(-1px);"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+                    const arrowSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transform: translateY(0);"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
                     if (comp.data.btn1) {
                         const tag = comp.data.btn1Link ? 'a' : 'button';
                         const hrefAttr = comp.data.btn1Link ? ` href="${comp.data.btn1Link.replace(/"/g, '&quot;')}" target="_blank"` : '';
-                        buttonsHtml += `<${tag}${hrefAttr} class="explanation-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 2px; text-decoration: none;"><span>${comp.data.btn1}</span>${comp.data.btn1Arrow ? arrowSvg : ''}</${tag}>`;
+                        buttonsHtml += `<${tag}${hrefAttr} class="explanation-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;"><span>${comp.data.btn1}</span>${comp.data.btn1Arrow ? arrowSvg : ''}</${tag}>`;
                     }
                     if (comp.data.btn2) {
                         const tag = comp.data.btn2Link ? 'a' : 'button';
                         const hrefAttr = comp.data.btn2Link ? ` href="${comp.data.btn2Link.replace(/"/g, '&quot;')}" target="_blank"` : '';
-                        buttonsHtml += `<${tag}${hrefAttr} class="explanation-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 2px; text-decoration: none;"><span>${comp.data.btn2}</span>${comp.data.btn2Arrow ? arrowSvg : ''}</${tag}>`;
+                        buttonsHtml += `<${tag}${hrefAttr} class="explanation-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;"><span>${comp.data.btn2}</span>${comp.data.btn2Arrow ? arrowSvg : ''}</${tag}>`;
                     }
                     buttonsHtml += '</div>';
                 }
@@ -1180,7 +1180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.style.cssText = `width: 100%; margin-top: 29px; ${paddingStyle} box-sizing: border-box; background-color: ${bgColor}; text-align: left;`;
                 
                 html = `
-                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: ${currentThemeColor}; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
+                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: #191B1E; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
                     ${bulletsHtml}
                 `;
             }

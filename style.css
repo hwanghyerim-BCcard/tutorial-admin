@@ -715,6 +715,11 @@ input:checked + .slider:before {
     color: #22252A;
     text-align: center;
     cursor: pointer;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 /* Add Menu Popup */
