@@ -649,8 +649,6 @@ input:checked + .slider:before {
     background-color: transparent;
     margin-bottom: 16px;
     display: block;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
 }
 
 .explanation-bullets {

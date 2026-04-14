@@ -559,6 +559,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label>유의사항 목록</label>
                         <textarea class="bind-area" data-field="bullets" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="5" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bullets || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
+                    <div class="form-group" style="margin-top: 12px; display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
+                        <label style="margin: 0; font-size: 13px; color: #4b5563; font-weight: 500;">회색 배경 표시</label>
+                        <label class="switch">
+                            <input type="checkbox" class="bind-chk" data-field="useBg">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 `;
             }
             
@@ -606,6 +613,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             card.querySelectorAll('.bind-chk').forEach(inp => {
+                if (inp.dataset.field === 'useBg' && comp.data.useBg === undefined) {
+                    comp.data.useBg = true;
+                }
                 inp.checked = !!comp.data[inp.dataset.field];
                 inp.addEventListener('change', (e) => {
                     comp.data[inp.dataset.field] = e.target.checked;
@@ -1164,7 +1174,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 div.className = 'notice-component';
-                div.style.cssText = 'width: 100%; margin-top: 29px; padding: 32px 20px; box-sizing: border-box; background-color: #F4F5F7; text-align: left;';
+                const showBg = comp.data.useBg !== false;
+                const bgColor = showBg ? '#F4F5F7' : 'transparent';
+                const paddingStyle = showBg ? 'padding: 32px 20px;' : 'padding: 8px 20px 32px 20px;';
+                div.style.cssText = `width: 100%; margin-top: 29px; ${paddingStyle} box-sizing: border-box; background-color: ${bgColor}; text-align: left;`;
                 
                 html = `
                     ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: ${currentThemeColor}; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
@@ -1402,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .explanation-content > *:last-child { margin-bottom: 0 !important; }
         .explanation-component.standalone .explanation-indicator { display: none; }
         .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: #191B1E; margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
-        .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; border: 1px solid rgba(0, 0, 0, 0.1); box-sizing: border-box; }
+        .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; }
         .explanation-bullets { list-style: none; padding: 0; margin: 0 0 16px 0; }
         .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 24px; word-break: keep-all; text-align: left; }
         .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
