@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label style="display: block; margin-bottom: 6px;">메인타이틀</label>
                         <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요. (<b>태그로 굵게 표기 가능)" rows="2" style="width: 100%; margin-bottom: 12px; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                         <label style="display: block; margin-bottom: 6px;">서브타이틀 (옵션)</label>
-                        <textarea class="bind-area" data-field="subtitle" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="subtitle" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; font-weight: 400; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>이미지 주소 또는 파일 첨부 (옵션)</label>
@@ -1019,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let bodyHtml = '';
                 if (comp.data.bodyText && comp.data.bodyText.trim()) {
                     const formattedBody = comp.data.bodyText.replace(/\n/g, '<br>');
-                    bodyHtml = `<p style="color: #626A7A; font-size: 14px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 20px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
+                    bodyHtml = `<p style="color: #343841; font-size: 14px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 20px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
                 }
 
                 let buttonHtml = '';
@@ -1046,9 +1046,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tabHtml = (comp.data.tabList || []).map((tab, i) => {
                     const isActive = i === 0;
                     const style = isActive
-                        ? "font-size: 16px; font-weight: 700; color: #111; padding-bottom: 12px; border-bottom: 2px solid #111; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s;"
-                        : "font-size: 16px; font-weight: 500; color: #9ca3af; padding-bottom: 12px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s;";
-                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = '#9ca3af'; e.style.fontWeight = '500'; e.style.borderBottomColor = 'transparent'; }); this.style.color = '#111'; this.style.fontWeight = '700'; this.style.borderBottomColor = '#111';`;
+                        ? "font-size: 17px; font-weight: 700; color: #111; height: 42px; line-height: 40px; border-bottom: 2px solid #111; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;"
+                        : "font-size: 17px; font-weight: 700; color: #9ca3af; height: 42px; line-height: 40px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;";
+                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = '#9ca3af'; e.style.borderBottomColor = 'transparent'; }); this.style.color = '#111'; this.style.borderBottomColor = '#111';`;
                     const tabName = (tab.name && tab.name.trim() !== '') ? tab.name.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
                     return `<a href="#${tab.targetStep}" class="tab-item" style="${style}" onclick="${onclickStr}">${tabName}</a>`;
                 }).join('');
@@ -1119,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="explanation-content" style="width: 100%; text-align: ${contentTextAlign}; ${standalonePaddingLeft}">
                         ${badgeHtml}
                         ${(comp.data.title && comp.data.title.trim() !== '') ? `<h3 class="explanation-title" style="margin-bottom: ${(comp.data.subtitle && comp.data.subtitle.trim()) ? '4px' : '16px'}; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/&lt;b&gt;/gi, '<b style="font-weight: 700;">').replace(/&lt;\/b&gt;/gi, '</b>')}</h3>` : ''}
-                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: #6b7280; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
+                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: #6b7280; font-weight: 400; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
                         ${imageHtml}
                         ${bulletsHtml}
                         ${buttonsHtml}
@@ -1147,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let bulletsHtml = '';
                 if (bList.length > 0) {
                     bulletsHtml = '<ul class="notice-bullets" style="display: block; list-style: none; padding: 0; margin: 0;">' + 
-                        bList.filter(b => b.trim() !== '').map(line => `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 14px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 1.5; word-break: keep-all; text-align: left;">${line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</li>`).join('') + 
+                        bList.filter(b => b.trim() !== '').map(line => `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 1.5; word-break: keep-all; text-align: left;">${line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</li>`).join('') + 
                         '</ul>';
                 }
                 
@@ -1155,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.style.cssText = 'width: 100%; margin-top: 29px; padding: 32px 20px; box-sizing: border-box; background-color: #F4F5F7; text-align: left;';
                 
                 html = `
-                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: #111; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
+                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: ${currentThemeColor}; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
                     ${bulletsHtml}
                 `;
             }
@@ -1368,7 +1368,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         const currentWidth = document.getElementById('previewContainer') ? document.getElementById('previewContainer').offsetWidth : 390;
-        
         return `<!DOCTYPE html>
 <html lang="ko">
 <head>

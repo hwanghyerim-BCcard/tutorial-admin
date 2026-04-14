@@ -698,12 +698,15 @@ input:checked + .slider:before {
 .explanation-btn {
     width: 100%;
     background-color: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #E7E0EF;
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 0 16px;
+    height: 40px;
     font-size: 14px;
-    font-weight: 600;
-    color: #111;
+    line-height: 20px;
+    font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    color: #22252A;
     text-align: center;
     cursor: pointer;
 }
