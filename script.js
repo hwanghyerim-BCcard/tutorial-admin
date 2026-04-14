@@ -1110,11 +1110,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     }
                 }
-                
+                let nextVisibleComp = null;
+                for (let i = index + 1; i < components.length; i++) {
+                    if (components[i].data.visible) {
+                        nextVisibleComp = components[i];
+                        break;
+                    }
+                }
+                const isLastStep = !nextVisibleComp || nextVisibleComp.type !== 'explanation' || !nextVisibleComp.data.isStep;
+
                 html = `
                     <div class="explanation-indicator">
                         <div class="step-circle">${comp.data.stepNumber || '1'}</div>
-                        <div class="step-line"></div>
+                        <div class="step-line" style="${isLastStep ? 'display: none;' : ''}"></div>
                     </div>
                     <div class="explanation-content" style="width: 100%; text-align: ${contentTextAlign}; ${standalonePaddingLeft}">
                         ${badgeHtml}
