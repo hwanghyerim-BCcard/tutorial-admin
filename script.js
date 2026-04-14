@@ -1069,7 +1069,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
                 if (bList.length > 0) {
                     bulletsHtml = '<ul class="explanation-bullets" style="display: block;">' + 
-                        bList.filter(b => b.trim() !== '').map(line => `<li>${line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</li>`).join('') + 
+                        bList.filter(b => b.trim() !== '').map(line => {
+                            let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                            const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                            const closeB = (t.match(/<\/b>/gi) || []).length;
+                            if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                            return `<li>${t}</li>`;
+                        }).join('') +  
                         '</ul>';
                 }
                 
@@ -1147,7 +1153,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 let bulletsHtml = '';
                 if (bList.length > 0) {
                     bulletsHtml = '<ul class="notice-bullets" style="display: block; list-style: none; padding: 0; margin: 0;">' + 
-                        bList.filter(b => b.trim() !== '').map(line => `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 1.5; word-break: keep-all; text-align: left;">${line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</li>`).join('') + 
+                        bList.filter(b => b.trim() !== '').map(line => {
+                            let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                            const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                            const closeB = (t.match(/<\/b>/gi) || []).length;
+                            if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                            return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 1.5; word-break: keep-all; text-align: left;">${t}</li>`;
+                        }).join('') + 
                         '</ul>';
                 }
                 
