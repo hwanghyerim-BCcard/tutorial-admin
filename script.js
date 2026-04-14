@@ -1029,14 +1029,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 let bodyHtml = '';
                 if (comp.data.bodyText && comp.data.bodyText.trim()) {
                     const formattedBody = comp.data.bodyText.replace(/\n/g, '<br>');
-                    bodyHtml = `<p style="color: #343841; font-size: 14px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 20px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
+                    bodyHtml = `<p style="color: #343841; font-size: 15px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 22px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
                 }
 
                 let buttonHtml = '';
                 if (comp.data.buttonText && comp.data.buttonText.trim()) {
                     buttonHtml = `
-                        <div style="margin-top: 12px; width: 100%;">
-                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #E7E9EF; color: #191B1E; font-size: 14px; font-weight: 600; padding: 0; height: 44px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 2px;">
+                        <div style="width: 100%;">
+                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #E7E0EF; color: #22252A; font-size: 14px; font-weight: 700; padding: 0 16px; height: 40px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 6px;">
                                 <span>${comp.data.buttonText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transform: translateY(0);"><path d="M9 18l6-6-6-6"/></svg>
                             </a>
@@ -1045,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 html = `
-                    <div class="concept-banner" style="background-color: white; border: 1px solid ${hexToRgba(currentThemeColor, 0.3)}; border-radius: 16px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 4px; width: 100%; box-sizing: border-box;">
+                    <div class="concept-banner" style="background-color: #F3F5F8; border-radius: 20px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 16px; width: 100%; box-sizing: border-box;">
                         ${titleHtml}
                         ${bodyHtml}
                         ${buttonHtml}
