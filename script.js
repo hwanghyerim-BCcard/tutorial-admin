@@ -115,17 +115,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let componentsTab2 = [];
     let activeTabId = 1;
     let components = componentsTab1;
-    let currentThemeColor = '#27a8f5';
+    let currentThemeColor = '#23B6FF';
 
-        const THEMES = ['#27a8f5', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#5CA8ED', '#F29046', '#AD84F0'];
+        const THEMES = ['#23B6FF', '#FF7171', '#5FD289', '#F7B52C', '#707BEB'];
 
     function renderThemeSelector() {
         const container = document.getElementById('themeColorSelector');
         if(!container) return;
         container.innerHTML = '';
+        
+        if (currentThemeColor === '#27a8f5' || !THEMES.includes(currentThemeColor)) {
+            currentThemeColor = THEMES[0];
+        }
+
         THEMES.forEach(color => {
             const btn = document.createElement('button');
-            const isSelected = currentThemeColor === color || (currentThemeColor === '#27a8f5' && color === THEMES[0]);
+            const isSelected = currentThemeColor === color;
             btn.style.cssText = `width: 32px; height: 32px; border-radius: 50%; background-color: ${color}; border: 2px solid ${isSelected ? '#000' : 'transparent'}; cursor: pointer; transition: all 0.2s; outline: ${isSelected ? '2px solid #FFFFFF' : 'none'}; outline-offset: -4px; padding:0;`;
             btn.onclick = () => {
                 currentThemeColor = color;
@@ -1634,7 +1639,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         componentsTab1 = item.componentsTab1 || item.components || [];
                         componentsTab2 = item.componentsTab2 || [];
-                        currentThemeColor = item.themeColor || '#27a8f5';
+                        currentThemeColor = item.themeColor || '#23B6FF';
+                        if (currentThemeColor === '#27a8f5') currentThemeColor = '#23B6FF';
                         renderThemeSelector();
 
                         currentScreenId = safeId;
@@ -1962,7 +1968,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     componentsTab1 = [];
                     componentsTab2 = [];
-                    currentThemeColor = THEMES[0] || '#27a8f5';
+                    currentThemeColor = THEMES[0] || '#23B6FF';
                     
                     syncTabVisibility();
                     switchWorkspaceTab(1);
