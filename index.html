@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>신규 서비스 이용방법 화면 제작하기</title>
-    <link rel="stylesheet" href="style.css?v=55">
+    <link rel="stylesheet" href="style.css?v=56">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,8 +44,10 @@
                 <!-- Editor Section -->
                 <section class="editor-section">
                     <div style="padding: 40px 40px 0 40px;">
-
-
+                        <div class="theme-settings-wrapper" style="background: var(--background-default); border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--gray-60);">
+                            <h3 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 700; color: var(--font-neutral-1);">🎨 색상 테마</h3>
+                            <div id="themeColorSelector" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
+                        </div>
                         <div id="editorWorkspaceTabs" style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb;">
                             <div id="editorTab1Btn" onclick="switchWorkspaceTab(1)" style="padding: 12px 24px; cursor: pointer; font-weight: 700; color: #111; border-bottom: 2px solid #111; margin-bottom: -2px;">
                                 기본 화면
@@ -175,6 +177,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=55"></script>
+    <script src="script.js?v=56"></script>
 </body>
 </html>

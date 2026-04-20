@@ -115,7 +115,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let componentsTab2 = [];
     let activeTabId = 1;
     let components = componentsTab1;
-    let currentThemeColor = 'var(--primary-color)';
+    let currentThemeColor = 'var(--theme-color)';
+
+        const THEMES = ['#27a8f5', 'var(--error-color)', '#10b981', '#f59e0b', '#8b5cf6', '#5CA8ED', 'var(--error-color)', '#F29046', '#AD84F0'];
+
+    function renderThemeSelector() {
+        const container = document.getElementById('themeColorSelector');
+        if(!container) return;
+        container.innerHTML = '';
+        THEMES.forEach(color => {
+            const btn = document.createElement('button');
+            const isSelected = currentThemeColor === color || (currentThemeColor === 'var(--theme-color)' && color === THEMES[0]);
+            btn.style.cssText = `width: 32px; height: 32px; border-radius: 50%; background-color: ${color}; border: 2px solid ${isSelected ? 'var(--font-neutral-1)' : 'transparent'}; cursor: pointer; transition: all 0.2s; outline: ${isSelected ? '2px solid var(--background-default)' : 'none'}; outline-offset: -4px; padding:0;`;
+            btn.onclick = () => {
+                currentThemeColor = color;
+                renderThemeSelector();
+                renderPreview();
+            };
+            container.appendChild(btn);
+        });
+        document.documentElement.style.setProperty('--theme-color', currentThemeColor);
+    }
+    
+    // Default fallback handling
+    if (!currentThemeColor || currentThemeColor === 'var(--theme-color)' || currentThemeColor === 'var(--theme-color)') {
+        currentThemeColor = THEMES[0];
+    }
+    document.documentElement.style.setProperty('--theme-color', currentThemeColor);
 
     function hexToRgba(hex, alpha) {
         let r=0, g=0, b=0;
@@ -499,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             } else if (comp.type === 'tabDivider') {
                 card.innerHTML = `
-                    <div style="padding:16px; background-color:var(--background-color-2); border-radius:8px; margin-bottom:12px; color:var(--primary-color); font-size:13px; line-height:1.5;">
+                    <div style="padding:16px; background-color:var(--background-color-2); border-radius:8px; margin-bottom:12px; color:var(--theme-color); font-size:13px; line-height:1.5;">
                         <b style="font-size: 14px;">화면 분할 기준점 📌</b><br>
                         이 컴포넌트를 기준으로, <b>위에 있는 모든 내용들은 첫 번째 탭</b>에 담기고,<br>
                         <b>아래에 추가되는 내용들은 두 번째 탭</b>에 담겨 서로 다른 화면으로 분리 동작하게 됩니다. (탭 버튼은 화면 맨 위에 자동 생성됩니다.)
@@ -978,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: var(--background-color-1); padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
                 
                 const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: var(--font-neutral-6); margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
-                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: var(--font-neutral-2); margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--primary-color);">$1</span>`)}</h3>` : '';
+                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: var(--font-neutral-2); margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--theme-color);">$1</span>`)}</h3>` : '';
 
                 html = subTHtml + mainTHtml;
             } else if (comp.type === 'concept') {
@@ -990,7 +1016,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim() !== '') {
                     const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    titleHtml = `<h4 style="color: var(--primary-color); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
+                    titleHtml = `<h4 style="color: var(--theme-color); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
                 }
 
                 let bodyHtml = '';
@@ -1032,7 +1058,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 html = `
                     <div class="tabs-container" style="display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;">
-                        <style>.tabs-container::-webkit-scrollbar { display: none; }</style>
+                        <style>
+        :root { --theme-color: ${currentThemeColor}; }.tabs-container::-webkit-scrollbar { display: none; }</style>
                         ${tabHtml}
                     </div>
                 `;
@@ -1086,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const badgeAlignment = comp.data.badgeAlign === 'left' ? 'flex-start' : 'center';
                         badgeHtml = `
                             <div style="display: flex; justify-content: ${badgeAlignment}; margin-top: 10px; margin-bottom: 16px;">
-                                <div style="background-color: var(--primary-color); color: var(--background-default); font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
+                                <div style="background-color: var(--theme-color); color: var(--background-default); font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
                                     ${comp.data.badgeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                                 </div>
                             </div>
@@ -1235,7 +1262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
                 
                 targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px var(--primary-color), 0 4px 12px rgba(0,0,0,0.15)`;
+                targetCard.style.boxShadow = `0 0 0 2px var(--theme-color), 0 4px 12px rgba(0,0,0,0.15)`;
                 setTimeout(() => {
                     targetCard.style.boxShadow = '';
                 }, 1000);
@@ -1305,7 +1332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
                 
                 targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px var(--primary-color), 0 4px 12px rgba(0,0,0,0.15)`;
+                targetCard.style.boxShadow = `0 0 0 2px var(--theme-color), 0 4px 12px rgba(0,0,0,0.15)`;
                 setTimeout(() => {
                     targetCard.style.boxShadow = '';
                 }, 1000);
@@ -1378,13 +1405,13 @@ document.addEventListener('DOMContentLoaded', () => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --theme-color: var(--primary-color); }
+        :root { --theme-color: var(--theme-color); }
         body { margin: 0; padding: 0; background-color: var(--background-color-2); display: flex; justify-content: center; }
         .canvas-container { width: 100%; max-width: 768px; background-color: var(--background-color-1); min-height: 100vh; box-sizing: border-box; }
         .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: var(--background-color-1); text-align: left; scroll-margin-top: 64px; }
         .explanation-component:not(.standalone) { padding-right: 22px; }
         .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-        .step-circle { width: 28px; height: 28px; background-color: var(--primary-color); color: var(--background-default); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
+        .step-circle { width: 28px; height: 28px; background-color: var(--theme-color); color: var(--background-default); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
         .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: var(--line)); margin-top: 4px; min-height: 20px; }
         .explanation-content { flex: 1; min-width: 0; padding-bottom: 20px; }
         .explanation-content > *:last-child { margin-bottom: 0 !important; }
@@ -1498,7 +1525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setTimeout(() => {
                 copySourceBtn.textContent = originalText;
-                copySourceBtn.style.backgroundColor = 'var(--primary-color)';
+                copySourceBtn.style.backgroundColor = 'var(--theme-color)';
             }, 2000);
         });
     }
@@ -1605,7 +1632,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         componentsTab1 = item.componentsTab1 || item.components || [];
                         componentsTab2 = item.componentsTab2 || [];
-                        currentThemeColor = item.themeColor || 'var(--primary-color)';
+                        currentThemeColor = item.themeColor || 'var(--theme-color)';
                         currentScreenId = safeId;
                         
                         const t1Input = document.getElementById('tab1NameInput');
@@ -1931,7 +1958,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     componentsTab1 = [];
                     componentsTab2 = [];
-                    currentThemeColor = THEMES[0] || 'var(--primary-color)';
+                    currentThemeColor = THEMES[0] || 'var(--theme-color)';
                     
                     syncTabVisibility();
                     switchWorkspaceTab(1);
