@@ -953,7 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             
             if (comp.type === 'video') {
-                div.style.cssText = "width: 100%; aspect-ratio: 16/9; background-color: #e5e5e5; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;";
+                div.style.cssText = "width: 100%; aspect-ratio: 16/9; background-color: var(--gray-60, #e5e5e5); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;";
                 
                 let moreBtnHtml = '';
                 if (comp.data.moreLink) {
@@ -980,7 +980,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                 } else {
-                    html = `<span style="color: #111; font-size: 15px; font-weight: 500;">영상</span>`;
+                    html = `<span style="color: var(--font-neutral-2, #111); font-size: 15px; font-weight: 500;">영상</span>`;
                 }
             } else if (comp.type === 'title') {
                 const alignStyle = comp.data.align === 'center' ? 'center' : 'left';
@@ -992,10 +992,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     topPad = 0;
                 }
                 const leftPad = comp.data.align === 'center' ? 20 : 24;
-                div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: white; padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
+                div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: var(--background-color-1, #ffffff); padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
                 
-                const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: #626A7A; margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
-                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: #191B1E; margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: ${currentThemeColor};">$1</span>`)}</h3>` : '';
+                const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: var(--font-neutral-6, #626A7A); margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
+                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: var(--font-neutral-2, #191B1E); margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--theme-color, ${currentThemeColor});">$1</span>`)}</h3>` : '';
 
                 html = subTHtml + mainTHtml;
             } else if (comp.type === 'concept') {
@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim() !== '') {
                     const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    titleHtml = `<h4 style="color: ${currentThemeColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
+                    titleHtml = `<h4 style="color: var(--theme-color, ${currentThemeColor}); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
                 }
 
                 let bodyHtml = '';
@@ -1103,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const badgeAlignment = comp.data.badgeAlign === 'left' ? 'flex-start' : 'center';
                         badgeHtml = `
                             <div style="display: flex; justify-content: ${badgeAlignment}; margin-top: 10px; margin-bottom: 16px;">
-                                <div style="background-color: ${currentThemeColor}; color: white; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
+                                <div style="background-color: var(--theme-color, ${currentThemeColor}); color: white; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
                                     ${comp.data.badgeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                                 </div>
                             </div>
@@ -1160,19 +1160,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
                             const closeB = (t.match(/<\/b>/gi) || []).length;
                             if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                            return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 1.5; word-break: keep-all; text-align: left;">${t}</li>`;
+                            return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: var(--font-neutral-4, #343841); line-height: 1.5; word-break: keep-all; text-align: left;">${t}</li>`;
                         }).join('') + 
                         '</ul>';
                 }
                 
                 div.className = 'notice-component';
                 const showBg = comp.data.useBg !== false;
-                const bgColor = showBg ? '#F4F5F7' : 'transparent';
+                const bgColor = showBg ? 'var(--background-color-2, #F4F5F7)' : 'transparent';
                 const paddingStyle = showBg ? 'padding: 32px 20px;' : 'padding: 8px 20px 32px 20px;';
                 div.style.cssText = `width: 100%; margin-top: 29px; ${paddingStyle} box-sizing: border-box; background-color: ${bgColor}; text-align: left;`;
                 
                 html = `
-                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: #191B1E; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
+                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: var(--font-neutral-2, #191B1E); font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
                     ${bulletsHtml}
                 `;
             }
@@ -1204,7 +1204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filler.style.cssText = 'width: 100%; pointer-events: none;';
             const last = list[list.length - 1];
             if (last && last.type === 'notice') {
-                filler.style.backgroundColor = '#F4F5F7';
+                filler.style.backgroundColor = 'var(--background-color-2, #F4F5F7)';
             } else {
                 filler.style.backgroundColor = 'transparent';
             }
