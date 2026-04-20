@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let components = componentsTab1;
     let currentThemeColor = '#27a8f5';
 
-        const THEMES = ['#27a8f5', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#5CA8ED', '#ef4444', '#F29046', '#AD84F0'];
+        const THEMES = ['#27a8f5', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#5CA8ED', '#F29046', '#AD84F0'];
 
     function renderThemeSelector() {
         const container = document.getElementById('themeColorSelector');
@@ -1006,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: white; padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
                 
                 const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: #9ca3af; margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
-                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: #111; margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: ${currentThemeColor};">$1</span>`)}</h3>` : '';
+                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: #111; margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--theme-color);">$1</span>`)}</h3>` : '';
 
                 html = subTHtml + mainTHtml;
             } else if (comp.type === 'concept') {
@@ -1018,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim() !== '') {
                     const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    titleHtml = `<h4 style="color: ${currentThemeColor}; font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
+                    titleHtml = `<h4 style="color: var(--theme-color); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
                 }
 
                 let bodyHtml = '';
@@ -1115,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const badgeAlignment = comp.data.badgeAlign === 'left' ? 'flex-start' : 'center';
                         badgeHtml = `
                             <div style="display: flex; justify-content: ${badgeAlignment}; margin-top: 10px; margin-bottom: 16px;">
-                                <div style="background-color: ${currentThemeColor}; color: #FFFFFF; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
+                                <div style="background-color: var(--theme-color); color: #FFFFFF; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
                                     ${comp.data.badgeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                                 </div>
                             </div>
@@ -1264,7 +1264,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
                 
                 targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px ${currentThemeColor}, 0 4px 12px rgba(0,0,0,0.15)`;
+                targetCard.style.boxShadow = `0 0 0 2px var(--theme-color), 0 4px 12px rgba(0,0,0,0.15)`;
                 setTimeout(() => {
                     targetCard.style.boxShadow = '';
                 }, 1000);
@@ -1334,7 +1334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
                 
                 targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px ${currentThemeColor}, 0 4px 12px rgba(0,0,0,0.15)`;
+                targetCard.style.boxShadow = `0 0 0 2px var(--theme-color), 0 4px 12px rgba(0,0,0,0.15)`;
                 setTimeout(() => {
                     targetCard.style.boxShadow = '';
                 }, 1000);
@@ -1413,7 +1413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: white; text-align: left; scroll-margin-top: 64px; }
         .explanation-component:not(.standalone) { padding-right: 22px; }
         .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-        .step-circle { width: 28px; height: 28px; background-color: ${currentThemeColor}; color: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
+        .step-circle { width: 28px; height: 28px; background-color: var(--theme-color); color: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
         .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: rgba(219, 226, 240, 0.4); margin-top: 4px; min-height: 20px; }
         .explanation-content { flex: 1; min-width: 0; padding-bottom: 20px; }
         .explanation-content > *:last-child { margin-bottom: 0 !important; }
