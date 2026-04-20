@@ -932,9 +932,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const t2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : 'FAQ';
 
             const tabSwitcherHtml = `
-                <div style="display: flex; gap: 20px; border-bottom: 1px solid #e5e7eb; background: white; position: sticky; top: 0; z-index: 10;">
-                    <div class="view-tab-btn active" onclick="window.switchPreviewTab(1, this);" style="font-size: 16px; font-weight: 700; color: #111; padding: 16px 0; border-bottom: 2px solid #111; cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
-                    <div class="view-tab-btn" onclick="window.switchPreviewTab(2, this);" style="font-size: 16px; font-weight: 500; color: #9ca3af; padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
+                <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--line, #e5e7eb); background: var(--background-color-1, #ffffff); position: sticky; top: 0; z-index: 10;">
+                    <div class="view-tab-btn active" onclick="window.switchPreviewTab(1, this);" style="font-size: 16px; font-weight: 700; color: var(--font-neutral-2, #111); padding: 16px 0; border-bottom: 2px solid var(--font-neutral-2, #111); cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
+                    <div class="view-tab-btn" onclick="window.switchPreviewTab(2, this);" style="font-size: 16px; font-weight: 500; color: var(--font-neutral-6, #626A7A); padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
                 </div>
             `;
             const switcherDiv = document.createElement('div');
@@ -1013,14 +1013,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 let bodyHtml = '';
                 if (comp.data.bodyText && comp.data.bodyText.trim()) {
                     const formattedBody = comp.data.bodyText.replace(/\n/g, '<br>');
-                    bodyHtml = `<p style="color: #343841; font-size: 15px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 22px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
+                    bodyHtml = `<p style="color: var(--font-neutral-4, #343841); font-size: 15px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 22px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
                 }
 
                 let buttonHtml = '';
                 if (comp.data.buttonText && comp.data.buttonText.trim()) {
                     buttonHtml = `
                         <div style="width: 100%;">
-                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #E7E0EF; color: #22252A; font-size: 14px; font-weight: 700; padding: 0 16px; height: 40px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 6px;">
+                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: var(--background-color-1, #ffffff); border: 1px solid var(--gray-60, #E7E9EF); color: var(--font-neutral-3, #22252A); font-size: 14px; font-weight: 700; padding: 0 16px; height: 40px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 6px;">
                                 <span>${comp.data.buttonText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transform: translateY(0);"><path d="M9 18l6-6-6-6"/></svg>
                             </a>
@@ -1029,20 +1029,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 html = `
-                    <div class="concept-banner" style="background-color: #F3F5F8; border-radius: 20px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 16px; width: 100%; box-sizing: border-box;">
+                    <div class="concept-banner" style="background-color: var(--background-color-2, #F3F5F8); border-radius: 20px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 16px; width: 100%; box-sizing: border-box;">
                         ${titleHtml}
                         ${bodyHtml}
                         ${buttonHtml}
                     </div>
                 `;
             } else if (comp.type === 'tabs') {
-                div.style.cssText = "width: 100%; background-color: white; padding: 20px 20px 0 20px; margin-bottom: 40px; position: sticky; top: 0; z-index: 10;";
+                div.style.cssText = "width: 100%; background-color: var(--background-color-1, #ffffff); padding: 20px 20px 0 20px; margin-bottom: 40px; position: sticky; top: 0; z-index: 10;";
                 const tabHtml = (comp.data.tabList || []).map((tab, i) => {
                     const isActive = i === 0;
                     const style = isActive
-                        ? "font-size: 17px; font-weight: 700; color: #111; height: 42px; line-height: 40px; border-bottom: 2px solid #111; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;"
-                        : "font-size: 17px; font-weight: 700; color: #9ca3af; height: 42px; line-height: 40px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;";
-                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = '#9ca3af'; e.style.borderBottomColor = 'transparent'; }); this.style.color = '#111'; this.style.borderBottomColor = '#111';`;
+                        ? "font-size: 17px; font-weight: 700; color: var(--font-neutral-2, #111); height: 42px; line-height: 40px; border-bottom: 2px solid var(--font-neutral-2, #111); cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;"
+                        : "font-size: 17px; font-weight: 700; color: var(--font-neutral-6, #626A7A); height: 42px; line-height: 40px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;";
+                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = 'var(--font-neutral-6, #626A7A)'; e.style.borderBottomColor = 'transparent'; }); this.style.color = 'var(--font-neutral-2, #111)'; this.style.borderBottomColor = 'var(--font-neutral-2, #111)';`;
                     const tabName = (tab.name && tab.name.trim() !== '') ? tab.name.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
                     return `<a href="#${tab.targetStep}" class="tab-item" style="${style}" onclick="${onclickStr}">${tabName}</a>`;
                 }).join('');
@@ -1127,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="explanation-content" style="width: 100%; text-align: ${contentTextAlign}; ${standalonePaddingLeft}">
                         ${badgeHtml}
                         ${(comp.data.title && comp.data.title.trim() !== '') ? `<h3 class="explanation-title" style="margin-bottom: ${(comp.data.subtitle && comp.data.subtitle.trim()) ? '4px' : '16px'}; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/&lt;b&gt;/gi, '<b style="font-weight: 700;">').replace(/&lt;\/b&gt;/gi, '</b>')}</h3>` : ''}
-                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: #6b7280; font-weight: 400; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
+                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: var(--font-neutral-6, #626A7A); font-weight: 400; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
                         ${imageHtml}
                         ${bulletsHtml}
                         ${buttonsHtml}
@@ -1135,16 +1135,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else if (comp.type === 'faq') {
-                div.style.cssText = "width: 100%; border-bottom: 1px solid #f3f4f6; background-color: white; padding: 0;";
+                div.style.cssText = "width: 100%; border-bottom: 1px solid var(--line, #f3f4f6); background-color: var(--background-color-1, #ffffff); padding: 0;";
                 const formattedAnswer = (comp.data.answer || '').replace(/\n/g, '<br>');
                 html = `
                     <div style="padding: 16px 20px 16px 24px; box-sizing: border-box;">
                         <div class="faq-question" onclick="const ans = this.nextElementSibling; const icon = this.querySelector('svg'); if(ans.style.display === 'none'){ ans.style.display = 'block'; icon.style.transform = 'rotate(180deg)'; } else { ans.style.display = 'none'; icon.style.transform = 'rotate(0deg)'; }" style="display: flex; justify-content: space-between; align-items: flex-start; cursor: pointer; background: transparent;">
-                            <h4 style="font-size: 15px; font-weight: 700; color: #111; margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question && comp.data.question.trim() !== '') ? comp.data.question.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : ''}</h4>
-                            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transition: transform 0.3s; margin-left: 8px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <h4 style="font-size: 15px; font-weight: 700; color: var(--font-neutral-2, #111); margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question && comp.data.question.trim() !== '') ? comp.data.question.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : ''}</h4>
+                            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transition: transform 0.3s; margin-left: 8px; color: var(--font-neutral-6, #626A7A);"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
                         <div class="faq-answer" style="display: none; padding-top: 12px;">
-                            <p style="font-size: 14px; color: #4b5563; margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${(comp.data.answer && comp.data.answer.trim() !== '') ? (comp.data.answer).replace(/\n/g, '<br>') : ''}</p>
+                            <p style="font-size: 14px; color: var(--font-neutral-5, #4B515D); margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${(comp.data.answer && comp.data.answer.trim() !== '') ? (comp.data.answer).replace(/\n/g, '<br>') : ''}</p>
                         </div>
                     </div>
                     </div>
@@ -1397,24 +1397,24 @@ document.addEventListener('DOMContentLoaded', () => {
     <style>
         :root { --theme-color: ${currentThemeColor}; }
         body { margin: 0; padding: 0; background-color: #f0f0f0; display: flex; justify-content: center; }
-        .canvas-container { width: 100%; max-width: 768px; background-color: white; min-height: 100vh; box-sizing: border-box; }
-        .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: white; text-align: left; scroll-margin-top: 64px; }
+        .canvas-container { width: 100%; max-width: 768px; background-color: var(--background-color-1, #ffffff); min-height: 100vh; box-sizing: border-box; }
+        .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: var(--background-color-1, #ffffff); text-align: left; scroll-margin-top: 64px; }
         .explanation-component:not(.standalone) { padding-right: 22px; }
         .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .step-circle { width: 28px; height: 28px; background-color: var(--theme-color, #27a8f5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
-        .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: rgba(219, 226, 240, 0.4); margin-top: 4px; min-height: 20px; }
+        .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: var(--line, rgba(219, 226, 240, 0.4)); margin-top: 4px; min-height: 20px; }
         .explanation-content { flex: 1; min-width: 0; padding-bottom: 20px; }
         .explanation-content > *:last-child { margin-bottom: 0 !important; }
         .explanation-component.standalone .explanation-indicator { display: none; }
-        .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: #191B1E; margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
+        .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: var(--font-neutral-2, #191B1E); margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
         .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; }
         .explanation-bullets { list-style: none; padding: 0; margin: 0 0 16px 0; }
-        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 24px; word-break: keep-all; text-align: left; }
-        .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
-        .notice-bullets li::before { content: ""; position: absolute; left: 0; top: 10px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
+        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: var(--font-neutral-4, #343841); line-height: 24px; word-break: keep-all; text-align: left; }
+        .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: var(--gray-300, #A3A8B6); border-radius: 50%; }
+        .notice-bullets li::before { content: ""; position: absolute; left: 0; top: 10px; width: 4px; height: 4px; background-color: var(--gray-300, #A3A8B6); border-radius: 50%; }
         .explanation-buttons { display: flex; flex-direction: column; gap: 8px; }
-        .explanation-btn { width: 100%; background-color: white; border: 1px solid #E7E0EF; border-radius: 8px; padding: 0 16px; height: 40px; font-size: 14px; font-weight: 700; color: #22252A; text-align: center; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
-        .canvas-container b, .canvas-container strong { font-weight: 700; color: #111; }
+        .explanation-btn { width: 100%; background-color: var(--background-color-1, #ffffff); border: 1px solid var(--gray-60, #E7E9EF); border-radius: 8px; padding: 0 16px; height: 40px; font-size: 14px; font-weight: 700; color: var(--font-neutral-3, #22252A); text-align: center; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+        .canvas-container b, .canvas-container strong { font-weight: 700; color: var(--font-neutral-2, #111); }
     </style>
 </head>
 <body>
@@ -1424,21 +1424,21 @@ document.addEventListener('DOMContentLoaded', () => {
     <script>
         window.switchPreviewTab = function(tabNum, btn) {
             if(tabNum === 1) {
-                btn.parentElement.children[0].style.borderBottomColor='#111'; 
+                btn.parentElement.children[0].style.borderBottomColor='var(--font-neutral-2, #111)'; 
                 btn.parentElement.children[0].style.fontWeight='700'; 
-                btn.parentElement.children[0].style.color='#111'; 
+                btn.parentElement.children[0].style.color='var(--font-neutral-2, #111)'; 
                 btn.parentElement.children[1].style.borderBottomColor='transparent'; 
                 btn.parentElement.children[1].style.fontWeight='500'; 
-                btn.parentElement.children[1].style.color='#9ca3af'; 
+                btn.parentElement.children[1].style.color='var(--font-neutral-6, #626A7A)'; 
                 document.getElementById('view-tab-1').style.display='block'; 
                 document.getElementById('view-tab-2').style.display='none';
             } else {
                 btn.parentElement.children[0].style.borderBottomColor='transparent'; 
                 btn.parentElement.children[0].style.fontWeight='500'; 
-                btn.parentElement.children[0].style.color='#9ca3af'; 
-                btn.parentElement.children[1].style.borderBottomColor='#111'; 
+                btn.parentElement.children[0].style.color='var(--font-neutral-6, #626A7A)'; 
+                btn.parentElement.children[1].style.borderBottomColor='var(--font-neutral-2, #111)'; 
                 btn.parentElement.children[1].style.fontWeight='700'; 
-                btn.parentElement.children[1].style.color='#111'; 
+                btn.parentElement.children[1].style.color='var(--font-neutral-2, #111)'; 
                 document.getElementById('view-tab-1').style.display='none'; 
                 document.getElementById('view-tab-2').style.display='block';
             }

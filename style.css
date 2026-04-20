@@ -612,7 +612,7 @@ input:checked + .slider:before {
     flex: 1;
     width: 2px;
     border-radius: 1px;
-    background-color: rgba(219, 226, 240, 0.4);
+    background-color: var(--line, rgba(219, 226, 240, 0.4));
     margin-top: 4px;
     min-height: 20px;
 }
@@ -636,7 +636,7 @@ input:checked + .slider:before {
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
-    color: #191B1E;
+    color: var(--font-neutral-2, #191B1E);
     margin: 0 0 16px 0;
     line-height: 26px;
     word-break: keep-all;
@@ -664,7 +664,7 @@ input:checked + .slider:before {
     font-size: 16px;
     font-weight: 400;
     font-family: Pretendard, sans-serif;
-    color: #343841;
+    color: var(--font-neutral-4, #343841);
     line-height: 24px;
     word-break: keep-all;
     text-align: left;
@@ -672,14 +672,14 @@ input:checked + .slider:before {
 
 #previewCanvas b, #previewCanvas strong {
     font-weight: 700;
-    color: #111;
+    color: var(--font-neutral-2, #111);
 }
 
 .explanation-bullets li::before {
     content: "\00B7"; /* middot */
     position: absolute;
     left: 0;
-    color: #9ca3af;
+    color: var(--font-neutral-6, #9ca3af);
     font-weight: bold;
     font-size: 18px;
     line-height: 1.1;
@@ -689,7 +689,7 @@ input:checked + .slider:before {
     content: "\00B7"; /* middot */
     position: absolute;
     left: 0;
-    color: #9ca3af;
+    color: var(--font-neutral-6, #9ca3af);
     font-weight: bold;
     font-size: 18px;
     line-height: 1.1;
@@ -703,8 +703,8 @@ input:checked + .slider:before {
 
 .explanation-btn {
     width: 100%;
-    background-color: white;
-    border: 1px solid #E7E0EF;
+    background-color: var(--background-color-1, #ffffff);
+    border: 1px solid var(--gray-60, #e5e7eb);
     border-radius: 8px;
     padding: 0 16px;
     height: 40px;
@@ -712,7 +712,7 @@ input:checked + .slider:before {
     line-height: 20px;
     font-weight: 700;
     font-family: 'Pretendard', sans-serif;
-    color: #22252A;
+    color: var(--font-neutral-3, #22252A);
     text-align: center;
     cursor: pointer;
     box-sizing: border-box;
