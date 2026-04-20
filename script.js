@@ -142,6 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentThemeColor = THEMES[0];
     }
     document.documentElement.style.setProperty('--theme-color', currentThemeColor);
+    renderThemeSelector();
+
 
     function hexToRgba(hex, alpha) {
         let r=0, g=0, b=0;
@@ -1633,6 +1635,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         componentsTab1 = item.componentsTab1 || item.components || [];
                         componentsTab2 = item.componentsTab2 || [];
                         currentThemeColor = item.themeColor || '#27a8f5';
+                        renderThemeSelector();
+
                         currentScreenId = safeId;
                         
                         const t1Input = document.getElementById('tab1NameInput');
