@@ -1,20 +1,20 @@
 window.switchPreviewTab = function(tabNum, btn) {
     if(tabNum === 1) {
-        btn.parentElement.children[0].style.borderBottomColor='#111'; 
+        btn.parentElement.children[0].style.borderBottomColor='var(--font-neutral-1)'; 
         btn.parentElement.children[0].style.fontWeight='700'; 
-        btn.parentElement.children[0].style.color='#111'; 
+        btn.parentElement.children[0].style.color='var(--font-neutral-1)'; 
         btn.parentElement.children[1].style.borderBottomColor='transparent'; 
         btn.parentElement.children[1].style.fontWeight='500'; 
-        btn.parentElement.children[1].style.color='#9ca3af'; 
+        btn.parentElement.children[1].style.color='var(--font-neutral-3)'; 
         document.getElementById('view-tab-1').style.display='block'; 
         document.getElementById('view-tab-2').style.display='none';
     } else {
         btn.parentElement.children[0].style.borderBottomColor='transparent'; 
         btn.parentElement.children[0].style.fontWeight='500'; 
-        btn.parentElement.children[0].style.color='#9ca3af'; 
-        btn.parentElement.children[1].style.borderBottomColor='#111'; 
+        btn.parentElement.children[0].style.color='var(--font-neutral-3)'; 
+        btn.parentElement.children[1].style.borderBottomColor='var(--font-neutral-1)'; 
         btn.parentElement.children[1].style.fontWeight='700'; 
-        btn.parentElement.children[1].style.color='#111'; 
+        btn.parentElement.children[1].style.color='var(--font-neutral-1)'; 
         document.getElementById('view-tab-1').style.display='none'; 
         document.getElementById('view-tab-2').style.display='block';
     }
@@ -115,8 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let componentsTab2 = [];
     let activeTabId = 1;
     let components = componentsTab1;
-    let currentThemeColor = '#27a8f5';
-    const THEMES = ['#27a8f5', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#5CA8ED', '#EE7272', '#52C498', '#F29046', '#AD84F0'];
+    let currentThemeColor = 'var(--primary-color)';
 
     function hexToRgba(hex, alpha) {
         let r=0, g=0, b=0;
@@ -133,23 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
-    function renderThemeSelector() {
-        const container = document.getElementById('themeColorSelector');
-        if(!container) return;
-        container.innerHTML = '';
-        THEMES.forEach(color => {
-            const btn = document.createElement('button');
-            btn.style.cssText = `width: 32px; height: 32px; border-radius: 50%; background-color: ${color}; border: 2px solid ${currentThemeColor === color ? '#111' : 'transparent'}; cursor: pointer; transition: all 0.2s; outline: ${currentThemeColor === color ? '2px solid white' : 'none'}; outline-offset: -4px; padding:0;`;
-            btn.onclick = () => {
-                currentThemeColor = color;
-                renderThemeSelector();
-                renderPreview();
-            };
-            container.appendChild(btn);
-        });
-        document.documentElement.style.setProperty('--theme-color', currentThemeColor);
-    }
-
+    
     function isPristineProject() {
         if (componentsTab2.length > 0) return false;
         if (componentsTab1.length !== 3) return false;
@@ -252,20 +235,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (tabId === 1) {
             tab1Btn.style.fontWeight = '700';
-            tab1Btn.style.color = '#111';
-            tab1Btn.style.borderBottomColor = '#111';
+            tab1Btn.style.color = 'var(--font-neutral-1)';
+            tab1Btn.style.borderBottomColor = 'var(--font-neutral-1)';
             tab2Btn.style.fontWeight = '500';
-            tab2Btn.style.color = '#9ca3af';
+            tab2Btn.style.color = 'var(--font-neutral-3)';
             tab2Btn.style.borderBottomColor = 'transparent';
             tab1Menu.style.display = 'block';
             tab2Menu.style.display = 'none';
         } else {
             tab1Btn.style.fontWeight = '500';
-            tab1Btn.style.color = '#9ca3af';
+            tab1Btn.style.color = 'var(--font-neutral-3)';
             tab1Btn.style.borderBottomColor = 'transparent';
             tab2Btn.style.fontWeight = '700';
-            tab2Btn.style.color = '#111';
-            tab2Btn.style.borderBottomColor = '#111';
+            tab2Btn.style.color = 'var(--font-neutral-1)';
+            tab2Btn.style.borderBottomColor = 'var(--font-neutral-1)';
             tab1Menu.style.display = 'none';
             tab2Menu.style.display = 'block';
         }
@@ -344,11 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <input type="text" class="bind-txt" data-field="url" placeholder="https://... URL 주소 입력 (.mp4 권장)" style="width: 100%;">
                             <div class="file-upload-wrapper">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                <span class="file-upload-text" style="font-size: 13px; color: #4b5563; font-weight: 500;">내 컴퓨터에서 영상 업로드 (.mp4)</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--font-neutral-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                <span class="file-upload-text" style="font-size: 13px; color: var(--font-neutral-3); font-weight: 500;">내 컴퓨터에서 영상 업로드 (.mp4)</span>
                                 <input type="file" class="video-file-input" accept="video/mp4,video/webm,video/ogg">
                             </div>
-                            <p style="font-size: 11px; color: #059669; margin: 4px 0 0 0; display: none;" class="file-warning-msg">✅ 업로드된 파일은 HTML 추출 시 내부에 자동 변환 병합(Base64)되어 단독 파일로 동작하게 됩니다.</p>
+                            <p style="font-size: 11px; color: var(--status-success); margin: 4px 0 0 0; display: none;" class="file-warning-msg">✅ 업로드된 파일은 HTML 추출 시 내부에 자동 변환 병합(Base64)되어 단독 파일로 동작하게 됩니다.</p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -361,18 +344,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
                         <label style="margin: 0; padding-bottom: 4px;">텍스트 정렬 설정</label>
-                        <div class="segmented-control align-toggle-control" style="background: white; border: 1px solid #d1d5db; padding: 2px;">
+                        <div class="segmented-control align-toggle-control" style="background: var(--background-default); border: 1px solid var(--gray-60); padding: 2px;">
                             <button class="seg-btn ${currentAlign !== 'center' ? 'active' : ''}" data-val="left" style="font-size: 13px; padding: 6px 12px;">좌측</button>
                             <button class="seg-btn ${currentAlign === 'center' ? 'active' : ''}" data-val="center" style="font-size: 13px; padding: 6px 12px;">중앙</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>서브타이틀</label>
-                        <textarea class="bind-area" data-field="subtitle" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="subtitle" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>메인타이틀 (줄바꿈: 엔터, 테마컬러 강조: *텍스트*)</label>
-                        <textarea class="bind-area" data-field="mainTitle" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #e5e7eb; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                        <textarea class="bind-area" data-field="mainTitle" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;"></textarea>
                     </div>
                 `;
             } else if (comp.type === 'explanation') {
@@ -393,8 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="form-group badge-settings-container" style="display: ${comp.data.isStep ? 'none' : 'block'}; margin-top: -4px; margin-bottom: 16px;">
                         <label style="display: block; margin-bottom: 6px;">단독형 정렬 및 뱃지 설정</label>
                         <div style="display: flex; gap: 8px;">
-                            <input type="text" class="bind-txt" data-field="badgeText" placeholder="뱃지 라벨명 (예: 첫번째)" style="flex: 1; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px;">
-                            <div class="segmented-control badge-align-control" style="background: white; border: 1px solid #d1d5db; padding: 2px;">
+                            <input type="text" class="bind-txt" data-field="badgeText" placeholder="뱃지 라벨명 (예: 첫번째)" style="flex: 1; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px;">
+                            <div class="segmented-control badge-align-control" style="background: var(--background-default); border: 1px solid var(--gray-60); padding: 2px;">
                                 <button class="seg-btn ${comp.data.badgeAlign !== 'left' ? 'active' : ''}" data-val="center">중앙</button>
                                 <button class="seg-btn ${comp.data.badgeAlign === 'left' ? 'active' : ''}" data-val="left">좌측</button>
                             </div>
@@ -402,9 +385,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 6px;">메인타이틀</label>
-                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요. (<b>태그로 굵게 표기 가능)" rows="2" style="width: 100%; margin-bottom: 12px; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요. (<b>태그로 굵게 표기 가능)" rows="2" style="width: 100%; margin-bottom: 12px; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                         <label style="display: block; margin-bottom: 6px;">서브타이틀 (옵션)</label>
-                        <textarea class="bind-area" data-field="subtitle" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; font-weight: 400; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="subtitle" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; font-weight: 400; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>이미지 주소 또는 파일 첨부 (옵션)</label>
@@ -413,11 +396,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://..." style="flex: 1;">
                             </div>
                             <div class="file-upload-wrapper exp-file-upload-wrapper">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                <span class="exp-file-upload-text" style="font-size: 13px; color: #4b5563; font-weight: 500;">내 컴퓨터에서 이미지 업로드 (.png, .jpg)</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--font-neutral-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                <span class="exp-file-upload-text" style="font-size: 13px; color: var(--font-neutral-3); font-weight: 500;">내 컴퓨터에서 이미지 업로드 (.png, .jpg)</span>
                                 <input type="file" class="exp-image-file-input" accept="image/png,image/jpeg,image/gif,image/webp">
                             </div>
-                            <p style="font-size: 11px; color: #059669; margin: 4px 0 0 0; display: none;" class="exp-file-warning-msg">✅ 첨부된 이미지는 HTML 추출 시 내부에 코드 형태로 영구 병합됩니다.</p>
+                            <p style="font-size: 11px; color: var(--status-success); margin: 4px 0 0 0; display: none;" class="exp-file-warning-msg">✅ 첨부된 이미지는 HTML 추출 시 내부에 코드 형태로 영구 병합됩니다.</p>
                         </div>
                     </div>
                     <div class="form-group bullet-list-group">
@@ -428,9 +411,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="bullet-inputs-container" style="display: flex; flex-direction: column; gap: 8px;">
                             ${(comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : [''])).map((line) => `
                                 <div class="bullet-input-row" style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px;">
-                                    <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
-                                    <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                                    <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; color: #ef4444; margin-top: 2px;" title="삭제">
+                                    <div style="width: 4px; height: 4px; background-color: var(--font-neutral-3); border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
+                                    <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                                    <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--background-default); border: 1px solid var(--gray-60); border-radius: 8px; color: var(--error-color); margin-top: 2px;" title="삭제">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                                     </button>
                                 </div>
@@ -444,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <input type="text" class="bind-txt" data-field="btn1Link" style="margin-bottom: 6px;" placeholder="이동할 링크 주소 (https://...)">
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <input type="checkbox" class="bind-chk" data-field="btn1Arrow" id="btn1_arrow_${index}">
-                                <label for="btn1_arrow_${index}" style="margin:0; font-size:12px; color:#4b5563; font-weight:normal; cursor:pointer;">우측 화살표(>) 추가</label>
+                                <label for="btn1_arrow_${index}" style="margin:0; font-size:12px; color:var(--font-neutral-3); font-weight:normal; cursor:pointer;">우측 화살표(>) 추가</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -453,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <input type="text" class="bind-txt" data-field="btn2Link" style="margin-bottom: 6px;" placeholder="이동할 링크 주소 (https://...)">
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <input type="checkbox" class="bind-chk" data-field="btn2Arrow" id="btn2_arrow_${index}">
-                                <label for="btn2_arrow_${index}" style="margin:0; font-size:12px; color:#4b5563; font-weight:normal; cursor:pointer;">우측 화살표(>) 추가</label>
+                                <label for="btn2_arrow_${index}" style="margin:0; font-size:12px; color:var(--font-neutral-3); font-weight:normal; cursor:pointer;">우측 화살표(>) 추가</label>
                             </div>
                         </div>
                     </div>
@@ -468,13 +451,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="tab-inputs-container" style="display: flex; flex-direction: column; gap: 8px;">
                             ${(comp.data.tabList || []).map((tab) => `
                                 <div class="tab-input-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
-                                    <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
-                                    <input type="text" class="bind-tab-name" value="${tab.name.replace(/"/g, '&quot;')}" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111;">
-                                    <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 32px 9px 12px; border: 1px solid #D1D5DB; font-size: 13px; color: #111; box-sizing: border-box; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                                    <div style="width: 4px; height: 4px; background-color: var(--font-neutral-3); border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
+                                    <input type="text" class="bind-tab-name" value="${tab.name.replace(/"/g, '&quot;')}" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1);">
+                                    <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 32px 9px 12px; border: 1px solid var(--gray-60); font-size: 13px; color: var(--font-neutral-1); box-sizing: border-box; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                                         <option value="">대상 선택...</option>
                                         ${components.filter(c => c.id !== comp.id).map(c => `<option value="${c.id}" ${tab.targetStep === c.id ? 'selected' : ''}>${getComponentLabel(c).replace(/"/g, '&quot;')}</option>`).join('')}
                                     </select>
-                                    <button class="action-btn remove-tab-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; color: #ef4444;" title="삭제">
+                                    <button class="action-btn remove-tab-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--background-default); border: 1px solid var(--gray-60); border-radius: 8px; color: var(--error-color);" title="삭제">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                                     </button>
                                 </div>
@@ -488,18 +471,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
                         <label style="margin: 0; padding-bottom: 4px;">텍스트 정렬 설정</label>
-                        <div class="segmented-control align-toggle-control" style="background: white; border: 1px solid #d1d5db; padding: 2px;">
+                        <div class="segmented-control align-toggle-control" style="background: var(--background-default); border: 1px solid var(--gray-60); padding: 2px;">
                             <button class="seg-btn ${currentAlign !== 'center' ? 'active' : ''}" data-val="left" style="font-size: 13px; padding: 6px 12px;">좌측</button>
                             <button class="seg-btn ${currentAlign === 'center' ? 'active' : ''}" data-val="center" style="font-size: 13px; padding: 6px 12px;">중앙</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>타이틀 (옵션)</label>
-                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>본문 내용 (필수)</label>
-                        <textarea class="bind-area" data-field="bodyText" placeholder="항목을 입력해주세요. (엔터로 줄바꿈, <b>태그로 굵게 표기 가능)" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bodyText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="bodyText" placeholder="항목을 입력해주세요. (엔터로 줄바꿈, <b>태그로 굵게 표기 가능)" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.bodyText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-row two-cols">
                         <div class="form-group">
@@ -516,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             } else if (comp.type === 'tabDivider') {
                 card.innerHTML = `
-                    <div style="padding:16px; background-color:#eff6ff; border-radius:8px; margin-bottom:12px; color:#1e40af; font-size:13px; line-height:1.5;">
+                    <div style="padding:16px; background-color:var(--background-color-2); border-radius:8px; margin-bottom:12px; color:var(--primary-color); font-size:13px; line-height:1.5;">
                         <b style="font-size: 14px;">화면 분할 기준점 📌</b><br>
                         이 컴포넌트를 기준으로, <b>위에 있는 모든 내용들은 첫 번째 탭</b>에 담기고,<br>
                         <b>아래에 추가되는 내용들은 두 번째 탭</b>에 담겨 서로 다른 화면으로 분리 동작하게 됩니다. (탭 버튼은 화면 맨 위에 자동 생성됩니다.)
@@ -536,11 +519,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.innerHTML = `
                     <div class="form-group">
                         <label>질문 (Q)</label>
-                        <textarea class="bind-area" data-field="question" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #d1d5db; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="question" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>답변 내용 (A) (필수)</label>
-                        <textarea class="bind-area" data-field="answer" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.answer || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="answer" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.answer || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                 `;
             } else if (comp.type === 'notice') {
@@ -551,10 +534,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="form-group">
                         <label>유의사항 목록</label>
-                        <textarea class="bind-area" data-field="bullets" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="5" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bullets || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        <textarea class="bind-area" data-field="bullets" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="5" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;">${(comp.data.bullets || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </div>
                     <div class="form-group" style="margin-top: 12px; display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
-                        <label style="margin: 0; font-size: 13px; color: #4b5563; font-weight: 500;">회색 배경 표시</label>
+                        <label style="margin: 0; font-size: 13px; color: var(--font-neutral-3); font-weight: 500;">회색 배경 표시</label>
                         <label class="switch">
                             <input type="checkbox" class="bind-chk" data-field="useBg">
                             <span class="slider round"></span>
@@ -569,13 +552,13 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleWrapper.style.marginBottom = '0';
             toggleWrapper.style.marginTop = '16px';
             toggleWrapper.style.paddingTop = '16px';
-            toggleWrapper.style.borderTop = '1px solid #f3f4f6';
+            toggleWrapper.style.borderTop = '1px solid var(--background-color-2)';
             toggleWrapper.style.justifyContent = 'flex-end';
             toggleWrapper.style.gap = '12px';
             
             toggleWrapper.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <label style="margin: 0; font-size: 13px; color: #4b5563; font-weight: 500;">컴포넌트 노출 여부</label>
+                    <label style="margin: 0; font-size: 13px; color: var(--font-neutral-3); font-weight: 500;">컴포넌트 노출 여부</label>
                     <label class="switch">
                         <input type="checkbox" class="bind-chk" data-field="visible">
                         <span class="slider round"></span>
@@ -699,9 +682,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     newRow.className = 'bullet-input-row';
                     newRow.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px;';
                     newRow.innerHTML = `
-                        <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
-                        <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111; font-family: inherit; resize: vertical; outline: none;"></textarea>
-                        <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; color: #ef4444; margin-top: 2px;" title="삭제">
+                        <div style="width: 4px; height: 4px; background-color: var(--font-neutral-3); border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
+                        <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1); font-family: inherit; resize: vertical; outline: none;"></textarea>
+                        <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--background-default); border: 1px solid var(--gray-60); border-radius: 8px; color: var(--error-color); margin-top: 2px;" title="삭제">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                         </button>
                     `;
@@ -758,13 +741,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     newRow.className = 'tab-input-row';
                     newRow.style.cssText = 'display: flex; align-items: center; gap: 8px; margin-bottom: 2px;';
                     newRow.innerHTML = `
-                        <div style="width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
-                        <input type="text" class="bind-tab-name" value="" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #D1D5DB; font-size: 14px; color: #111;">
-                        <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 32px 9px 12px; border: 1px solid #D1D5DB; font-size: 13px; color: #111; box-sizing: border-box; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                        <div style="width: 4px; height: 4px; background-color: var(--font-neutral-3); border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
+                        <input type="text" class="bind-tab-name" value="" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid var(--gray-60); font-size: 14px; color: var(--font-neutral-1);">
+                        <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 32px 9px 12px; border: 1px solid var(--gray-60); font-size: 13px; color: var(--font-neutral-1); box-sizing: border-box; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                             <option value="" selected>대상 선택...</option>
                             ${components.filter(c => c.id !== comp.id).map(c => `<option value="${c.id}">${getComponentLabel(c).replace(/"/g, '&quot;')}</option>`).join('')}
                         </select>
-                        <button class="action-btn remove-tab-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-radius: 8px; color: #ef4444;" title="삭제">
+                        <button class="action-btn remove-tab-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--background-default); border: 1px solid var(--gray-60); border-radius: 8px; color: var(--error-color);" title="삭제">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                         </button>
                     `;
@@ -793,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const uploadText = card.querySelector('.file-upload-text');
                         if (uploadText) {
                             uploadText.textContent = file.name;
-                            uploadText.style.color = '#111';
+                            uploadText.style.color = 'var(--font-neutral-1)';
                         }
                         
                         const reader = new FileReader();
@@ -834,7 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const uploadText = card.querySelector('.exp-file-upload-text');
                         if (uploadText) {
                             uploadText.textContent = file.name;
-                            uploadText.style.color = '#111';
+                            uploadText.style.color = 'var(--font-neutral-1)';
                         }
                         
                         const reader = new FileReader();
@@ -932,9 +915,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const t2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : 'FAQ';
 
             const tabSwitcherHtml = `
-                <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--line, #e5e7eb); background: var(--background-color-1, #ffffff); position: sticky; top: 0; z-index: 10;">
-                    <div class="view-tab-btn active" onclick="window.switchPreviewTab(1, this);" style="font-size: 16px; font-weight: 700; color: var(--font-neutral-2, #111); padding: 16px 0; border-bottom: 2px solid var(--font-neutral-2, #111); cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
-                    <div class="view-tab-btn" onclick="window.switchPreviewTab(2, this);" style="font-size: 16px; font-weight: 500; color: var(--font-neutral-6, #626A7A); padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
+                <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--line); background: var(--background-color-1); position: sticky; top: 0; z-index: 10;">
+                    <div class="view-tab-btn active" onclick="window.switchPreviewTab(1, this);" style="font-size: 16px; font-weight: 700; color: var(--font-neutral-2); padding: 16px 0; border-bottom: 2px solid var(--font-neutral-2); cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
+                    <div class="view-tab-btn" onclick="window.switchPreviewTab(2, this);" style="font-size: 16px; font-weight: 500; color: var(--font-neutral-6); padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
                 </div>
             `;
             const switcherDiv = document.createElement('div');
@@ -953,11 +936,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             
             if (comp.type === 'video') {
-                div.style.cssText = "width: 100%; aspect-ratio: 16/9; background-color: var(--gray-60, #e5e5e5); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;";
+                div.style.cssText = "width: 100%; aspect-ratio: 16/9; background-color: var(--gray-60); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;";
                 
                 let moreBtnHtml = '';
                 if (comp.data.moreLink) {
-                    moreBtnHtml = `<a href="${comp.data.moreLink}" target="_blank" style="background-color: rgba(25,27,30,0.3); color: white; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; font-size: 13px; font-weight: 600; padding: 0 16px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; height: 32px; backdrop-filter: blur(4px);">더보기</a>`;
+                    moreBtnHtml = `<a href="${comp.data.moreLink}" target="_blank" style="background-color: rgba(25,27,30,0.3); color: var(--background-default); border: 1px solid rgba(255,255,255,0.2); text-decoration: none; font-size: 13px; font-weight: 600; padding: 0 16px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; height: 32px; backdrop-filter: blur(4px);">더보기</a>`;
                 }
 
                 if (comp.data.url) {
@@ -971,7 +954,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         <div style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 16px 12px 16px; pointer-events: none; z-index: 10;">
-                            <button class="mute-toggle-btn" style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(25,27,30,0.3); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; padding: 0; pointer-events: auto; backdrop-filter: blur(4px);">
+                            <button class="mute-toggle-btn" style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(25,27,30,0.3); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--background-default); padding: 0; pointer-events: auto; backdrop-filter: blur(4px);">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                             </button>
                             <div style="pointer-events: auto;">
@@ -980,7 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                 } else {
-                    html = `<span style="color: var(--font-neutral-2, #111); font-size: 15px; font-weight: 500;">영상</span>`;
+                    html = `<span style="color: var(--font-neutral-2); font-size: 15px; font-weight: 500;">영상</span>`;
                 }
             } else if (comp.type === 'title') {
                 const alignStyle = comp.data.align === 'center' ? 'center' : 'left';
@@ -992,10 +975,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     topPad = 0;
                 }
                 const leftPad = comp.data.align === 'center' ? 20 : 24;
-                div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: var(--background-color-1, #ffffff); padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
+                div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: var(--background-color-1); padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
                 
-                const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: var(--font-neutral-6, #626A7A); margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
-                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: var(--font-neutral-2, #191B1E); margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--theme-color, ${currentThemeColor});">$1</span>`)}</h3>` : '';
+                const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: var(--font-neutral-6); margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
+                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: var(--font-neutral-2); margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--primary-color);">$1</span>`)}</h3>` : '';
 
                 html = subTHtml + mainTHtml;
             } else if (comp.type === 'concept') {
@@ -1007,20 +990,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 let titleHtml = '';
                 if (comp.data.title && comp.data.title.trim() !== '') {
                     const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    titleHtml = `<h4 style="color: var(--theme-color, ${currentThemeColor}); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
+                    titleHtml = `<h4 style="color: var(--primary-color); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
                 }
 
                 let bodyHtml = '';
                 if (comp.data.bodyText && comp.data.bodyText.trim()) {
                     const formattedBody = comp.data.bodyText.replace(/\n/g, '<br>');
-                    bodyHtml = `<p style="color: var(--font-neutral-4, #343841); font-size: 15px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 22px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
+                    bodyHtml = `<p style="color: var(--font-neutral-4); font-size: 15px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 22px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
                 }
 
                 let buttonHtml = '';
                 if (comp.data.buttonText && comp.data.buttonText.trim()) {
                     buttonHtml = `
                         <div style="width: 100%;">
-                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: var(--background-color-1, #ffffff); border: 1px solid var(--gray-60, #E7E9EF); color: var(--font-neutral-3, #22252A); font-size: 14px; font-weight: 700; padding: 0 16px; height: 40px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 6px;">
+                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: var(--background-color-1); border: 1px solid var(--gray-60); color: var(--font-neutral-3); font-size: 14px; font-weight: 700; padding: 0 16px; height: 40px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 6px;">
                                 <span>${comp.data.buttonText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transform: translateY(0);"><path d="M9 18l6-6-6-6"/></svg>
                             </a>
@@ -1029,20 +1012,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 html = `
-                    <div class="concept-banner" style="background-color: var(--background-color-2, #F3F5F8); border-radius: 20px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 16px; width: 100%; box-sizing: border-box;">
+                    <div class="concept-banner" style="background-color: var(--background-color-2); border-radius: 20px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 16px; width: 100%; box-sizing: border-box;">
                         ${titleHtml}
                         ${bodyHtml}
                         ${buttonHtml}
                     </div>
                 `;
             } else if (comp.type === 'tabs') {
-                div.style.cssText = "width: 100%; background-color: var(--background-color-1, #ffffff); padding: 20px 20px 0 20px; margin-bottom: 40px; position: sticky; top: 0; z-index: 10;";
+                div.style.cssText = "width: 100%; background-color: var(--background-color-1); padding: 20px 20px 0 20px; margin-bottom: 40px; position: sticky; top: 0; z-index: 10;";
                 const tabHtml = (comp.data.tabList || []).map((tab, i) => {
                     const isActive = i === 0;
                     const style = isActive
-                        ? "font-size: 17px; font-weight: 700; color: var(--font-neutral-2, #111); height: 42px; line-height: 40px; border-bottom: 2px solid var(--font-neutral-2, #111); cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;"
-                        : "font-size: 17px; font-weight: 700; color: var(--font-neutral-6, #626A7A); height: 42px; line-height: 40px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;";
-                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = 'var(--font-neutral-6, #626A7A)'; e.style.borderBottomColor = 'transparent'; }); this.style.color = 'var(--font-neutral-2, #111)'; this.style.borderBottomColor = 'var(--font-neutral-2, #111)';`;
+                        ? "font-size: 17px; font-weight: 700; color: var(--font-neutral-2); height: 42px; line-height: 40px; border-bottom: 2px solid var(--font-neutral-2); cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;"
+                        : "font-size: 17px; font-weight: 700; color: var(--font-neutral-6); height: 42px; line-height: 40px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;";
+                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = 'var(--font-neutral-6)'; e.style.borderBottomColor = 'transparent'; }); this.style.color = 'var(--font-neutral-2)'; this.style.borderBottomColor = 'var(--font-neutral-2)';`;
                     const tabName = (tab.name && tab.name.trim() !== '') ? tab.name.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
                     return `<a href="#${tab.targetStep}" class="tab-item" style="${style}" onclick="${onclickStr}">${tabName}</a>`;
                 }).join('');
@@ -1103,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const badgeAlignment = comp.data.badgeAlign === 'left' ? 'flex-start' : 'center';
                         badgeHtml = `
                             <div style="display: flex; justify-content: ${badgeAlignment}; margin-top: 10px; margin-bottom: 16px;">
-                                <div style="background-color: var(--theme-color, ${currentThemeColor}); color: white; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
+                                <div style="background-color: var(--primary-color); color: var(--background-default); font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
                                     ${comp.data.badgeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                                 </div>
                             </div>
@@ -1127,7 +1110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="explanation-content" style="width: 100%; text-align: ${contentTextAlign}; ${standalonePaddingLeft}">
                         ${badgeHtml}
                         ${(comp.data.title && comp.data.title.trim() !== '') ? `<h3 class="explanation-title" style="margin-bottom: ${(comp.data.subtitle && comp.data.subtitle.trim()) ? '4px' : '16px'}; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/&lt;b&gt;/gi, '<b style="font-weight: 700;">').replace(/&lt;\/b&gt;/gi, '</b>')}</h3>` : ''}
-                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: var(--font-neutral-6, #626A7A); font-weight: 400; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
+                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: var(--font-neutral-6); font-weight: 400; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
                         ${imageHtml}
                         ${bulletsHtml}
                         ${buttonsHtml}
@@ -1135,16 +1118,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else if (comp.type === 'faq') {
-                div.style.cssText = "width: 100%; border-bottom: 1px solid var(--line, #f3f4f6); background-color: var(--background-color-1, #ffffff); padding: 0;";
+                div.style.cssText = "width: 100%; border-bottom: 1px solid var(--line); background-color: var(--background-color-1); padding: 0;";
                 const formattedAnswer = (comp.data.answer || '').replace(/\n/g, '<br>');
                 html = `
                     <div style="padding: 16px 20px 16px 24px; box-sizing: border-box;">
                         <div class="faq-question" onclick="const ans = this.nextElementSibling; const icon = this.querySelector('svg'); if(ans.style.display === 'none'){ ans.style.display = 'block'; icon.style.transform = 'rotate(180deg)'; } else { ans.style.display = 'none'; icon.style.transform = 'rotate(0deg)'; }" style="display: flex; justify-content: space-between; align-items: flex-start; cursor: pointer; background: transparent;">
-                            <h4 style="font-size: 15px; font-weight: 700; color: var(--font-neutral-2, #111); margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question && comp.data.question.trim() !== '') ? comp.data.question.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : ''}</h4>
-                            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transition: transform 0.3s; margin-left: 8px; color: var(--font-neutral-6, #626A7A);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <h4 style="font-size: 15px; font-weight: 700; color: var(--font-neutral-2); margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question && comp.data.question.trim() !== '') ? comp.data.question.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : ''}</h4>
+                            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transition: transform 0.3s; margin-left: 8px; color: var(--font-neutral-6);"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
                         <div class="faq-answer" style="display: none; padding-top: 12px;">
-                            <p style="font-size: 14px; color: var(--font-neutral-5, #4B515D); margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${(comp.data.answer && comp.data.answer.trim() !== '') ? (comp.data.answer).replace(/\n/g, '<br>') : ''}</p>
+                            <p style="font-size: 14px; color: var(--font-neutral-5); margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${(comp.data.answer && comp.data.answer.trim() !== '') ? (comp.data.answer).replace(/\n/g, '<br>') : ''}</p>
                         </div>
                     </div>
                     </div>
@@ -1160,19 +1143,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
                             const closeB = (t.match(/<\/b>/gi) || []).length;
                             if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                            return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: var(--font-neutral-4, #343841); line-height: 1.5; word-break: keep-all; text-align: left;">${t}</li>`;
+                            return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: var(--font-neutral-4); line-height: 1.5; word-break: keep-all; text-align: left;">${t}</li>`;
                         }).join('') + 
                         '</ul>';
                 }
                 
                 div.className = 'notice-component';
                 const showBg = comp.data.useBg !== false;
-                const bgColor = showBg ? 'var(--background-color-2, #F4F5F7)' : 'transparent';
+                const bgColor = showBg ? 'var(--background-color-2)' : 'transparent';
                 const paddingStyle = showBg ? 'padding: 32px 20px;' : 'padding: 8px 20px 32px 20px;';
                 div.style.cssText = `width: 100%; margin-top: 29px; ${paddingStyle} box-sizing: border-box; background-color: ${bgColor}; text-align: left;`;
                 
                 html = `
-                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: var(--font-neutral-2, #191B1E); font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
+                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: var(--font-neutral-2); font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
                     ${bulletsHtml}
                 `;
             }
@@ -1204,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filler.style.cssText = 'width: 100%; pointer-events: none;';
             const last = list[list.length - 1];
             if (last && last.type === 'notice') {
-                filler.style.backgroundColor = 'var(--background-color-2, #F4F5F7)';
+                filler.style.backgroundColor = 'var(--background-color-2)';
             } else {
                 filler.style.backgroundColor = 'transparent';
             }
@@ -1252,7 +1235,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
                 
                 targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px ${currentThemeColor}, 0 4px 12px rgba(0,0,0,0.15)`;
+                targetCard.style.boxShadow = `0 0 0 2px var(--primary-color), 0 4px 12px rgba(0,0,0,0.15)`;
                 setTimeout(() => {
                     targetCard.style.boxShadow = '';
                 }, 1000);
@@ -1322,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
                 
                 targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px ${currentThemeColor}, 0 4px 12px rgba(0,0,0,0.15)`;
+                targetCard.style.boxShadow = `0 0 0 2px var(--primary-color), 0 4px 12px rgba(0,0,0,0.15)`;
                 setTimeout(() => {
                     targetCard.style.boxShadow = '';
                 }, 1000);
@@ -1395,26 +1378,26 @@ document.addEventListener('DOMContentLoaded', () => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --theme-color: ${currentThemeColor}; }
-        body { margin: 0; padding: 0; background-color: #f0f0f0; display: flex; justify-content: center; }
-        .canvas-container { width: 100%; max-width: 768px; background-color: var(--background-color-1, #ffffff); min-height: 100vh; box-sizing: border-box; }
-        .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: var(--background-color-1, #ffffff); text-align: left; scroll-margin-top: 64px; }
+        :root { --theme-color: var(--primary-color); }
+        body { margin: 0; padding: 0; background-color: var(--background-color-2); display: flex; justify-content: center; }
+        .canvas-container { width: 100%; max-width: 768px; background-color: var(--background-color-1); min-height: 100vh; box-sizing: border-box; }
+        .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: var(--background-color-1); text-align: left; scroll-margin-top: 64px; }
         .explanation-component:not(.standalone) { padding-right: 22px; }
         .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-        .step-circle { width: 28px; height: 28px; background-color: var(--theme-color, #27a8f5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
-        .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: var(--line, rgba(219, 226, 240, 0.4)); margin-top: 4px; min-height: 20px; }
+        .step-circle { width: 28px; height: 28px; background-color: var(--primary-color); color: var(--background-default); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
+        .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: var(--line)); margin-top: 4px; min-height: 20px; }
         .explanation-content { flex: 1; min-width: 0; padding-bottom: 20px; }
         .explanation-content > *:last-child { margin-bottom: 0 !important; }
         .explanation-component.standalone .explanation-indicator { display: none; }
-        .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: var(--font-neutral-2, #191B1E); margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
+        .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: var(--font-neutral-2); margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
         .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; }
         .explanation-bullets { list-style: none; padding: 0; margin: 0 0 16px 0; }
-        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: var(--font-neutral-4, #343841); line-height: 24px; word-break: keep-all; text-align: left; }
-        .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: var(--gray-300, #A3A8B6); border-radius: 50%; }
-        .notice-bullets li::before { content: ""; position: absolute; left: 0; top: 10px; width: 4px; height: 4px; background-color: var(--gray-300, #A3A8B6); border-radius: 50%; }
+        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: var(--font-neutral-4); line-height: 24px; word-break: keep-all; text-align: left; }
+        .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: var(--gray-300); border-radius: 50%; }
+        .notice-bullets li::before { content: ""; position: absolute; left: 0; top: 10px; width: 4px; height: 4px; background-color: var(--gray-300); border-radius: 50%; }
         .explanation-buttons { display: flex; flex-direction: column; gap: 8px; }
-        .explanation-btn { width: 100%; background-color: var(--background-color-1, #ffffff); border: 1px solid var(--gray-60, #E7E9EF); border-radius: 8px; padding: 0 16px; height: 40px; font-size: 14px; font-weight: 700; color: var(--font-neutral-3, #22252A); text-align: center; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
-        .canvas-container b, .canvas-container strong { font-weight: 700; color: var(--font-neutral-2, #111); }
+        .explanation-btn { width: 100%; background-color: var(--background-color-1); border: 1px solid var(--gray-60); border-radius: 8px; padding: 0 16px; height: 40px; font-size: 14px; font-weight: 700; color: var(--font-neutral-3); text-align: center; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+        .canvas-container b, .canvas-container strong { font-weight: 700; color: var(--font-neutral-2); }
     </style>
 </head>
 <body>
@@ -1424,21 +1407,21 @@ document.addEventListener('DOMContentLoaded', () => {
     <script>
         window.switchPreviewTab = function(tabNum, btn) {
             if(tabNum === 1) {
-                btn.parentElement.children[0].style.borderBottomColor='var(--font-neutral-2, #111)'; 
+                btn.parentElement.children[0].style.borderBottomColor='var(--font-neutral-2)'; 
                 btn.parentElement.children[0].style.fontWeight='700'; 
-                btn.parentElement.children[0].style.color='var(--font-neutral-2, #111)'; 
+                btn.parentElement.children[0].style.color='var(--font-neutral-2)'; 
                 btn.parentElement.children[1].style.borderBottomColor='transparent'; 
                 btn.parentElement.children[1].style.fontWeight='500'; 
-                btn.parentElement.children[1].style.color='var(--font-neutral-6, #626A7A)'; 
+                btn.parentElement.children[1].style.color='var(--font-neutral-6)'; 
                 document.getElementById('view-tab-1').style.display='block'; 
                 document.getElementById('view-tab-2').style.display='none';
             } else {
                 btn.parentElement.children[0].style.borderBottomColor='transparent'; 
                 btn.parentElement.children[0].style.fontWeight='500'; 
-                btn.parentElement.children[0].style.color='var(--font-neutral-6, #626A7A)'; 
-                btn.parentElement.children[1].style.borderBottomColor='var(--font-neutral-2, #111)'; 
+                btn.parentElement.children[0].style.color='var(--font-neutral-6)'; 
+                btn.parentElement.children[1].style.borderBottomColor='var(--font-neutral-2)'; 
                 btn.parentElement.children[1].style.fontWeight='700'; 
-                btn.parentElement.children[1].style.color='var(--font-neutral-2, #111)'; 
+                btn.parentElement.children[1].style.color='var(--font-neutral-2)'; 
                 document.getElementById('view-tab-1').style.display='none'; 
                 document.getElementById('view-tab-2').style.display='block';
             }
@@ -1511,11 +1494,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const originalText = copySourceBtn.textContent;
             copySourceBtn.textContent = '복사 완료!';
-            copySourceBtn.style.backgroundColor = '#10b981';
+            copySourceBtn.style.backgroundColor = 'var(--status-success)';
             
             setTimeout(() => {
                 copySourceBtn.textContent = originalText;
-                copySourceBtn.style.backgroundColor = '#27a8f5';
+                copySourceBtn.style.backgroundColor = 'var(--primary-color)';
             }, 2000);
         });
     }
@@ -1558,7 +1541,7 @@ document.addEventListener('DOMContentLoaded', () => {
         savedScreensList.innerHTML = '';
         
         if (!list || !Array.isArray(list) || list.length === 0) {
-            savedScreensList.innerHTML = '<li style="text-align:center; padding: 32px; color:#6b7280; font-size:13px;">저장된 화면이<br>없습니다</li>';
+            savedScreensList.innerHTML = '<li style="text-align:center; padding: 32px; color:var(--font-neutral-3); font-size:13px;">저장된 화면이<br>없습니다</li>';
             return;
         }
         
@@ -1569,7 +1552,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (sortedList.length === 0) {
-            savedScreensList.innerHTML = '<li style="text-align:center; padding: 32px; color:#6b7280; font-size:13px;">저장된 화면이<br>없습니다</li>';
+            savedScreensList.innerHTML = '<li style="text-align:center; padding: 32px; color:var(--font-neutral-3); font-size:13px;">저장된 화면이<br>없습니다</li>';
             return;
         }
         
@@ -1584,8 +1567,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 li.innerHTML = `
                     <div style="display: flex; flex-direction: column; width: 100%; gap: 6px; overflow: hidden; padding-right: 28px;">
-                        <span style="color: white; font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${safeTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
-                        <span style="color: #9ca3af; font-size: 12px; font-weight: 400;">${formattedDate}</span>
+                        <span style="color: var(--background-default); font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${safeTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                        <span style="color: var(--font-neutral-3); font-size: 12px; font-weight: 400;">${formattedDate}</span>
                     </div>
                     <div class="saved-item-actions">
                         <button class="lib-more-btn" title="더보기">
@@ -1622,7 +1605,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         componentsTab1 = item.componentsTab1 || item.components || [];
                         componentsTab2 = item.componentsTab2 || [];
-                        currentThemeColor = item.themeColor || '#27a8f5';
+                        currentThemeColor = item.themeColor || 'var(--primary-color)';
                         currentScreenId = safeId;
                         
                         const t1Input = document.getElementById('tab1NameInput');
@@ -1640,7 +1623,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (comp.type === 'explanation') comp.data.imageUrl = blobUrl;
                             }
                         });
-                        renderThemeSelector();
                         renderEditor();
                         renderSidebarLibraryList(listDb);
                         if (typeof showToast === 'function') showToast(safeTitle.substring(0, 15) + '... 불러왔습니다.');
@@ -1776,17 +1758,17 @@ document.addEventListener('DOMContentLoaded', () => {
             listEl.innerHTML = '';
             
             if (!trash || trash.length === 0) {
-                listEl.innerHTML = '<li style="color: #6b7280; font-size: 12px; text-align: center; padding: 12px 0;">휴지통이 비어있습니다.</li>';
+                listEl.innerHTML = '<li style="color: var(--font-neutral-3); font-size: 12px; text-align: center; padding: 12px 0;">휴지통이 비어있습니다.</li>';
                 return;
             }
             
             trash.forEach(screen => {
                 const li = document.createElement('li');
-                li.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: #374151; border-radius: 6px; margin-bottom: 6px;';
+                li.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: var(--font-neutral-2); border-radius: 6px; margin-bottom: 6px;';
                 
                 const titleSpan = document.createElement('span');
                 titleSpan.textContent = screen.title;
-                titleSpan.style.cssText = 'color: #d1d5db; font-size: 12px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px;';
+                titleSpan.style.cssText = 'color: var(--gray-60); font-size: 12px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px;';
                 titleSpan.title = screen.title;
                 
                 const actionDiv = document.createElement('div');
@@ -1795,9 +1777,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const restoreBtn = document.createElement('button');
                 restoreBtn.textContent = '복원';
                 restoreBtn.title = '리스트로 복원';
-                restoreBtn.style.cssText = 'background: #4b5563; color: #fff; border: 1px solid #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.2s;';
-                restoreBtn.onmouseover = () => restoreBtn.style.background = '#6b7280';
-                restoreBtn.onmouseout = () => restoreBtn.style.background = '#4b5563';
+                restoreBtn.style.cssText = 'background: var(--font-neutral-3); color: var(--background-default); border: 1px solid var(--font-neutral-3); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.2s;';
+                restoreBtn.onmouseover = () => restoreBtn.style.background = 'var(--font-neutral-3)';
+                restoreBtn.onmouseout = () => restoreBtn.style.background = 'var(--font-neutral-3)';
                 restoreBtn.onclick = () => {
                     StorageTrash.load().then(currentTrash => {
                         const target = currentTrash.find(x => x && x.id === screen.id);
@@ -1820,7 +1802,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const deleteBtn = document.createElement('button');
                 deleteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>';
                 deleteBtn.title = '영구 삭제';
-                deleteBtn.style.cssText = 'background: #ef4444; color: white; border: none; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;';
+                deleteBtn.style.cssText = 'background: var(--error-color); color: var(--background-default); border: none; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;';
                 deleteBtn.onmouseover = () => deleteBtn.style.opacity = '1';
                 deleteBtn.onmouseout = () => deleteBtn.style.opacity = '0.8';
                 deleteBtn.onclick = () => {
@@ -1866,7 +1848,7 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.style.left = '50%';
             toast.style.transform = 'translateX(-50%)';
             toast.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
-            toast.style.color = '#fff';
+            toast.style.color = 'var(--background-default)';
             toast.style.padding = '12px 24px';
             toast.style.borderRadius = '30px';
             toast.style.fontSize = '14px';
@@ -1903,8 +1885,8 @@ document.addEventListener('DOMContentLoaded', () => {
             li.className = 'saved-item active';
             li.innerHTML = `
                 <div style="display: flex; flex-direction: column; width: 100%; gap: 6px;">
-                    <input type="text" id="newProjectInput" placeholder="프로젝트 이름 입력..." style="width: 100%; background: transparent; border: none; color: white; padding: 0; font-size: 15px; font-weight: 700; outline: none;">
-                    <span style="color: #9ca3af; font-size: 12px; font-weight: 400;">${formatDatePoint(new Date().toISOString())}</span>
+                    <input type="text" id="newProjectInput" placeholder="프로젝트 이름 입력..." style="width: 100%; background: transparent; border: none; color: var(--background-default); padding: 0; font-size: 15px; font-weight: 700; outline: none;">
+                    <span style="color: var(--font-neutral-3); font-size: 12px; font-weight: 400;">${formatDatePoint(new Date().toISOString())}</span>
                 </div>
             `;
             
@@ -1949,8 +1931,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     componentsTab1 = [];
                     componentsTab2 = [];
-                    currentThemeColor = THEMES[0] || '#27a8f5';
-                    renderThemeSelector();
+                    currentThemeColor = THEMES[0] || 'var(--primary-color)';
                     
                     syncTabVisibility();
                     switchWorkspaceTab(1);
@@ -2078,7 +2059,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialization ---
     StorageDB.init().then(() => {
         executeLocalMigration();
-        renderThemeSelector();
         renderSidebarLibrary();
         renderTrashList();
         addComponent('video');
@@ -2088,7 +2068,6 @@ document.addEventListener('DOMContentLoaded', () => {
         deviceSelect.dispatchEvent(new Event('change'));
     }).catch(e => {
         console.error("DB Init Failed", e);
-        renderThemeSelector();
         addComponent('video');
         addComponent('title');
         addComponent('explanation');
