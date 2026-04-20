@@ -1,14 +1,14 @@
 :root {
     --bg-color-main: #FAFBFC;
-    --bg-color-sidebar: var(--background-default);
-    --bg-color-card: var(--background-default);
+    --bg-color-sidebar: #FFFFFF;
+    --bg-color-card: #FFFFFF;
     --bg-color-preview: #F2F4F7;
     --primary-color: #2c426c; /* Deep blue from download button */
     --text-main: #111827;
-    --text-muted: var(--font-neutral-3);
-    --border-color: var(--gray-60);
-    --border-color-input: var(--gray-60);
-    --active-item-bg: var(--background-color-2);
+    --text-muted: #6B7280;
+    --border-color: #E5E7EB;
+    --border-color-input: #D1D5DB;
+    --active-item-bg: #EFF6FF;
     --active-item-text: #1d4ed8;
     
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -22,8 +22,8 @@
 }
 
 body {
-    background-color: var(--bg-color-main);
-    color: var(--text-main);
+    background-color: #FAFBFC;
+    color: #111827;
     font-size: 14px;
     height: 100vh;
     overflow: hidden;
@@ -37,8 +37,8 @@ body {
 /* Sidebar */
 .sidebar {
     width: 240px;
-    background-color: var(--bg-color-sidebar);
-    border-right: 1px solid var(--border-color);
+    background-color: #FFFFFF;
+    border-right: 1px solid #E5E7EB;
     display: flex;
     flex-direction: column;
 }
@@ -48,13 +48,13 @@ body {
     display: flex;
     align-items: center;
     padding: 0 24px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #E5E7EB;
 }
 
 .logo {
     width: 24px;
     height: 24px;
-    background-color: var(--primary-color);
+    background-color: #2c426c;
     border-radius: 50%;
     margin-right: 12px;
 }
@@ -76,7 +76,7 @@ body {
     align-items: center;
     padding: 10px 12px;
     text-decoration: none;
-    color: var(--text-muted);
+    color: #6B7280;
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.2s;
@@ -88,13 +88,13 @@ body {
 }
 
 .nav-item:hover {
-    background-color: var(--background-color-2);
-    color: var(--text-main);
+    background-color: #F9FAFB;
+    color: #111827;
 }
 
 .nav-item.active {
-    background-color: var(--active-item-bg);
-    color: var(--active-item-text);
+    background-color: #EFF6FF;
+    color: #1d4ed8;
 }
 
 .nav-item.active .icon {
@@ -114,8 +114,8 @@ body {
     display: flex;
     align-items: center;
     padding: 0 40px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--bg-color-main);
+    border-bottom: 1px solid #E5E7EB;
+    background-color: #FAFBFC;
     z-index: 10;
 }
 
@@ -139,7 +139,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     height: 100%;
-    color: var(--gray-60);
+    color: #E5E7EB;
 }
 .lib-header {
     padding: 20px 24px;
@@ -152,7 +152,7 @@ body {
     margin: 0;
     font-size: 13px;
     font-weight: 700;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
@@ -208,7 +208,7 @@ body {
 .delete-lib-btn {
     background: #444;
     border: none;
-    color: var(--error-color);
+    color: #ef4444;
     cursor: pointer;
     padding: 4px;
     display: flex;
@@ -227,13 +227,13 @@ body {
     overflow: hidden;
     position: relative;
     max-width: none;
-    background-color: var(--background-color-2);
+    background-color: #F9FAFB;
 }
 
 .editor-action-footer {
     padding: 24px 40px;
-    background-color: var(--background-color-2);
-    border-top: 1px solid var(--gray-60);
+    background-color: #F9FAFB;
+    border-top: 1px solid #E5E7EB;
     z-index: 10;
 }
 
@@ -254,9 +254,9 @@ body {
 }
 
 .card {
-    background-color: var(--bg-color-card);
+    background-color: #FFFFFF;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid #E5E7EB;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
@@ -287,7 +287,7 @@ body {
 .form-group label {
     font-size: 13px;
     font-weight: 500;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     margin-bottom: 8px;
 }
 
@@ -299,24 +299,24 @@ body {
 input[type="text"] {
     width: 100%;
     padding: 10px 14px;
-    border: 1px solid var(--border-color-input);
+    border: 1px solid #D1D5DB;
     border-radius: 8px;
     font-size: 14px;
     font-family: inherit;
-    color: var(--text-main);
+    color: #111827;
     transition: all 0.2s;
 }
 
 input[type="text"]:disabled {
-    background-color: var(--background-color-2);
-    color: var(--font-neutral-3);
-    border-color: var(--gray-60);
+    background-color: #F9FAFB;
+    color: #6B7280;
+    border-color: #E5E7EB;
     cursor: not-allowed;
 }
 
 input[type="text"]:focus {
     outline: none;
-    border-color: var(--active-item-text);
+    border-color: #1d4ed8;
     box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
 }
 
@@ -336,11 +336,11 @@ input[type="text"]:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--background-default);
-    border: 1px solid var(--border-color-input);
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
     border-radius: 8px;
     cursor: pointer;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     transition: all 0.2s;
     font-size: 18px;
     position: relative;
@@ -348,8 +348,8 @@ input[type="text"]:focus {
 
 
 .action-btn:hover {
-    background-color: var(--background-color-2);
-    color: var(--text-main);
+    background-color: #F9FAFB;
+    color: #111827;
 }
 
 /* Switch Toggle - Thick Blue Pattern */
@@ -373,7 +373,7 @@ input[type="text"]:focus {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--gray-60);
+    background-color: #E5E7EB;
     transition: .3s;
 }
 
@@ -384,7 +384,7 @@ input[type="text"]:focus {
     width: 24px;
     left: 3px;
     bottom: 3px;
-    background-color: var(--background-default);
+    background-color: #FFFFFF;
     transition: .3s;
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -409,7 +409,7 @@ input:checked + .slider:before {
 /* Segmented Control for ON/OFF */
 .segmented-control {
     display: inline-flex;
-    background-color: var(--background-color-2);
+    background-color: #F9FAFB;
     border-radius: 24px;
     padding: 3px;
     gap: 2px;
@@ -421,7 +421,7 @@ input:checked + .slider:before {
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.2s;
@@ -429,12 +429,12 @@ input:checked + .slider:before {
 }
 
 .segmented-control .seg-btn:hover {
-    color: var(--font-neutral-2);
+    color: #111;
 }
 
 .segmented-control .seg-btn.active {
-    background-color: var(--background-default);
-    color: var(--font-neutral-1);
+    background-color: #FFFFFF;
+    color: #000;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -455,8 +455,8 @@ input:checked + .slider:before {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background-color: var(--font-neutral-1);
-    color: var(--background-default);
+    background-color: #000;
+    color: #FFFFFF;
     border: none;
     display: flex;
     align-items: center;
@@ -473,8 +473,8 @@ input:checked + .slider:before {
 /* Preview Section */
 .preview-section {
     flex: 1;
-    background-color: var(--bg-color-preview);
-    border-left: 1px solid var(--border-color);
+    background-color: #F2F4F7;
+    border-left: 1px solid #E5E7EB;
     display: flex;
     flex-direction: column;
 }
@@ -503,12 +503,12 @@ input:checked + .slider:before {
 
 .device-select {
     padding: 6px 30px 6px 12px;
-    border: 1px solid var(--border-color-input);
+    border: 1px solid #D1D5DB;
     border-radius: 8px;
     font-size: 13px;
     font-family: inherit;
-    color: var(--text-main);
-    background-color: var(--background-default);
+    color: #111827;
+    background-color: #FFFFFF;
     cursor: pointer;
     outline: none;
     transition: all 0.2s;
@@ -520,7 +520,7 @@ input:checked + .slider:before {
 }
 
 .device-select:focus {
-    border-color: var(--active-item-text);
+    border-color: #1d4ed8;
     box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
 }
 
@@ -533,7 +533,7 @@ input:checked + .slider:before {
 }
 
 .preview-container {
-    background-color: var(--background-default);
+    background-color: #FFFFFF;
     box-shadow: 0 20px 40px rgba(0,0,0,0.08); /* Soft large shadow for the "phone" */
     transition: width 0.1s;
     min-height: 600px;
@@ -548,15 +548,15 @@ input:checked + .slider:before {
 
 .preview-footer {
     padding: 20px 40px;
-    background-color: var(--bg-color-preview);
-    border-top: 1px solid var(--gray-60);
+    background-color: #F2F4F7;
+    border-top: 1px solid #E5E7EB;
 }
 
 .download-btn {
     width: 100%;
     padding: 14px;
-    background-color: var(--primary-color);
-    color: var(--background-default);
+    background-color: #2c426c;
+    color: #FFFFFF;
     border: none;
     border-radius: 8px;
     font-size: 15px;
@@ -577,7 +577,7 @@ input:checked + .slider:before {
 .explanation-component {
     display: flex;
     padding: 16px 20px 0 20px;
-    background-color: var(--background-default);
+    background-color: #FFFFFF;
     text-align: left;
     scroll-margin-top: 64px;
 }
@@ -597,8 +597,8 @@ input:checked + .slider:before {
 .step-circle {
     width: 28px;
     height: 28px;
-    background-color: var(--primary-color);
-    color: var(--background-default);
+    background-color: #2c426c;
+    color: #FFFFFF;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -612,7 +612,7 @@ input:checked + .slider:before {
     flex: 1;
     width: 2px;
     border-radius: 1px;
-    background-color: var(--line));
+    background-color: rgba(219, 226, 240, 0.4);
     margin-top: 4px;
     min-height: 20px;
 }
@@ -636,7 +636,7 @@ input:checked + .slider:before {
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
-    color: var(--font-neutral-2);
+    color: #111;
     margin: 0 0 16px 0;
     line-height: 26px;
     word-break: keep-all;
@@ -664,7 +664,7 @@ input:checked + .slider:before {
     font-size: 16px;
     font-weight: 400;
     font-family: Pretendard, sans-serif;
-    color: var(--font-neutral-4);
+    color: #343841;
     line-height: 24px;
     word-break: keep-all;
     text-align: left;
@@ -672,14 +672,14 @@ input:checked + .slider:before {
 
 #previewCanvas b, #previewCanvas strong {
     font-weight: 700;
-    color: var(--font-neutral-2);
+    color: #111;
 }
 
 .explanation-bullets li::before {
     content: "\00B7"; /* middot */
     position: absolute;
     left: 0;
-    color: var(--font-neutral-6);
+    color: #9ca3af;
     font-weight: bold;
     font-size: 18px;
     line-height: 1.1;
@@ -689,7 +689,7 @@ input:checked + .slider:before {
     content: "\00B7"; /* middot */
     position: absolute;
     left: 0;
-    color: var(--font-neutral-6);
+    color: #9ca3af;
     font-weight: bold;
     font-size: 18px;
     line-height: 1.1;
@@ -703,8 +703,8 @@ input:checked + .slider:before {
 
 .explanation-btn {
     width: 100%;
-    background-color: var(--background-color-1);
-    border: 1px solid var(--gray-60);
+    background-color: white;
+    border: 1px solid #E5E7EB;
     border-radius: 8px;
     padding: 0 16px;
     height: 40px;
@@ -712,7 +712,7 @@ input:checked + .slider:before {
     line-height: 20px;
     font-weight: 700;
     font-family: 'Pretendard', sans-serif;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     text-align: center;
     cursor: pointer;
     box-sizing: border-box;
@@ -727,8 +727,8 @@ input:checked + .slider:before {
     position: absolute;
     bottom: 100%;
     right: 0;
-    background: var(--background-default);
-    border: 1px solid var(--gray-60);
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
     border-radius: 12px;
     box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
     padding: 8px;
@@ -751,24 +751,24 @@ input:checked + .slider:before {
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 500;
-    color: var(--font-neutral-1);
+    color: #000;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .add-menu-btn:hover {
-    background: var(--background-color-2);
+    background: #F9FAFB;
 }
 
 /* Component Order Controls */
 .order-controls .order-btn {
-    background: var(--background-default);
-    border: 1px solid var(--gray-60);
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
     border-radius: 6px;
     padding: 0;
     cursor: pointer;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     font-size: 11px;
     display: flex;
     align-items: center;
@@ -779,25 +779,25 @@ input:checked + .slider:before {
 }
 
 .order-controls .order-btn:hover:not(:disabled) {
-    background: var(--background-color-2);
-    color: var(--font-neutral-1);
+    background: #F9FAFB;
+    color: #000;
 }
 
 .order-controls .order-btn:disabled {
     opacity: 0.3;
     cursor: default;
-    background: var(--background-color-2);
+    background: #F9FAFB;
 }
 
 .order-controls .delete-btn {
-    color: var(--error-color);
+    color: #ef4444;
     border-color: #fca5a5;
     background: #fff5f5;
 }
 
 .order-controls .delete-btn:hover {
     background: #fee2e2;
-    border-color: var(--error-color);
+    border-color: #ef4444;
 }
 
 /* File Upload Wrapper */
@@ -808,17 +808,17 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: var(--background-color-2);
+    background: #F9FAFB;
     padding: 12px 16px;
     border-radius: 8px;
-    border: 1px dashed var(--gray-60);
+    border: 1px dashed #E5E7EB;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .file-upload-wrapper:hover {
-    background: var(--background-color-2);
-    border-color: var(--font-neutral-3);
+    background: #F9FAFB;
+    border-color: #6B7280;
 }
 
 .file-upload-wrapper input[type="file"] {
@@ -854,7 +854,7 @@ input:checked + .slider:before {
 }
 
 .modal-content {
-    background: var(--background-default);
+    background: #FFFFFF;
     width: 100%;
     max-width: 500px;
     border-radius: 16px;
@@ -875,14 +875,14 @@ input:checked + .slider:before {
 .modal-header h2 {
     margin: 0;
     font-size: 18px;
-    color: var(--font-neutral-1);
+    color: #000;
 }
 
 .modal-close-btn {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     padding: 4px;
 }
 .lib-more-btn {
@@ -890,7 +890,7 @@ input:checked + .slider:before {
     border: none;
     padding: 6px;
     cursor: pointer;
-    color: var(--font-neutral-3);
+    color: #6B7280;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -899,7 +899,7 @@ input:checked + .slider:before {
 }
 .lib-more-btn:hover {
     background: rgba(255,255,255,0.1);
-    color: var(--background-default);
+    color: #FFFFFF;
 }
 .lib-dropdown-menu {
     position: absolute;
@@ -908,7 +908,7 @@ input:checked + .slider:before {
     background: #2f333a;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    border: 1px solid var(--font-neutral-3);
+    border: 1px solid #6B7280;
     z-index: 100;
     min-width: 120px;
     overflow: hidden;
@@ -920,13 +920,13 @@ input:checked + .slider:before {
     background: none;
     border: none;
     font-size: 13px;
-    color: var(--gray-60);
+    color: #E5E7EB;
     cursor: pointer;
     transition: background 0.2s;
 }
 .lib-dropdown-btn:hover {
     background: rgba(255,255,255,0.05);
-    color: var(--background-default);
+    color: #FFFFFF;
 }
 .lib-dropdown-btn.delete {
     color: #fca5a5;
