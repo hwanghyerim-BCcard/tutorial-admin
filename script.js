@@ -45,50 +45,59 @@ const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const API_BASE = '/api/sync';
-
-    const API_BASE = '/api/sync';
-
-    const StorageDB = {
+        const StorageDB = {
         init() {
+            try {
+                // Rescue any old data from tutorialAppDB or similar just in case
+                const keys = Object.keys(localStorage);
+                for (let k of keys) {
+                    if (k === 'workspace_components') continue;
+                    const val = localStorage.getItem(k);
+                    if (val && typeof val === 'string' && val.includes('componentsTab1') && val.includes('themeColor')) {
+                        localStorage.setItem('workspace_components', val);
+                        console.log('Restored from old key:', k);
+                        break;
+                    }
+                }
+            } catch(e) {}
             return Promise.resolve();
         },
         load() {
-            return fetch(API_BASE + '?key=workspace_components', {
-                headers: { 'Cache-Control': 'no-cache' }
-            })
-                .then(res => {
-                    if(!res.ok) throw new Error("API not connected");
-                    return res.json();
-                })
-                .catch(err => { 
-                    console.error('Sync Error', err); 
-                    return []; 
-                });
+            try {
+                const data = localStorage.getItem('workspace_components');
+                return Promise.resolve(data ? JSON.parse(data) : []);
+            } catch (e) {
+                console.error('StorageDB load error:', e);
+                return Promise.resolve([]);
+            }
         },
         save(data) {
-            return fetch(API_BASE + '?key=workspace_components', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
+            try {
+                localStorage.setItem('workspace_components', JSON.stringify(data || []));
+                return Promise.resolve({ success: true });
+            } catch (e) {
+                console.error('StorageDB save error:', e);
+                return Promise.resolve();
+            }
         }
     };
 
     const StorageTrash = {
         load() {
-            return fetch(API_BASE + '?key=workspace_trash', {
-                headers: { 'Cache-Control': 'no-cache' }
-            })
-                .then(res => res.ok ? res.json() : [])
-                .catch(err => { console.error('Sync Error', err); return []; });
+            try {
+                const data = localStorage.getItem('workspace_trash');
+                return Promise.resolve(data ? JSON.parse(data) : []);
+            } catch (e) {
+                return Promise.resolve([]);
+            }
         },
         save(data) {
-            return fetch(API_BASE + '?key=workspace_trash', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
+            try {
+                localStorage.setItem('workspace_trash', JSON.stringify(data || []));
+                return Promise.resolve({ success: true });
+            } catch (e) {
+                return Promise.resolve();
+            }
         }
     };
 
