@@ -929,8 +929,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
 function generateComponentHtml(comp, index, components, isExport = false, currentThemeColor = '#23B6FF') {
         let html = '';
-        const safeText = (txt) => txt ? txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/
-/g, '<br>') : '';
+        const safeText = (txt) => txt ? txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\n/g, '<br>') : '';
         const themeSpan = (txt) => safeText(txt).replace(/\*(.*?)\*/g, '<b>$1</b>');
 
         if (comp.type === 'video') {
@@ -1025,12 +1024,10 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
             const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
 
             let bulletsHtml = '';
-            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('
-') : []);
+            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
             if (bList.length > 0) {
                 const lis = bList.filter(b => b.trim() !== '').map(line => {
-                    let t = line.trim().replace(/\n/g, '<br>').replace(/
-/g, '<br>');
+                    let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
                     const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
                     const closeB = (t.match(/<\/b>/gi) || []).length;
                     if (openB > closeB) t += '</b>'.repeat(openB - closeB);
@@ -1066,8 +1063,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
             const showBg = comp.data.useBg !== false;
             const titleHtml = comp.data.title || '유의사항';
             let bulletsHtml = '';
-            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('
-') : []);
+            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
             if (bList.length > 0) {
                 const lis = bList.filter(b => b.trim() !== '').map(line => `<li>${safeText(line)}</li>`).join('');
                 if(lis) bulletsHtml = `<ul class="list--dot">${lis}</ul>`;
@@ -1223,8 +1219,7 @@ function generateExportHtml(mode = 'view') {
         const t2 = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
 
         const mapTab = (compList, tIdx) => {
-            return compList.filter(c => c.data.visible).map((comp, index) => generateComponentHtml(comp, index, compList, true, currentThemeColor)).join('
-');
+            return compList.filter(c => c.data.visible).map((comp, index) => generateComponentHtml(comp, index, compList, true, currentThemeColor)).join('\n');
         };
 
         const html1 = mapTab(componentsTab1, 1);
