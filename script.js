@@ -50,14 +50,24 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Rescue any old data from tutorialAppDB or similar just in case
                 const keys = Object.keys(localStorage);
+                let foundOldData = false;
                 for (let k of keys) {
                     if (k === 'workspace_components') continue;
                     const val = localStorage.getItem(k);
-                    if (val && typeof val === 'string' && val.includes('componentsTab1') && val.includes('themeColor')) {
+                    if (val && typeof val === 'string' && val.startsWith('[') && val.includes('"id"') && val.includes('"themeColor"')) {
                         localStorage.setItem('workspace_components', val);
                         console.log('Restored from old key:', k);
+                        foundOldData = true;
                         break;
                     }
+                }
+                
+                // If STILL completely empty, load the db_dump.json backup as a last resort
+                const currentData = localStorage.getItem('workspace_components');
+                if (!currentData || currentData === '[]') {
+                    const fallbackData = [{"id":"comp_p64h9hwn0","title":"쇼핑적립","date":"2026-04-13T00:30:55.482Z","themeColor":"#52C498","componentsTab1":[{"id":"comp_lpendiad3","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_ut4y0d0du","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_rvpjns62n","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"},{"id":"comp_11zlsbr3r","title":"내 화면 (09:31)","date":"2026-04-13T00:31:07.562Z","themeColor":"#27a8f5","componentsTab1":[{"id":"comp_h9ijdd8m9","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_bb1e494w5","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_oke2wa46b","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"}];
+                    localStorage.setItem('workspace_components', JSON.stringify(fallbackData));
+                    console.log('Restored from fallback db_dump.json');
                 }
             } catch(e) {}
             return Promise.resolve();
