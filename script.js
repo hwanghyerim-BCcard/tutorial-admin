@@ -391,175 +391,134 @@ document.addEventListener('DOMContentLoaded', () => {
                         <textarea class="bind-area" data-field="mainTitle" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;"></textarea>
                     </div>
                 `;
-            } else if (comp.type === 'explanation') {
-                card.innerHTML = `
-                    <div class="form-row two-cols">
-                        <div class="form-group flex-row" style="align-items: center; justify-content: flex-start; gap: 12px;">
-                            <label style="margin: 0;">스텝 표시</label>
-                            <div class="segmented-control step-toggle-control">
-                                <button class="seg-btn ${comp.data.isStep ? 'active' : ''}" data-val="true">ON</button>
-                                <button class="seg-btn ${!comp.data.isStep ? 'active' : ''}" data-val="false">OFF</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>스텝 번호</label>
-                            <input type="text" class="bind-txt step-number-input" data-field="stepNumber" style="width: 80px;" ${comp.data.isStep ? '' : 'disabled'}>
-                        </div>
-                    </div>
-                    <div class="form-group badge-settings-container" style="display: ${comp.data.isStep ? 'none' : 'block'}; margin-top: -4px; margin-bottom: 16px;">
-                        <label style="display: block; margin-bottom: 6px;">단독형 정렬 및 뱃지 설정</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" class="bind-txt" data-field="badgeText" placeholder="뱃지 라벨명 (예: 첫번째)" style="flex: 1; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px;">
-                            <div class="segmented-control badge-align-control" style="background: #FFFFFF; border: 1px solid #E5E7EB; padding: 2px;">
-                                <button class="seg-btn ${comp.data.badgeAlign !== 'left' ? 'active' : ''}" data-val="center">중앙</button>
-                                <button class="seg-btn ${comp.data.badgeAlign === 'left' ? 'active' : ''}" data-val="left">좌측</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label style="display: block; margin-bottom: 6px;">메인타이틀</label>
-                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요. (<b>태그로 굵게 표기 가능)" rows="2" style="width: 100%; margin-bottom: 12px; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                        <label style="display: block; margin-bottom: 6px;">서브타이틀 (옵션)</label>
-                        <textarea class="bind-area" data-field="subtitle" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; font-weight: 400; resize: vertical; outline: none;">${(comp.data.subtitle || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>이미지 주소 또는 파일 첨부 (옵션)</label>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div class="input-with-actions" style="display: flex; gap: 8px;">
-                                <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://..." style="flex: 1;">
-                            </div>
-                            <div class="file-upload-wrapper exp-file-upload-wrapper">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                <span class="exp-file-upload-text" style="font-size: 13px; color: #6B7280; font-weight: 500;">내 컴퓨터에서 이미지 업로드 (.png, .jpg)</span>
-                                <input type="file" class="exp-image-file-input" accept="image/png,image/jpeg,image/gif,image/webp">
-                            </div>
-                            <p style="font-size: 11px; color: #059669; margin: 4px 0 0 0; display: none;" class="exp-file-warning-msg">✅ 첨부된 이미지는 HTML 추출 시 내부에 코드 형태로 영구 병합됩니다.</p>
-                        </div>
-                    </div>
-                    <div class="form-group bullet-list-group">
-                        <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span>설명 항목</span>
-                            <button class="action-btn add-bullet-btn" style="width: auto; padding: 4px 10px; font-size: 12px; height: auto; white-space: nowrap; flex-shrink: 0;" title="항목 추가">+ 추가</button>
-                        </label>
-                        <div class="bullet-inputs-container" style="display: flex; flex-direction: column; gap: 8px;">
-                            ${(comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : [''])).map((line) => `
-                                <div class="bullet-input-row" style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px;">
-                                    <div style="width: 4px; height: 4px; background-color: #6B7280; border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
-                                    <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                                    <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px; color: #ef4444; margin-top: 2px;" title="삭제">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                                    </button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div class="form-row two-cols">
-                        <div class="form-group">
-                            <label>버튼 1 설정 (옵션)</label>
-                            <input type="text" class="bind-txt" data-field="btn1" style="margin-bottom: 6px;" placeholder="버튼 텍스트 (예: 바로가기)">
-                            <input type="text" class="bind-txt" data-field="btn1Link" style="margin-bottom: 6px;" placeholder="이동할 링크 주소 (https://...)">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <input type="checkbox" class="bind-chk" data-field="btn1Arrow" id="btn1_arrow_${index}">
-                                <label for="btn1_arrow_${index}" style="margin:0; font-size:12px; color:#6B7280; font-weight:normal; cursor:pointer;">우측 화살표(>) 추가</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>버튼 2 설정 (옵션)</label>
-                            <input type="text" class="bind-txt" data-field="btn2" style="margin-bottom: 6px;" placeholder="버튼 텍스트">
-                            <input type="text" class="bind-txt" data-field="btn2Link" style="margin-bottom: 6px;" placeholder="이동할 링크 주소 (https://...)">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <input type="checkbox" class="bind-chk" data-field="btn2Arrow" id="btn2_arrow_${index}">
-                                <label for="btn2_arrow_${index}" style="margin:0; font-size:12px; color:#6B7280; font-weight:normal; cursor:pointer;">우측 화살표(>) 추가</label>
-                            </div>
-                        </div>
+    
+        } else if (comp.type === 'explanation') {
+            const isStep = comp.data.isStep;
+            let isLastStep = false;
+            if (isStep) {
+                let nextVisibleStep = null;
+                for (let i = index + 1; i < components.length; i++) {
+                    if (components[i].type === 'explanation' && components[i].data.visible && components[i].data.isStep) {
+                        nextVisibleStep = components[i];
+                        break;
+                    }
+                }
+                if (!nextVisibleStep) isLastStep = true;
+            }
+
+            if (isExport) {
+                // EXPORT MODE: STRICT COMPLIANCE WITH use_guide.html
+                const wrapperClass = isStep ? `explanation-component has-step${isLastStep ? ' no-line' : ''}` : `explanation-component center`;
+
+                let badgeHtml = '';
+                if (!isStep && comp.data.badgeText) {
+                    badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
+                }
+
+                const stepNumHtml = isStep ? `<span class="num">${comp.data.stepNumber || 1}</span>` : '';
+                const titleHtml = comp.data.title ? `<h3 class="explanation-title" id="${comp.id}">${stepNumHtml}${themeSpan(comp.data.title)}</h3>` : '';
+                const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
+
+                let bulletsHtml = '';
+                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
+                if (bList.length > 0) {
+                    const lis = bList.filter(b => b.trim() !== '').map(line => {
+                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                        const closeB = (t.match(/<\/b>/gi) || []).length;
+                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                        return `<li>${t}</li>`;
+                    }).join('');
+                    if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
+                }
+
+                let btnsHtml = '';
+                if (comp.data.btn1 || comp.data.btn2) {
+                    btnsHtml = '<div class="btn-wrap">';
+                    if (comp.data.btn1) {
+                        const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
+                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn1Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
+                    }
+                    if (comp.data.btn2) {
+                        const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
+                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn2Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
+                    }
+                    btnsHtml += '</div>';
+                }
+
+                html = `
+                    <div class="${wrapperClass}">
+                        ${badgeHtml}
+                        ${titleHtml}
+                        ${imgHtml}
+                        ${bulletsHtml}
+                        ${btnsHtml}
                     </div>
                 `;
-            } else if (comp.type === 'tabs') {
-                card.innerHTML = `
-                    <div class="form-group tab-list-group">
-                        <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span>탭 항목 관리</span>
-                            <button class="action-btn add-tab-btn" style="width: auto; padding: 4px 10px; font-size: 12px; height: auto; white-space: nowrap; flex-shrink: 0;" title="탭 추가">+ 탭 추가</button>
-                        </label>
-                        <div class="tab-inputs-container" style="display: flex; flex-direction: column; gap: 8px;">
-                            ${(comp.data.tabList || []).map((tab) => `
-                                <div class="tab-input-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
-                                    <div style="width: 4px; height: 4px; background-color: #6B7280; border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
-                                    <input type="text" class="bind-tab-name" value="${tab.name.replace(/"/g, '&quot;')}" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000;">
-                                    <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 32px 9px 12px; border: 1px solid #E5E7EB; font-size: 13px; color: #000; box-sizing: border-box; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-                                        <option value="">대상 선택...</option>
-                                        ${components.filter(c => c.id !== comp.id).map(c => `<option value="${c.id}" ${tab.targetStep === c.id ? 'selected' : ''}>${getComponentLabel(c).replace(/"/g, '&quot;')}</option>`).join('')}
-                                    </select>
-                                    <button class="action-btn remove-tab-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px; color: #ef4444;" title="삭제">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                                    </button>
-                                </div>
-                            `).join('')}
-                        </div>
-                        </div>
+            } else {
+                // PREVIEW MODE: Use flexible styles to support the user's visual expectations
+                // This prevents the "squished" number badge and allows left alignment
+                const alignStyle = comp.data.badgeAlign === 'left' ? 'text-align: left;' : 'text-align: center;';
+                
+                let badgeHtml = '';
+                if (isStep) {
+                    const numText = comp.data.stepNumber || '1';
+                    // If text is short, make it a circle, otherwise a pill
+                    const isCircle = numText.length <= 2;
+                    const style = isCircle 
+                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -40px; top: 0;` 
+                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -100px; top: 0; white-space: nowrap;`;
+                    badgeHtml = `<span style="${style}">${numText}</span>`;
+                } else if (comp.data.badgeText) {
+                    badgeHtml = `<div style="display: inline-block; padding: 4px 16px; border-radius: 20px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px;">${safeText(comp.data.badgeText)}</div>`;
+                }
+
+                let wrapperStyle = `position: relative; padding: 20px 0; ${alignStyle}`;
+                if (isStep) {
+                    const numText = comp.data.stepNumber || '1';
+                    const marginLeft = numText.length <= 2 ? '40px' : '100px';
+                    wrapperStyle = `position: relative; margin-left: ${marginLeft}; padding-bottom: 30px; border-left: ${isLastStep ? 'none' : '1px solid #E7E9EF'}; padding-left: 20px; text-align: left; min-height: 60px;`;
+                }
+
+                const titleHtml = comp.data.title ? `<h3 style="font-size: 18px; line-height: 26px; font-weight: 700; color: #191B1E; margin-bottom: 16px;">${badgeHtml}${themeSpan(comp.data.title)}</h3>` : badgeHtml;
+                const imgHtml = comp.data.imageUrl ? `<div style="margin-bottom: 16px; border-radius: 12px; overflow: hidden;"><img src="${comp.data.imageUrl}" style="max-width: 100%; display: block;"></div>` : '';
+
+                let bulletsHtml = '';
+                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
+                if (bList.length > 0) {
+                    const lis = bList.filter(b => b.trim() !== '').map(line => {
+                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                        const closeB = (t.match(/<\/b>/gi) || []).length;
+                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                        return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; color: #343841; font-size: 16px; line-height: 24px; text-align: left;"><span style="position: absolute; left: 0; top: 9px; width: 3px; height: 3px; border-radius: 50%; background: #A3A8B6;"></span>${t}</li>`;
+                    }).join('');
+                    if(lis) bulletsHtml = `<ul style="list-style: none; padding: 0; margin: 0;">${lis}</ul>`;
+                }
+
+                let btnsHtml = '';
+                if (comp.data.btn1 || comp.data.btn2) {
+                    btnsHtml = '<div style="display: flex; gap: 8px; margin-top: 16px;">';
+                    if (comp.data.btn1) {
+                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn1)}</button>`;
+                    }
+                    if (comp.data.btn2) {
+                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn2)}</button>`;
+                    }
+                    btnsHtml += '</div>';
+                }
+
+                html = `
+                    <div style="${wrapperStyle}">
+                        ${titleHtml}
+                        ${imgHtml}
+                        ${bulletsHtml}
+                        ${btnsHtml}
                     </div>
                 `;
-            } else if (comp.type === 'concept') {
-                const currentAlign = comp.data.align || 'left';
-                card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
-                        <label style="margin: 0; padding-bottom: 4px;">텍스트 정렬 설정</label>
-                        <div class="segmented-control align-toggle-control" style="background: #FFFFFF; border: 1px solid #E5E7EB; padding: 2px;">
-                            <button class="seg-btn ${currentAlign !== 'center' ? 'active' : ''}" data-val="left" style="font-size: 13px; padding: 6px 12px;">좌측</button>
-                            <button class="seg-btn ${currentAlign === 'center' ? 'active' : ''}" data-val="center" style="font-size: 13px; padding: 6px 12px;">중앙</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>타이틀 (옵션)</label>
-                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>본문 내용 (필수)</label>
-                        <textarea class="bind-area" data-field="bodyText" placeholder="항목을 입력해주세요. (엔터로 줄바꿈, <b>태그로 굵게 표기 가능)" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bodyText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </div>
-                    <div class="form-row two-cols">
-                        <div class="form-group">
-                            <label>버튼 텍스트 (옵션)</label>
-                            <input type="text" class="bind-txt" data-field="buttonText" placeholder="입력 시 하단 버튼 생성 (예: 자세히보기 >)">
-                        </div>
-                        <div class="form-group">
-                            <label>버튼 링크 (옵션)</label>
-                            <input type="text" class="bind-txt" data-field="buttonUrl" placeholder="https://...">
-                        </div>
-                    </div>
-                        </div>
-                    </div>
-                `;
-            } else if (comp.type === 'tabDivider') {
-                card.innerHTML = `
-                    <div style="padding:16px; background-color:#F9FAFB; border-radius:8px; margin-bottom:12px; color:#1e40af; font-size:13px; line-height:1.5;">
-                        <b style="font-size: 14px;">화면 분할 기준점 📌</b><br>
-                        이 컴포넌트를 기준으로, <b>위에 있는 모든 내용들은 첫 번째 탭</b>에 담기고,<br>
-                        <b>아래에 추가되는 내용들은 두 번째 탭</b>에 담겨 서로 다른 화면으로 분리 동작하게 됩니다. (탭 버튼은 화면 맨 위에 자동 생성됩니다.)
-                    </div>
-                    <div class="form-row two-cols" style="margin-top: 12px;">
-                        <div class="form-group">
-                            <label>첫 번째 탭 이름 (왼쪽)</label>
-                            <input type="text" class="bind-txt" data-field="tab1Name" placeholder="예: 기존 화면">
-                        </div>
-                        <div class="form-group">
-                            <label>두 번째 탭 이름 (오른쪽)</label>
-                            <input type="text" class="bind-txt" data-field="tab2Name" placeholder="예: 새로운 화면 (우측 탭)">
-                        </div>
-                    </div>
-                `;
-            } else if (comp.type === 'faq') {
-                card.innerHTML = `
-                    <div class="form-group">
-                        <label>질문 (Q)</label>
-                        <textarea class="bind-area" data-field="question" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>답변 내용 (A) (필수)</label>
-                        <textarea class="bind-area" data-field="answer" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.answer || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </div>
-                `;
-            } else if (comp.type === 'notice') {
+            }
+        } else if (comp.type === 'notice') {
+
                 card.innerHTML = `
                     <div class="form-group" style="display: none;">
                         <label>타이틀</label>
@@ -929,7 +888,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
 function generateComponentHtml(comp, index, components, isExport = false, currentThemeColor = '#23B6FF') {
         let html = '';
-        const safeText = (txt) => txt ? txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\n/g, '<br>') : '';
+        const safeText = (txt) => {
+            if (!txt) return '';
+            let s = txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+            s = s.replace(/&lt;b(?![a-zA-Z])&gt;/gi, '<b>').replace(/&lt;\/b&gt;/gi, '</b>');
+            return s;
+        };').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\\n/g, '<br>') : '';
         const themeSpan = (txt) => safeText(txt).replace(/\*(.*?)\*/g, '<b>$1</b>');
 
         if (comp.type === 'video') {
@@ -998,6 +962,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                     </div>
                 </div>
             `;
+
         } else if (comp.type === 'explanation') {
             const isStep = comp.data.isStep;
             let isLastStep = false;
@@ -1012,54 +977,119 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                 if (!nextVisibleStep) isLastStep = true;
             }
 
-            const wrapperClass = isStep ? `explanation-component has-step${isLastStep ? ' no-line' : ''}` : `explanation-component center`;
+            if (isExport) {
+                // EXPORT MODE: STRICT COMPLIANCE WITH use_guide.html
+                const wrapperClass = isStep ? `explanation-component has-step${isLastStep ? ' no-line' : ''}` : `explanation-component center`;
 
-            let badgeHtml = '';
-            if (!isStep && comp.data.badgeText) {
-                badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
-            }
-
-            const stepNumHtml = isStep ? `<span class="num">${comp.data.stepNumber || 1}</span>` : '';
-            const titleHtml = comp.data.title ? `<h3 class="explanation-title" ${isExport ? `id="${comp.id}"` : ''}>${stepNumHtml}${themeSpan(comp.data.title)}</h3>` : '';
-            const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
-
-            let bulletsHtml = '';
-            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-            if (bList.length > 0) {
-                const lis = bList.filter(b => b.trim() !== '').map(line => {
-                    let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-                    const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                    const closeB = (t.match(/<\/b>/gi) || []).length;
-                    if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                    return `<li>${t}</li>`;
-                }).join('');
-                if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
-            }
-
-            let btnsHtml = '';
-            if (comp.data.btn1 || comp.data.btn2) {
-                btnsHtml = '<div class="btn-wrap">';
-                if (comp.data.btn1) {
-                    const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
-                    btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn1Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
+                let badgeHtml = '';
+                if (!isStep && comp.data.badgeText) {
+                    badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
                 }
-                if (comp.data.btn2) {
-                    const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
-                    btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn2Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
-                }
-                btnsHtml += '</div>';
-            }
 
-            html = `
-                <div class="${wrapperClass}">
-                    ${badgeHtml}
-                    ${titleHtml}
-                    ${imgHtml}
-                    ${bulletsHtml}
-                    ${btnsHtml}
-                </div>
-            `;
+                const stepNumHtml = isStep ? `<span class="num">${comp.data.stepNumber || 1}</span>` : '';
+                const titleHtml = comp.data.title ? `<h3 class="explanation-title" id="${comp.id}">${stepNumHtml}${themeSpan(comp.data.title)}</h3>` : '';
+                const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
+
+                let bulletsHtml = '';
+                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
+                if (bList.length > 0) {
+                    const lis = bList.filter(b => b.trim() !== '').map(line => {
+                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                        const closeB = (t.match(/<\/b>/gi) || []).length;
+                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                        return `<li>${t}</li>`;
+                    }).join('');
+                    if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
+                }
+
+                let btnsHtml = '';
+                if (comp.data.btn1 || comp.data.btn2) {
+                    btnsHtml = '<div class="btn-wrap">';
+                    if (comp.data.btn1) {
+                        const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
+                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn1Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
+                    }
+                    if (comp.data.btn2) {
+                        const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
+                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn2Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
+                    }
+                    btnsHtml += '</div>';
+                }
+
+                html = `
+                    <div class="${wrapperClass}">
+                        ${badgeHtml}
+                        ${titleHtml}
+                        ${imgHtml}
+                        ${bulletsHtml}
+                        ${btnsHtml}
+                    </div>
+                `;
+            } else {
+                // PREVIEW MODE: Use flexible styles to support the user's visual expectations
+                // This prevents the "squished" number badge and allows left alignment
+                const alignStyle = comp.data.badgeAlign === 'left' ? 'text-align: left;' : 'text-align: center;';
+                
+                let badgeHtml = '';
+                if (isStep) {
+                    const numText = comp.data.stepNumber || '1';
+                    // If text is short, make it a circle, otherwise a pill
+                    const isCircle = numText.length <= 2;
+                    const style = isCircle 
+                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -40px; top: 0;` 
+                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -100px; top: 0; white-space: nowrap;`;
+                    badgeHtml = `<span style="${style}">${numText}</span>`;
+                } else if (comp.data.badgeText) {
+                    badgeHtml = `<div style="display: inline-block; padding: 4px 16px; border-radius: 20px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px;">${safeText(comp.data.badgeText)}</div>`;
+                }
+
+                let wrapperStyle = `position: relative; padding: 20px 0; ${alignStyle}`;
+                if (isStep) {
+                    const numText = comp.data.stepNumber || '1';
+                    const marginLeft = numText.length <= 2 ? '40px' : '100px';
+                    wrapperStyle = `position: relative; margin-left: ${marginLeft}; padding-bottom: 30px; border-left: ${isLastStep ? 'none' : '1px solid #E7E9EF'}; padding-left: 20px; text-align: left; min-height: 60px;`;
+                }
+
+                const titleHtml = comp.data.title ? `<h3 style="font-size: 18px; line-height: 26px; font-weight: 700; color: #191B1E; margin-bottom: 16px;">${badgeHtml}${themeSpan(comp.data.title)}</h3>` : badgeHtml;
+                const imgHtml = comp.data.imageUrl ? `<div style="margin-bottom: 16px; border-radius: 12px; overflow: hidden;"><img src="${comp.data.imageUrl}" style="max-width: 100%; display: block;"></div>` : '';
+
+                let bulletsHtml = '';
+                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
+                if (bList.length > 0) {
+                    const lis = bList.filter(b => b.trim() !== '').map(line => {
+                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                        const closeB = (t.match(/<\/b>/gi) || []).length;
+                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                        return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; color: #343841; font-size: 16px; line-height: 24px; text-align: left;"><span style="position: absolute; left: 0; top: 9px; width: 3px; height: 3px; border-radius: 50%; background: #A3A8B6;"></span>${t}</li>`;
+                    }).join('');
+                    if(lis) bulletsHtml = `<ul style="list-style: none; padding: 0; margin: 0;">${lis}</ul>`;
+                }
+
+                let btnsHtml = '';
+                if (comp.data.btn1 || comp.data.btn2) {
+                    btnsHtml = '<div style="display: flex; gap: 8px; margin-top: 16px;">';
+                    if (comp.data.btn1) {
+                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn1)}</button>`;
+                    }
+                    if (comp.data.btn2) {
+                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn2)}</button>`;
+                    }
+                    btnsHtml += '</div>';
+                }
+
+                html = `
+                    <div style="${wrapperStyle}">
+                        ${titleHtml}
+                        ${imgHtml}
+                        ${bulletsHtml}
+                        ${btnsHtml}
+                    </div>
+                `;
+            }
         } else if (comp.type === 'notice') {
+
             const showBg = comp.data.useBg !== false;
             const titleHtml = comp.data.title || '유의사항';
             let bulletsHtml = '';
