@@ -51,66 +51,44 @@ document.addEventListener('DOMContentLoaded', () => {
             return Promise.resolve();
         },
         load() {
-            return fetch(API_BASE + '?key=workspace_components', {
-                headers: { 'Cache-Control': 'no-cache' }
-            })
-                .then(res => {
-                    if(!res.ok) throw new Error("API not connected");
-                    return res.json();
-                })
-                .catch(err => { 
-                    console.error('Sync Error', err); 
-                    return []; 
-                });
+            try {
+                const data = localStorage.getItem('workspace_components');
+                return Promise.resolve(data ? JSON.parse(data) : []);
+            } catch (e) {
+                console.error('StorageDB load error:', e);
+                return Promise.resolve([]);
+            }
         },
         save(data) {
-            return fetch(API_BASE + '?key=workspace_components', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
+            try {
+                localStorage.setItem('workspace_components', JSON.stringify(data || []));
+                return Promise.resolve({ success: true });
+            } catch (e) {
+                console.error('StorageDB save error:', e);
+                return Promise.resolve();
+            }
         }
     };
 
     const StorageTrash = {
         load() {
-            return fetch(API_BASE + '?key=workspace_trash', {
-                headers: { 'Cache-Control': 'no-cache' }
-            })
-                .then(res => res.ok ? res.json() : [])
-                .catch(err => []);
+            try {
+                const data = localStorage.getItem('workspace_trash');
+                return Promise.resolve(data ? JSON.parse(data) : []);
+            } catch (e) {
+                return Promise.resolve([]);
+            }
         },
         save(data) {
-            return fetch(API_BASE + '?key=workspace_trash', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data || [])
-            }).then(res => res.json()).catch(err => Promise.resolve());
+            try {
+                localStorage.setItem('workspace_trash', JSON.stringify(data || []));
+                return Promise.resolve({ success: true });
+            } catch (e) {
+                return Promise.resolve();
+            }
         }
     };
 
-    function executeLocalMigration() {
-        // Only run once if local data exists and needs to go to cloud
-    }
-
-    function dataURItoBlobUrl(dataURI) {
-        try {
-            const byteString = atob(dataURI.split(',')[1]);
-            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            const blob = new Blob([ab], {type: mimeString});
-            return URL.createObjectURL(blob);
-        } catch(e) {
-            return '';
-        }
-    }
-
-    // --- State Management ---
-    const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
     let componentsTab1 = [];
     let componentsTab2 = [];
     let activeTabId = 1;
@@ -890,10 +868,10 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
         let html = '';
         const safeText = (txt) => {
             if (!txt) return '';
-            let s = txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+            let s = txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
             s = s.replace(/&lt;b(?![a-zA-Z])&gt;/gi, '<b>').replace(/&lt;\/b&gt;/gi, '</b>');
             return s;
-        };').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\\n/g, '<br>') : '';
+        };
         const themeSpan = (txt) => safeText(txt).replace(/\*(.*?)\*/g, '<b>$1</b>');
 
         if (comp.type === 'video') {
