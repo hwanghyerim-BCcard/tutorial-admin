@@ -41,6 +41,7 @@ window.switchPreviewTab = function(tabNum, btn) {
         }
     }
 };
+const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1963,7 +1964,6 @@ function generateExportHtml(mode = 'view') {
 
     // --- Initialization ---
     StorageDB.init().then(() => {
-        executeLocalMigration();
         renderSidebarLibrary();
         renderTrashList();
         addComponent('video');
