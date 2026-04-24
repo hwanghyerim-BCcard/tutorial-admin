@@ -47,46 +47,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const API_BASE = '/api/sync';
 
+    const API_BASE = '/api/sync';
+
     const StorageDB = {
         init() {
             return Promise.resolve();
         },
         load() {
-            try {
-                const data = localStorage.getItem('workspace_components');
-                return Promise.resolve(data ? JSON.parse(data) : []);
-            } catch (e) {
-                console.error('StorageDB load error:', e);
-                return Promise.resolve([]);
-            }
+            return fetch(API_BASE + '?key=workspace_components', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => {
+                    if(!res.ok) throw new Error("API not connected");
+                    return res.json();
+                })
+                .catch(err => { 
+                    console.error('Sync Error', err); 
+                    return []; 
+                });
         },
         save(data) {
-            try {
-                localStorage.setItem('workspace_components', JSON.stringify(data || []));
-                return Promise.resolve({ success: true });
-            } catch (e) {
-                console.error('StorageDB save error:', e);
-                return Promise.resolve();
-            }
+            return fetch(API_BASE + '?key=workspace_components', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         }
     };
 
     const StorageTrash = {
         load() {
-            try {
-                const data = localStorage.getItem('workspace_trash');
-                return Promise.resolve(data ? JSON.parse(data) : []);
-            } catch (e) {
-                return Promise.resolve([]);
-            }
+            return fetch(API_BASE + '?key=workspace_trash', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => res.ok ? res.json() : [])
+                .catch(err => { console.error('Sync Error', err); return []; });
         },
         save(data) {
-            try {
-                localStorage.setItem('workspace_trash', JSON.stringify(data || []));
-                return Promise.resolve({ success: true });
-            } catch (e) {
-                return Promise.resolve();
-            }
+            return fetch(API_BASE + '?key=workspace_trash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         }
     };
 
