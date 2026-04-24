@@ -925,365 +925,203 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Render Preview ---
-    function renderPreview() {
-        triggerAutoSave();
-        
-        previewBody.innerHTML = '';
-        
-        let tab1Container = null;
-        let tab2Container = null;
-        
-        if (componentsTab2.length > 0) {
-            tab1Container = document.createElement('div');
-            tab1Container.id = 'view-tab-1';
-            tab1Container.style.display = 'block';
-            tab1Container.style.width = '100%';
-            
-            tab2Container = document.createElement('div');
-            tab2Container.id = 'view-tab-2';
-            tab2Container.style.display = 'none';
-            tab2Container.style.width = '100%';
 
-            const t1Name = document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '기본 화면';
-            const t2Name = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : 'FAQ';
+    
+function generateComponentHtml(comp, index, components, isExport = false, currentThemeColor = '#23B6FF') {
+        let html = '';
+        const safeText = (txt) => txt ? txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/
+/g, '<br>') : '';
+        const themeSpan = (txt) => safeText(txt).replace(/\*(.*?)\*/g, '<b>$1</b>');
 
-            const tabSwitcherHtml = `
-                <div style="display: flex; gap: 20px; border-bottom: 1px solid #e5e7eb; background: white; position: sticky; top: 0; z-index: 10;">
-                    <div class="view-tab-btn active" onclick="window.switchPreviewTab(1, this);" style="font-size: 16px; font-weight: 700; color: #111; padding: 16px 0; border-bottom: 2px solid #111; cursor: pointer; flex: 1; text-align: center;">${t1Name.replace(/</g, '&lt;')}</div>
-                    <div class="view-tab-btn" onclick="window.switchPreviewTab(2, this);" style="font-size: 16px; font-weight: 500; color: #9ca3af; padding: 16px 0; border-bottom: 2px solid transparent; cursor: pointer; flex: 1; text-align: center;">${t2Name.replace(/</g, '&lt;')}</div>
-                </div>
-            `;
-            const switcherDiv = document.createElement('div');
-            switcherDiv.style.width = '100%';
-            switcherDiv.innerHTML = tabSwitcherHtml;
-            previewBody.appendChild(switcherDiv);
-            
-            previewBody.appendChild(tab1Container);
-            previewBody.appendChild(tab2Container);
-        }
-        
-        const processComp = (comp, index, finalTarget) => {
-            if (!comp.data.visible) return;
-            
-            let html = '';
-            const div = document.createElement('div');
-            
-            if (comp.type === 'video') {
-                div.style.cssText = "width: 100%; aspect-ratio: 16/9; background-color: #E5E7EB; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;";
-                
+        if (comp.type === 'video') {
+            if (comp.data.url) {
                 let moreBtnHtml = '';
-                if (comp.data.moreLink) {
-                    moreBtnHtml = `<a href="${comp.data.moreLink}" target="_blank" style="background-color: rgba(25,27,30,0.3); color: #FFFFFF; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; font-size: 13px; font-weight: 600; padding: 0 16px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; height: 32px; backdrop-filter: blur(4px);">더보기</a>`;
+                if (comp.data.btnType !== 'none') {
+                    const linkAttr = comp.data.btnLink ? `onclick="window.open('${comp.data.btnLink}', '_blank')"` : '';
+                    moreBtnHtml = `<button type="button" class="btn-more" ${linkAttr}>더보기</button>`;
                 }
-
-                if (comp.data.url) {
-                    html = `
-                        <video src="${comp.data.url}" class="playable-video" style="width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer;" autoplay loop muted playsinline></video>
-                        <div class="video-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background-color: rgba(0,0,0,0.1); display: none; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; z-index: 5;">
-                            <div style="width: 80px; height: 80px; background-color: rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-                                <svg width="32" height="32" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-left: 3px;">
-                                    <path d="M26 18V62L66 40L26 18Z" fill="white" stroke="white" stroke-width="8" stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 16px 12px 16px; pointer-events: none; z-index: 10;">
-                            <button class="mute-toggle-btn" style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(25,27,30,0.3); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #FFFFFF; padding: 0; pointer-events: auto; backdrop-filter: blur(4px);">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-                            </button>
-                            <div style="pointer-events: auto;">
+                html = `
+                    <div class="ad-mov-wrap">
+                        <div class="ad-video">
+                            <video id="onBoarding-${index}" src="${comp.data.url}" class="playable-video" autoplay loop muted playsinline></video>
+                            <div class="util-wrap">
+                                <button type="button" class="sound on">소리 재생 중. 눌러서 음소거</button>
+                                <button type="button" class="sound off">음소거 상태. 눌러서 해제</button>
                                 ${moreBtnHtml}
                             </div>
+                            <button type="button" class="btn-play">멈춤 상태. 눌러서 재생</button>
                         </div>
-                    `;
-                } else {
-                    html = `<span style="color: #111; font-size: 15px; font-weight: 500;">영상</span>`;
-                }
-            } else if (comp.type === 'title') {
-                const alignStyle = comp.data.align === 'center' ? 'center' : 'left';
-                const prevComp = index > 0 ? components[index - 1] : null;
-                let topPad = 40;
-                if (prevComp && prevComp.type === 'concept') {
-                    topPad = 16;
-                } else if (prevComp && prevComp.type === 'tabs') {
-                    topPad = 0;
-                }
-                const leftPad = comp.data.align === 'center' ? 20 : 24;
-                div.style.cssText = `width: 100%; text-align: ${alignStyle}; background-color: white; padding: ${topPad}px 20px 8px ${leftPad}px; box-sizing: border-box;`;
-                
-                const subTHtml = (comp.data.subtitle && comp.data.subtitle.trim() !== '') ? `<p style="font-size: 16px; color: #9ca3af; margin: 0 0 6px 0; font-weight: 400; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : '';
-                const mainTHtml = (comp.data.mainTitle && comp.data.mainTitle.trim() !== '') ? `<h3 style="font-size: 28px; font-weight: 700; color: #111; margin: 0; word-break: keep-all; line-height: 1.3;">${comp.data.mainTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, `<span style="color: var(--theme-color);">$1</span>`)}</h3>` : '';
-
-                html = subTHtml + mainTHtml;
-            } else if (comp.type === 'concept') {
-                const prevComp = index > 0 ? components[index - 1] : null;
-                let topPad = 0;
-                const alignStyle = comp.data.align === 'center' ? 'center' : 'left';
-                div.style.cssText = `width: 100%; text-align: ${alignStyle}; padding: ${topPad}px 20px 16px 20px; margin-top: -10px; box-sizing: border-box;`;
-                
-                let titleHtml = '';
-                if (comp.data.title && comp.data.title.trim() !== '') {
-                    const conceptTitle = comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    titleHtml = `<h4 style="color: var(--theme-color); font-size: 17px; font-family: Pretendard, sans-serif; font-weight: 700; margin: 0; word-break: keep-all; overflow-wrap: anywhere; line-height: 24px;">${conceptTitle}</h4>`;
-                }
-
-                let bodyHtml = '';
-                if (comp.data.bodyText && comp.data.bodyText.trim()) {
-                    const formattedBody = comp.data.bodyText.replace(/\n/g, '<br>');
-                    bodyHtml = `<p style="color: #343841; font-size: 15px; font-family: Pretendard, sans-serif; font-weight: 400; margin: 0; line-height: 22px; word-break: keep-all; overflow-wrap: anywhere;">${formattedBody}</p>`;
-                }
-
-                let buttonHtml = '';
-                if (comp.data.buttonText && comp.data.buttonText.trim()) {
-                    buttonHtml = `
-                        <div style="width: 100%;">
-                            <a href="${comp.data.buttonUrl || '#'}" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #E5E7EB; color: #6B7280; font-size: 14px; font-weight: 700; padding: 0 16px; height: 40px; border-radius: 8px; text-decoration: none; width: 100%; box-sizing: border-box; gap: 6px;">
-                                <span>${comp.data.buttonText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transform: translateY(0);"><path d="M9 18l6-6-6-6"/></svg>
-                            </a>
-                        </div>
-                    `;
-                }
-
-                html = `
-                    <div class="concept-banner" style="background-color: #F9FAFB; border-radius: 20px; padding: 20px; position: relative; text-align: ${alignStyle}; display: flex; flex-direction: column; align-items: ${alignStyle === 'center' ? 'center' : 'flex-start'}; gap: 16px; width: 100%; box-sizing: border-box;">
-                        ${titleHtml}
-                        ${bodyHtml}
-                        ${buttonHtml}
                     </div>
                 `;
-            } else if (comp.type === 'tabs') {
-                div.style.cssText = "width: 100%; background-color: white; padding: 20px 20px 0 20px; margin-bottom: 40px; position: sticky; top: 0; z-index: 10;";
-                const tabHtml = (comp.data.tabList || []).map((tab, i) => {
-                    const isActive = i === 0;
-                    const style = isActive
-                        ? "font-size: 17px; font-weight: 700; color: #111; height: 42px; line-height: 40px; border-bottom: 2px solid #111; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;"
-                        : "font-size: 17px; font-weight: 700; color: #9ca3af; height: 42px; line-height: 40px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s; box-sizing: border-box; display: inline-block;";
-                    const onclickStr = `event.preventDefault(); const t = document.getElementById('${tab.targetStep}'); if(t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); Array.from(this.parentElement.children).forEach(e => { e.style.color = '#9ca3af'; e.style.borderBottomColor = 'transparent'; }); this.style.color = '#111'; this.style.borderBottomColor = '#111';`;
-                    const tabName = (tab.name && tab.name.trim() !== '') ? tab.name.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-                    return `<a href="#${tab.targetStep}" class="tab-item" style="${style}" onclick="${onclickStr}">${tabName}</a>`;
-                }).join('');
-                
-                html = `
-                    <div class="tabs-container" style="display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;">
-                        <style>
-        :root { --theme-color: ${currentThemeColor}; }.tabs-container::-webkit-scrollbar { display: none; }</style>
-                        ${tabHtml}
+            } else {
+                html = `<span style="font-size: 15px; font-weight: 500;">(영상 컴포넌트)</span>`;
+            }
+        } else if (comp.type === 'title') {
+            const subTitle = comp.data.subtitle ? `<p class="sub-txt">${safeText(comp.data.subtitle)}</p>` : '';
+            const mainTitle = comp.data.mainTitle ? `<h2 class="tit">${themeSpan(comp.data.mainTitle)}</h2>` : '';
+            html = `
+                <div class="top-tit-wrap">
+                    ${subTitle}
+                    ${mainTitle}
+                </div>
+            `;
+        } else if (comp.type === 'concept') {
+            const titleHtml = comp.data.title ? `<h4 class="concept-banner-title">${safeText(comp.data.title)}</h4>` : '';
+            const bodyHtml = comp.data.bodyText ? `<p>${safeText(comp.data.bodyText)}</p>` : '';
+            let btnHtml = '';
+            if (comp.data.buttonText) {
+                const linkAttr = comp.data.buttonUrl ? `onclick="window.open('${comp.data.buttonUrl}', '_blank')"` : '';
+                btnHtml = `
+                <div class="btn-wrap">
+                    <button type="button" class="btn-outline full has-arr" ${linkAttr}><span>${safeText(comp.data.buttonText)}</span></button>
+                </div>`;
+            }
+            html = `
+                <div class="concept-banner-component">
+                    ${titleHtml}
+                    ${bodyHtml}
+                    ${btnHtml}
+                </div>
+            `;
+        } else if (comp.type === 'tabs') {
+            const tabsHtml = (comp.data.tabList || []).map((tab, i) => {
+                const preventStr = isExport ? '' : 'event.preventDefault(); ';
+                const scrollLogic = isExport 
+                    ? '' 
+                    : `onclick="${preventStr}const p = document.getElementById('preview-${tab.targetStep}'); if(p) p.scrollIntoView({behavior: 'smooth', block: 'start'}); const wrap = this.closest('.tabs-wrap'); if(wrap) Array.from(wrap.children).forEach(c=>c.classList.remove('active')); this.classList.add('active');"`;
+                const hrf = isExport ? '#' : '#';
+                return `<a href="${hrf}" class="tab-linker ${i === 0 ? 'active' : ''}" ${scrollLogic}>${safeText(tab.name)}</a>`;
+            }).join('');
+            html = `
+                <div class="tabs-container fixed-top">
+                    <div class="tabs-wrap">
+                        ${tabsHtml}
                     </div>
-                `;
-            } else if (comp.type === 'explanation') {
-                div.className = 'explanation-component' + (comp.data.isStep ? '' : ' standalone');
-                div.style.position = 'relative';
-                
-                let imageHtml = comp.data.imageUrl ? `<img class="explanation-image" src="${comp.data.imageUrl}" style="display: block;" alt="Explanation Image">` : '';
-                
-                let bulletsHtml = '';
-                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-                if (bList.length > 0) {
-                    bulletsHtml = '<ul class="explanation-bullets" style="display: block;">' + 
-                        bList.filter(b => b.trim() !== '').map(line => {
-                            let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-                            const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                            const closeB = (t.match(/<\/b>/gi) || []).length;
-                            if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                            return `<li>${t}</li>`;
-                        }).join('') +  
-                        '</ul>';
-                }
-                
-                let buttonsHtml = '';
-                if (comp.data.btn1 || comp.data.btn2) {
-                    buttonsHtml = '<div class="explanation-buttons" style="display: flex;">';
-                    const arrowSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transform: translateY(0);"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
-                    if (comp.data.btn1) {
-                        const tag = comp.data.btn1Link ? 'a' : 'button';
-                        const hrefAttr = comp.data.btn1Link ? ` href="${comp.data.btn1Link.replace(/"/g, '&quot;')}" target="_blank"` : '';
-                        buttonsHtml += `<${tag}${hrefAttr} class="explanation-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;"><span>${comp.data.btn1}</span>${comp.data.btn1Arrow ? arrowSvg : ''}</${tag}>`;
-                    }
-                    if (comp.data.btn2) {
-                        const tag = comp.data.btn2Link ? 'a' : 'button';
-                        const hrefAttr = comp.data.btn2Link ? ` href="${comp.data.btn2Link.replace(/"/g, '&quot;')}" target="_blank"` : '';
-                        buttonsHtml += `<${tag}${hrefAttr} class="explanation-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;"><span>${comp.data.btn2}</span>${comp.data.btn2Arrow ? arrowSvg : ''}</${tag}>`;
-                    }
-                    buttonsHtml += '</div>';
-                }
-                
-                let badgeHtml = '';
-                let contentTextAlign = 'left';
-                let standalonePaddingLeft = '';
-                if (!comp.data.isStep) {
-                    if (comp.data.badgeAlign === 'center') {
-                        contentTextAlign = 'center';
-                    } else if (comp.data.badgeAlign === 'left') {
-                        standalonePaddingLeft = 'padding-left: 4px;';
-                    }
-                    if (comp.data.badgeText && comp.data.badgeText.trim() !== '') {
-                        const badgeAlignment = comp.data.badgeAlign === 'left' ? 'flex-start' : 'center';
-                        badgeHtml = `
-                            <div style="display: flex; justify-content: ${badgeAlignment}; margin-top: 10px; margin-bottom: 16px;">
-                                <div style="background-color: var(--theme-color); color: #FFFFFF; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
-                                    ${comp.data.badgeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-                let nextVisibleComp = null;
+                </div>
+            `;
+        } else if (comp.type === 'explanation') {
+            const isStep = comp.data.isStep;
+            let isLastStep = false;
+            if (isStep) {
+                let nextVisibleStep = null;
                 for (let i = index + 1; i < components.length; i++) {
-                    if (components[i].data.visible) {
-                        nextVisibleComp = components[i];
+                    if (components[i].type === 'explanation' && components[i].data.visible && components[i].data.isStep) {
+                        nextVisibleStep = components[i];
                         break;
                     }
                 }
-                const isLastStep = !nextVisibleComp || nextVisibleComp.type !== 'explanation' || !nextVisibleComp.data.isStep;
+                if (!nextVisibleStep) isLastStep = true;
+            }
 
-                html = `
-                    <div class="explanation-indicator">
-                        <div class="step-circle">${comp.data.stepNumber || '1'}</div>
-                        <div class="step-line" style="${isLastStep ? 'display: none;' : ''}"></div>
-                    </div>
-                    <div class="explanation-content" style="width: 100%; text-align: ${contentTextAlign}; ${standalonePaddingLeft}">
-                        ${badgeHtml}
-                        ${(comp.data.title && comp.data.title.trim() !== '') ? `<h3 class="explanation-title" style="margin-bottom: ${(comp.data.subtitle && comp.data.subtitle.trim()) ? '4px' : '16px'}; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/&lt;b&gt;/gi, '<b style="font-weight: 700;">').replace(/&lt;\/b&gt;/gi, '</b>')}</h3>` : ''}
-                        ${(comp.data.subtitle && comp.data.subtitle.trim()) ? `<p class="explanation-subtitle" style="font-size: 16px; color: #9ca3af; font-weight: 400; margin: 0 0 16px 0; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere;">${comp.data.subtitle.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
-                        ${imageHtml}
-                        ${bulletsHtml}
-                        ${buttonsHtml}
-                    </div>
-                    </div>
-                `;
-            } else if (comp.type === 'faq') {
-                div.style.cssText = "width: 100%; border-bottom: 1px solid #e5e7eb; background-color: white; padding: 0;";
-                const formattedAnswer = (comp.data.answer || '').replace(/\n/g, '<br>');
-                html = `
-                    <div style="padding: 16px 20px 16px 24px; box-sizing: border-box;">
-                        <div class="faq-question" onclick="const ans = this.nextElementSibling; const icon = this.querySelector('svg'); if(ans.style.display === 'none'){ ans.style.display = 'block'; icon.style.transform = 'rotate(180deg)'; } else { ans.style.display = 'none'; icon.style.transform = 'rotate(0deg)'; }" style="display: flex; justify-content: space-between; align-items: flex-start; cursor: pointer; background: transparent;">
-                            <h4 style="font-size: 15px; font-weight: 700; color: #111; margin: 0; line-height: 1.4; font-family: Pretendard, sans-serif; word-break: keep-all; overflow-wrap: anywhere;">${(comp.data.question && comp.data.question.trim() !== '') ? comp.data.question.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') : ''}</h4>
-                            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; transition: transform 0.3s; margin-left: 8px; color: #9ca3af;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                        </div>
-                        <div class="faq-answer" style="display: none; padding-top: 12px;">
-                            <p style="font-size: 14px; color: #4b5563; margin: 0; line-height: 1.5; font-family: Pretendard, sans-serif; word-break: keep-all;">${(comp.data.answer && comp.data.answer.trim() !== '') ? (comp.data.answer).replace(/\n/g, '<br>') : ''}</p>
-                        </div>
-                    </div>
-                    </div>
-                `;
-            } else if (comp.type === 'notice') {
-                const titleText = (comp.data.title && comp.data.title.trim() !== '') ? comp.data.title.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-                const bList = comp.data.bullets ? comp.data.bullets.split('\n') : [];
-                let bulletsHtml = '';
-                if (bList.length > 0) {
-                    bulletsHtml = '<ul class="notice-bullets" style="display: block; list-style: none; padding: 0; margin: 0;">' + 
-                        bList.filter(b => b.trim() !== '').map(line => {
-                            let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-                            const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                            const closeB = (t.match(/<\/b>/gi) || []).length;
-                            if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                            return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 15px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 1.5; word-break: keep-all; text-align: left;">${t}</li>`;
-                        }).join('') + 
-                        '</ul>';
+            const wrapperClass = isStep ? `explanation-component has-step${isLastStep ? ' no-line' : ''}` : `explanation-component center`;
+
+            let badgeHtml = '';
+            if (!isStep && comp.data.badgeText) {
+                badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
+            }
+
+            const stepNumHtml = isStep ? `<span class="num">${comp.data.stepNumber || 1}</span>` : '';
+            const titleHtml = comp.data.title ? `<h3 class="explanation-title" ${isExport ? `id="${comp.id}"` : ''}>${stepNumHtml}${themeSpan(comp.data.title)}</h3>` : '';
+            const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
+
+            let bulletsHtml = '';
+            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('
+') : []);
+            if (bList.length > 0) {
+                const lis = bList.filter(b => b.trim() !== '').map(line => {
+                    let t = line.trim().replace(/\n/g, '<br>').replace(/
+/g, '<br>');
+                    const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                    const closeB = (t.match(/<\/b>/gi) || []).length;
+                    if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                    return `<li>${t}</li>`;
+                }).join('');
+                if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
+            }
+
+            let btnsHtml = '';
+            if (comp.data.btn1 || comp.data.btn2) {
+                btnsHtml = '<div class="btn-wrap">';
+                if (comp.data.btn1) {
+                    const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
+                    btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn1Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
                 }
-                
-                div.className = 'notice-component';
-                const showBg = comp.data.useBg !== false;
-                const bgColor = showBg ? '#F9FAFB' : 'transparent';
-                const paddingStyle = showBg ? 'padding: 32px 20px;' : 'padding: 8px 20px 32px 20px;';
-                div.style.cssText = `width: 100%; margin-top: 29px; ${paddingStyle} box-sizing: border-box; background-color: ${bgColor}; text-align: left;`;
-                
-                html = `
-                    ${titleText ? `<h4 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 700; color: #111; font-family: Pretendard, sans-serif; word-break: keep-all; text-align: left;">${titleText}</h4>` : ''}
+                if (comp.data.btn2) {
+                    const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
+                    btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn2Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
+                }
+                btnsHtml += '</div>';
+            }
+
+            html = `
+                <div class="${wrapperClass}">
+                    ${badgeHtml}
+                    ${titleHtml}
+                    ${imgHtml}
                     ${bulletsHtml}
-                `;
+                    ${btnsHtml}
+                </div>
+            `;
+        } else if (comp.type === 'notice') {
+            const showBg = comp.data.useBg !== false;
+            const titleHtml = comp.data.title || '유의사항';
+            let bulletsHtml = '';
+            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('
+') : []);
+            if (bList.length > 0) {
+                const lis = bList.filter(b => b.trim() !== '').map(line => `<li>${safeText(line)}</li>`).join('');
+                if(lis) bulletsHtml = `<ul class="list--dot">${lis}</ul>`;
             }
-            
-            if (html !== '') {
-                let anchorTop = -50;
-                if (index > 0 && components[index - 1] && components[index - 1].type === 'tabs') {
-                    anchorTop -= 40;
-                }
-                const globalAnchorHtml = `<div id="${comp.id}" style="position: absolute; top: ${anchorTop}px; visibility: hidden; pointer-events: none;"></div>`;
-                if (!div.style.position || div.style.position === 'static') {
-                    div.style.position = 'relative';
-                }
-                div.innerHTML = globalAnchorHtml + html;
-                finalTarget.appendChild(div);
-            }
-        };
 
-        if (componentsTab2.length > 0) {
-            componentsTab1.forEach((comp, index) => processComp(comp, index, tab1Container));
-            componentsTab2.forEach((comp, index) => processComp(comp, index, tab2Container));
-        } else {
-            componentsTab1.forEach((comp, index) => processComp(comp, index, previewBody));
+            html = `
+                <div class="notice-component acc-wrap${showBg ? ' bg-gray' : ''}">
+                    <div class="acc-item no-toggle">
+                        <div class="acc-header">${safeText(titleHtml)}</div>
+                        <div class="acc-cont show">
+                            ${bulletsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
-        function createBottomFiller(list) {
-            const filler = document.createElement('div');
-            filler.className = 'smart-bottom-filler';
-            filler.style.cssText = 'width: 100%; pointer-events: none;';
-            const last = list[list.length - 1];
-            if (last && last.type === 'notice') {
-                filler.style.backgroundColor = '#F9FAFB';
-            } else {
-                filler.style.backgroundColor = 'transparent';
-            }
-            return filler;
-        }
-
-        if (componentsTab2.length > 0) {
-            tab1Container.appendChild(createBottomFiller(componentsTab1));
-            tab2Container.appendChild(createBottomFiller(componentsTab2));
-            // Trigger measurement for Tab 1 initially
-            setTimeout(() => {
-                const dummyBtn = { parentElement: { children: [{}, {}] } }; // Mock for initial call
-                // Don't call switchPreviewTab since it changes UI colors. Just set height.
-                const target = document.getElementById('view-tab-1');
-                if(!target) return;
-                const fill = target.querySelector('.smart-bottom-filler');
-                const tMenu = target.querySelector('[style*="position: sticky"]');
-                const pArea = document.querySelector('.preview-area');
-                if(fill && tMenu && pArea) {
-                    fill.style.height = '0px';
-                    const diff = target.getBoundingClientRect().bottom - tMenu.getBoundingClientRect().bottom;
-                    if (diff < pArea.clientHeight) fill.style.height = (pArea.clientHeight - diff) + 'px';
-                }
-            }, 50);
-        } else {
-            previewBody.appendChild(createBottomFiller(componentsTab1));
-        }
+        return html;
     }
 
-    // --- State Accessors ---
-    function moveComponent(index, direction) {
-        if (index + direction < 0 || index + direction >= components.length) return;
-        const newIndex = index + direction;
-        const temp = components[index];
-        components[index] = components[newIndex];
-        components[newIndex] = temp;
-        renderEditor(); 
+function renderPreview() {
+        const previewCanvas = document.getElementById('previewCanvas');
+        if (!previewCanvas) return;
         
-        setTimeout(() => {
-            const editorList = document.getElementById('editorComponentList');
-            if (editorList && editorList.children[newIndex]) {
-                const targetCard = editorList.children[newIndex];
-                
-                const scrollPos = targetCard.offsetTop - (editorList.clientHeight / 2) + (targetCard.clientHeight / 2) - 40;
-                editorList.scrollTo({ top: scrollPos, behavior: 'smooth' });
-                
-                targetCard.style.transition = 'box-shadow 0.3s ease';
-                targetCard.style.boxShadow = `0 0 0 2px var(--theme-color), 0 4px 12px rgba(0,0,0,0.15)`;
-                setTimeout(() => {
-                    targetCard.style.boxShadow = '';
-                }, 1000);
-            }
-        }, 50);
-    }
-    
-    function deleteComponent(index) {
-        if(confirm('이 컴포넌트를 삭제하시겠습니까?')) {
-            components.splice(index, 1);
-            renderEditor();
+        previewCanvas.innerHTML = '';
+        if (componentsTab1.length === 0 && componentsTab2.length === 0) {
+            previewCanvas.innerHTML = '<div style="flex:1; display:flex; align-items:center; justify-content:center; color:#9ca3af; font-size:16px;">미리보기 영역</div>';
+            return;
         }
+
+        [componentsTab1, componentsTab2].forEach((compList, tabIndex) => {
+            if (compList.length === 0) return;
+            const wrap = document.createElement('div');
+            wrap.className = 'explanation-wrap';
+            if (tabIndex + 1 !== activeTabId) {
+                wrap.style.display = 'none';
+            }
+            wrap.id = `preview-tab-${tabIndex + 1}`;
+            
+            compList.forEach((comp, index) => {
+                if (!comp.data.visible) return;
+                
+                const div = document.createElement('div');
+                div.id = 'preview-' + comp.id;
+                div.innerHTML = generateComponentHtml(comp, index, compList, false, currentThemeColor);
+                wrap.appendChild(div);
+            });
+            previewCanvas.appendChild(wrap);
+        });
+        
+        const videos = previewCanvas.querySelectorAll('video');
+        videos.forEach(v => v.play().catch(e => {}));
     }
-    
+
     function addComponent(type) {
         const base = { id: generateId(), type, data: { visible: true } };
         if (type === 'video') {
@@ -1379,125 +1217,152 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // --- Export HTML Generator ---
-    function generateExportHtml(mode = 'view') {
-        let previewCanvasHtml = document.getElementById('previewCanvas').innerHTML;
-        
-        [componentsTab1, componentsTab2].forEach(arr => {
-            arr.forEach(comp => {
-                if (comp && comp.data) {
-                    let currentUrl = '';
-                    if (comp.type === 'video') currentUrl = comp.data.url;
-                    if (comp.type === 'explanation') currentUrl = comp.data.imageUrl;
-                    
-                    if (currentUrl && currentUrl.startsWith('blob:')) {
-                        if (mode === 'download' && comp.data.exportStr) {
-                            previewCanvasHtml = previewCanvasHtml.split(currentUrl).join(comp.data.exportStr);
-                        } else {
-                            const placeholder = comp.type === 'video' ? 'https://[여기에_영상주소_입력].mp4' : 'https://[여기에_이미지주소_입력].png';
-                            previewCanvasHtml = previewCanvasHtml.split(currentUrl).join(placeholder);
-                        }
-                    }
-                }
-            });
-        });
-        
-        const currentWidth = document.getElementById('previewContainer') ? document.getElementById('previewContainer').offsetWidth : 390;
-        return `<!DOCTYPE html>
+
+function generateExportHtml(mode = 'view') {
+        const t1 = document.getElementById('tab1NameInput') ? document.getElementById('tab1NameInput').value : '이용 가이드';
+        const t2 = document.getElementById('tab2NameInput') ? document.getElementById('tab2NameInput').value : '유의사항';
+
+        const mapTab = (compList, tIdx) => {
+            return compList.filter(c => c.data.visible).map((comp, index) => generateComponentHtml(comp, index, compList, true, currentThemeColor)).join('
+');
+        };
+
+        const html1 = mapTab(componentsTab1, 1);
+        const html2 = mapTab(componentsTab2, 2);
+
+        let tabsMenuHtml = '';
+        if (componentsTab2.length > 0) {
+            tabsMenuHtml = `
+        <div class="tabs-container fixed-top">
+            <div class="tabs-wrap">
+                <a href="#" class="tab-linker active">${t1.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</a>
+                <a href="#" class="tab-linker">${t2.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</a>
+            </div>
+        </div>`;
+        }
+
+        const template = `<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preview</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="No-Cache">
+    <meta name="format-detection" content="telephone=no">
+    <title>이용 가이드</title>
+    <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="/static/assets/styles/etc/use_guide.css">
+
+    <script src="/static/assets/scripts/libs/jquery-2.2.3.min.js"></script>
+    <script src="/static/js/comm/common.js"></script>
+    <script src="/static/js/comm/app_scheme.js"></script>
+    <script src="/static/js/comm/ajax.js"></script>
+    <script src="/static/assets/scripts/comm/common.ui.js"></script>
+    <script src="/static/assets/scripts/comm/tab_scroll.js"></script>
+    <script src="/static/assets/scripts/comm/nethru_pb.js" async></script>
     <style>
-        :root { --theme-color: ${currentThemeColor}; }
-        body { margin: 0; padding: 0; background-color: #F9FAFB; display: flex; justify-content: center; }
-        .canvas-container { width: 100%; max-width: 768px; background-color: white; min-height: 100vh; box-sizing: border-box; }
-        .explanation-component { display: flex; padding: 16px 20px 0 20px; background-color: white; text-align: left; scroll-margin-top: 64px; }
-        .explanation-component:not(.standalone) { padding-right: 22px; }
-        .explanation-indicator { margin-right: 12px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-        .step-circle { width: 28px; height: 28px; background-color: var(--theme-color); color: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
-        .step-line { flex: 1; width: 2px; border-radius: 1px; background-color: rgba(219, 226, 240, 0.4); margin-top: 4px; min-height: 20px; }
-        .explanation-content { flex: 1; min-width: 0; padding-bottom: 20px; }
-        .explanation-content > *:last-child { margin-bottom: 0 !important; }
-        .explanation-component.standalone .explanation-indicator { display: none; }
-        .explanation-title { font-family: Pretendard, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; color: #111; margin: 0 0 16px 0; line-height: 26px; word-break: keep-all; }
-        .explanation-image { width: 100%; height: auto; border-radius: 12px; background-color: transparent; margin-bottom: 16px; display: block; }
-        .explanation-bullets { list-style: none; padding: 0; margin: 0 0 16px 0; }
-        .explanation-bullets li { position: relative; padding-left: 12px; margin-bottom: 8px; font-size: 16px; font-weight: 400; font-family: Pretendard, sans-serif; color: #343841; line-height: 24px; word-break: keep-all; text-align: left; }
-        .explanation-bullets li::before { content: ""; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
-        .notice-bullets li::before { content: ""; position: absolute; left: 0; top: 10px; width: 4px; height: 4px; background-color: #A3A8B6; border-radius: 50%; }
-        .explanation-buttons { display: flex; flex-direction: column; gap: 8px; }
-        .explanation-btn { width: 100%; background-color: white; border: 1px solid #E5E7EB; border-radius: 8px; padding: 0 16px; height: 40px; font-size: 14px; font-weight: 700; color: #6B7280; text-align: center; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
-        .canvas-container b, .canvas-container strong { font-weight: 700; color: #111; }
+        :root {
+            --theme-color: ${currentThemeColor};
+        }
     </style>
 </head>
-<body>
-    <div class="canvas-container">
-        ${previewCanvasHtml}
+<body class="bg-gray">
+    <header class="renew21--header">
+        <a href="#" class="btn-back" onclick="onBackHistory();">뒤로</a>
+        <h1 class="tit">이용 가이드</h1>
+    </header>
+
+    <div class="use-guide-wrap">
+        ${tabsMenuHtml}
+        
+        <div class="explanation-wrap tab-cont1">
+            ${html1}
+        </div>
+        ${html2.trim() !== '' ? `
+        <div class="explanation-wrap tab-cont2">
+            ${html2}
+        </div>` : ''}
     </div>
+
     <script>
-        window.switchPreviewTab = function(tabNum, btn) {
-            if(tabNum === 1) {
-                btn.parentElement.children[0].style.borderBottomColor='#111'; 
-                btn.parentElement.children[0].style.fontWeight='700'; 
-                btn.parentElement.children[0].style.color='#111'; 
-                btn.parentElement.children[1].style.borderBottomColor='transparent'; 
-                btn.parentElement.children[1].style.fontWeight='500'; 
-                btn.parentElement.children[1].style.color='#9ca3af'; 
-                document.getElementById('view-tab-1').style.display='block'; 
-                document.getElementById('view-tab-2').style.display='none';
-            } else {
-                btn.parentElement.children[0].style.borderBottomColor='transparent'; 
-                btn.parentElement.children[0].style.fontWeight='500'; 
-                btn.parentElement.children[0].style.color='#9ca3af'; 
-                btn.parentElement.children[1].style.borderBottomColor='#111'; 
-                btn.parentElement.children[1].style.fontWeight='700'; 
-                btn.parentElement.children[1].style.color='#111'; 
-                document.getElementById('view-tab-1').style.display='none'; 
-                document.getElementById('view-tab-2').style.display='block';
-            }
-        };
-
-        document.addEventListener('click', function(e) {
-            var muteBtn = e.target.closest('.mute-toggle-btn');
-            if (muteBtn) {
-                var container = muteBtn.parentElement.parentElement;
-                var video = container.querySelector('video');
-                if (video) {
-                    video.muted = !video.muted;
-                    if (video.muted) {
-                        muteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
-                    } else {
-                        muteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
-                    }
-                }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof TabMenuModule !== 'undefined') {
+                TabMenuModule.init({
+                    tabSelector: '.tab-linker',
+                    contentSelectors: ['.tab-cont1', '.tab-cont2'],
+                    stickyTopOffset: 56,
+                    tabHeight: 44
+                });
             }
 
-            var playableVideo = e.target.closest('.playable-video');
-            var videoOverlay = e.target.closest('.video-overlay');
+            setVideoControler();
             
-            if (playableVideo) {
-                var container = playableVideo.parentElement;
-                var overlay = container.querySelector('.video-overlay');
-                if (overlay && !playableVideo.paused) {
-                    playableVideo.pause();
-                    overlay.style.display = 'flex';
-                }
-            } else if (videoOverlay) {
-                var container = videoOverlay.parentElement;
-                var videoEl = container.querySelector('.playable-video');
-                if (videoEl && videoEl.paused) {
-                    videoEl.play();
-                    videoOverlay.style.display = 'none';
-                }
+            if (typeof AccCtl !== 'undefined') {
+                new AccCtl();
             }
         });
+
+        function setVideoControler() {
+            const videoWrap = document.querySelector('.ad-video');
+            if(!videoWrap) return;
+
+            const video = document.getElementById('onBoarding');
+            const btnSoundOn = videoWrap.querySelector('.sound.on');
+            const btnSoundOff = videoWrap.querySelector('.sound.off');
+            const btnPlay = videoWrap.querySelector('.btn-play');
+            const btnClose = videoWrap.querySelector('.btn-close');
+            if(!video) return;
+
+            const pausedAndShowPlayBtn = () => {
+                video.pause();
+                if (btnPlay) btnPlay.style.display = 'block';
+                videoWrap.classList.add('paused');
+            };
+
+            video.addEventListener('pause', pausedAndShowPlayBtn);
+
+            video.addEventListener('click', () => {
+                if (!video.paused) {
+                    pausedAndShowPlayBtn();
+                }
+            });
+
+            if (btnPlay) {
+                btnPlay.addEventListener('click', () => {
+                    video.play();
+                    btnPlay.style.display = 'none';
+                    videoWrap.classList.remove('paused');
+                });
+            }
+
+            if (btnSoundOn) {
+                btnSoundOn.addEventListener('click', function () {
+                    video.muted = true;
+                    this.style.display = 'none';
+                    if (btnSoundOff) btnSoundOff.style.display = 'block';
+                });
+            }
+
+            if (btnSoundOff) {
+                btnSoundOff.addEventListener('click', function () {
+                    video.muted = false;
+                    this.style.display = 'none';
+                    if (btnSoundOn) btnSoundOn.style.display = 'block';
+                });
+            }
+
+            if (btnClose) {
+                btnClose.addEventListener('click', () => {
+                    videoWrap.remove();
+                });
+            }
+        }
     </script>
 </body>
 </html>`;
+
+        return template;
     }
 
     // --- View Source Modal Logic ---
