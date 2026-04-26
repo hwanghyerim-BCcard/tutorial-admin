@@ -45,37 +45,33 @@ const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
 
 document.addEventListener('DOMContentLoaded', () => {
 
-        const StorageDB = {
+        const API_BASE = '/api/sync';
+
+    const StorageDB = {
         init() {
-            try {
-                // Rescue any old data from tutorialAppDB or similar just in case
-                const keys = Object.keys(localStorage);
-                let foundOldData = false;
-                for (let k of keys) {
-                    if (k === 'workspace_components') continue;
-                    const val = localStorage.getItem(k);
-                    if (val && typeof val === 'string' && val.startsWith('[') && val.includes('"id"') && val.includes('"themeColor"')) {
-                        localStorage.setItem('workspace_components', val);
-                        console.log('Restored from old key:', k);
-                        foundOldData = true;
-                        break;
-                    }
-                }
-                
-                // If STILL completely empty, load the db_dump.json backup as a last resort
-                const currentData = localStorage.getItem('workspace_components');
-                if (!currentData || currentData === '[]') {
-                    const fallbackData = [{"id":"comp_p64h9hwn0","title":"쇼핑적립","date":"2026-04-13T00:30:55.482Z","themeColor":"#52C498","componentsTab1":[{"id":"comp_lpendiad3","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_ut4y0d0du","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_rvpjns62n","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"},{"id":"comp_11zlsbr3r","title":"내 화면 (09:31)","date":"2026-04-13T00:31:07.562Z","themeColor":"#27a8f5","componentsTab1":[{"id":"comp_h9ijdd8m9","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_bb1e494w5","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_oke2wa46b","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"}];
-                    localStorage.setItem('workspace_components', JSON.stringify(fallbackData));
-                    console.log('Restored from fallback db_dump.json');
-                }
-            } catch(e) {}
             return Promise.resolve();
         },
         load() {
             try {
-                const data = localStorage.getItem('workspace_components');
-                return Promise.resolve(data ? JSON.parse(data) : []);
+                // Determine if we are running locally or on Vercel
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync' : API_BASE;
+                
+                return fetch(apiUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error('API Sync Failed');
+                        return res.json();
+                    })
+                    .then(data => {
+                        return Array.isArray(data) ? data : [];
+                    })
+                    .catch(e => {
+                        console.error('StorageDB API load error:', e);
+                        // Fallback to local storage if API fails
+                        let localData = localStorage.getItem('workspace_components');
+                        let parsed = localData ? JSON.parse(localData) : [];
+                        return Array.isArray(parsed) ? parsed : [];
+                    });
             } catch (e) {
                 console.error('StorageDB load error:', e);
                 return Promise.resolve([]);
@@ -83,8 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         save(data) {
             try {
+                // Save to localStorage as a backup
                 localStorage.setItem('workspace_components', JSON.stringify(data || []));
-                return Promise.resolve({ success: true });
+
+                // Save to API
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync' : API_BASE;
+
+                return fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data || [])
+                })
+                .then(res => res.json())
+                .catch(e => {
+                    console.error('StorageDB API save error:', e);
+                    return { success: true }; // Don't crash if offline
+                });
             } catch (e) {
                 console.error('StorageDB save error:', e);
                 return Promise.resolve();
@@ -392,132 +403,63 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
     
-        } else if (comp.type === 'explanation') {
-            const isStep = comp.data.isStep;
-            let isLastStep = false;
-            if (isStep) {
-                let nextVisibleStep = null;
-                for (let i = index + 1; i < components.length; i++) {
-                    if (components[i].type === 'explanation' && components[i].data.visible && components[i].data.isStep) {
-                        nextVisibleStep = components[i];
-                        break;
-                    }
-                }
-                if (!nextVisibleStep) isLastStep = true;
-            }
-
-            if (isExport) {
-                // EXPORT MODE: STRICT COMPLIANCE WITH use_guide.html
-                const wrapperClass = isStep ? `explanation-component has-step${isLastStep ? ' no-line' : ''}` : `explanation-component center`;
-
-                let badgeHtml = '';
-                if (!isStep && comp.data.badgeText) {
-                    badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
-                }
-
-                const stepNumHtml = isStep ? `<span class="num">${comp.data.stepNumber || 1}</span>` : '';
-                const titleHtml = comp.data.title ? `<h3 class="explanation-title" id="${comp.id}">${stepNumHtml}${themeSpan(comp.data.title)}</h3>` : '';
-                const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
-
-                let bulletsHtml = '';
-                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-                if (bList.length > 0) {
-                    const lis = bList.filter(b => b.trim() !== '').map(line => {
-                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
-                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                        const closeB = (t.match(/<\/b>/gi) || []).length;
-                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                        return `<li>${t}</li>`;
-                    }).join('');
-                    if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
-                }
-
-                let btnsHtml = '';
-                if (comp.data.btn1 || comp.data.btn2) {
-                    btnsHtml = '<div class="btn-wrap">';
-                    if (comp.data.btn1) {
-                        const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
-                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn1Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
-                    }
-                    if (comp.data.btn2) {
-                        const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
-                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn2Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
-                    }
-                    btnsHtml += '</div>';
-                }
-
-                html = `
-                    <div class="${wrapperClass}">
-                        ${badgeHtml}
-                        ${titleHtml}
-                        ${imgHtml}
-                        ${bulletsHtml}
-                        ${btnsHtml}
+                } else if (comp.type === 'explanation') {
+            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
+            card.innerHTML = `
+                <div style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                        <input type="checkbox" class="bind-chk" data-field="isStep" ${comp.data.isStep ? 'checked' : ''}>
+                        스텝형 화면 (번호 표시)
+                    </label>
+                    <div style="display: ${comp.data.isStep ? 'flex' : 'none'}; align-items:center; gap:6px;" class="step-num-wrap">
+                        <span style="font-size:13px;">스텝 번호:</span>
+                        <input type="text" class="bind-txt" data-field="stepNumber" value="${comp.data.stepNumber || '1'}" style="width: 60px; padding: 4px; border: 1px solid #E5E7EB; border-radius: 4px;">
                     </div>
-                `;
-            } else {
-                // PREVIEW MODE: Use flexible styles to support the user's visual expectations
-                // This prevents the "squished" number badge and allows left alignment
-                const alignStyle = comp.data.badgeAlign === 'left' ? 'text-align: left;' : 'text-align: center;';
-                
-                let badgeHtml = '';
-                if (isStep) {
-                    const numText = comp.data.stepNumber || '1';
-                    // If text is short, make it a circle, otherwise a pill
-                    const isCircle = numText.length <= 2;
-                    const style = isCircle 
-                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -40px; top: 0;` 
-                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -100px; top: 0; white-space: nowrap;`;
-                    badgeHtml = `<span style="${style}">${numText}</span>`;
-                } else if (comp.data.badgeText) {
-                    badgeHtml = `<div style="display: inline-block; padding: 4px 16px; border-radius: 20px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px;">${safeText(comp.data.badgeText)}</div>`;
-                }
+                </div>
 
-                let wrapperStyle = `position: relative; padding: 20px 0; ${alignStyle}`;
-                if (isStep) {
-                    const numText = comp.data.stepNumber || '1';
-                    const marginLeft = numText.length <= 2 ? '40px' : '100px';
-                    wrapperStyle = `position: relative; margin-left: ${marginLeft}; padding-bottom: 30px; border-left: ${isLastStep ? 'none' : '1px solid #E7E9EF'}; padding-left: 20px; text-align: left; min-height: 60px;`;
-                }
-
-                const titleHtml = comp.data.title ? `<h3 style="font-size: 18px; line-height: 26px; font-weight: 700; color: #191B1E; margin-bottom: 16px;">${badgeHtml}${themeSpan(comp.data.title)}</h3>` : badgeHtml;
-                const imgHtml = comp.data.imageUrl ? `<div style="margin-bottom: 16px; border-radius: 12px; overflow: hidden;"><img src="${comp.data.imageUrl}" style="max-width: 100%; display: block;"></div>` : '';
-
-                let bulletsHtml = '';
-                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-                if (bList.length > 0) {
-                    const lis = bList.filter(b => b.trim() !== '').map(line => {
-                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
-                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                        const closeB = (t.match(/<\/b>/gi) || []).length;
-                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                        return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; color: #343841; font-size: 16px; line-height: 24px; text-align: left;"><span style="position: absolute; left: 0; top: 9px; width: 3px; height: 3px; border-radius: 50%; background: #A3A8B6;"></span>${t}</li>`;
-                    }).join('');
-                    if(lis) bulletsHtml = `<ul style="list-style: none; padding: 0; margin: 0;">${lis}</ul>`;
-                }
-
-                let btnsHtml = '';
-                if (comp.data.btn1 || comp.data.btn2) {
-                    btnsHtml = '<div style="display: flex; gap: 8px; margin-top: 16px;">';
-                    if (comp.data.btn1) {
-                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn1)}</button>`;
-                    }
-                    if (comp.data.btn2) {
-                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn2)}</button>`;
-                    }
-                    btnsHtml += '</div>';
-                }
-
-                html = `
-                    <div style="${wrapperStyle}">
-                        ${titleHtml}
-                        ${imgHtml}
-                        ${bulletsHtml}
-                        ${btnsHtml}
+                <div class="non-step-fields" style="display: ${comp.data.isStep ? 'none' : 'block'}; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label>뱃지 텍스트 (옵션)</label>
+                        <input type="text" class="bind-txt" data-field="badgeText" placeholder="ex) TIP" value="${(comp.data.badgeText || '').replace(/"/g, '&quot;')}">
                     </div>
-                `;
-            }
-        } else if (comp.type === 'notice') {
+                </div>
+
+                <div class="form-group">
+                    <label>서브타이틀 (옵션)</label>
+                    <input type="text" class="bind-txt" data-field="subtitle" placeholder="서브타이틀을 입력하세요" value="${(comp.data.subtitle || '').replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="form-group">
+                    <label>메인문구 (테마컬러 강조: *텍스트*)</label>
+                    <input type="text" class="bind-txt" data-field="title" value="${(comp.data.title || '').replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="form-group">
+                    <label>이미지 URL (옵션)</label>
+                    <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://" value="${(comp.data.imageUrl || '').replace(/"/g, '&quot;')}">
+                </div>
+
+                <div class="form-group">
+                    <label>본문 내용 (엔터로 구분, 굵게: &lt;b&gt;텍스트&lt;/b&gt;)</label>
+                    <textarea class="bind-area" data-field="bullets" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${bList.join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                </div>
+
+                <div style="display:flex; gap:12px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>버튼 1 텍스트</label>
+                        <input type="text" class="bind-txt" data-field="btn1" value="${(comp.data.btn1 || '').replace(/"/g, '&quot;')}">
+                        <label style="margin-top:8px;">버튼 1 링크</label>
+                        <input type="text" class="bind-txt" data-field="btn1Link" value="${(comp.data.btn1Link || '').replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>버튼 2 텍스트</label>
+                        <input type="text" class="bind-txt" data-field="btn2" value="${(comp.data.btn2 || '').replace(/"/g, '&quot;')}">
+                        <label style="margin-top:8px;">버튼 2 링크</label>
+                        <input type="text" class="bind-txt" data-field="btn2Link" value="${(comp.data.btn2Link || '').replace(/"/g, '&quot;')}">
+                    </div>
+                </div>
+            `;
+} else if (comp.type === 'notice') {
 
                 card.innerHTML = `
                     <div class="form-group" style="display: none;">
@@ -1037,8 +979,8 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                     // If text is short, make it a circle, otherwise a pill
                     const isCircle = numText.length <= 2;
                     const style = isCircle 
-                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -40px; top: 0;` 
-                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -100px; top: 0; white-space: nowrap;`;
+                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -14px; top: 0;` 
+                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -14px; top: 0; white-space: nowrap;`;
                     badgeHtml = `<span style="${style}">${numText}</span>`;
                 } else if (comp.data.badgeText) {
                     badgeHtml = `<div style="display: inline-block; padding: 4px 16px; border-radius: 20px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px;">${safeText(comp.data.badgeText)}</div>`;
@@ -1127,7 +1069,7 @@ function renderPreview() {
         [componentsTab1, componentsTab2].forEach((compList, tabIndex) => {
             if (compList.length === 0) return;
             const wrap = document.createElement('div');
-            wrap.className = 'explanation-wrap';
+            wrap.className = 'explanation-wrap';\n            wrap.style.padding = '0 20px';
             if (tabIndex + 1 !== activeTabId) {
                 wrap.style.display = 'none';
             }
