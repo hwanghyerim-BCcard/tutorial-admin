@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else if (comp.type === 'title') {
-                const currentAlign = comp.data.align || 'left';
+                const currentAlign = comp.data.align || 'center';
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
                         <label style="margin: 0; padding-bottom: 4px;">텍스트 정렬 설정</label>
@@ -918,10 +918,11 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                 html = `<span style="font-size: 15px; font-weight: 500;">(영상 컴포넌트)</span>`;
             }
         } else if (comp.type === 'title') {
-            const subTitle = comp.data.subtitle ? `<p class="sub-txt">${safeText(comp.data.subtitle)}</p>` : '';
-            const mainTitle = comp.data.mainTitle ? `<h2 class="tit">${themeSpan(comp.data.mainTitle)}</h2>` : '';
+            const align = comp.data.align || 'center';
+            const subTitle = comp.data.subtitle ? `<p class="sub-txt" style="margin: 0 0 6px 0; color: var(--font-neutral-6, #6B7280); font-size: 16px; line-height: 24px;">${safeText(comp.data.subtitle)}</p>` : '';
+            const mainTitle = comp.data.mainTitle ? `<h2 class="tit" style="margin: 0; color: var(--font-neutral-2, #111827); font-size: 28px; line-height: 36px; font-weight: 700;">${themeSpan(comp.data.mainTitle)}</h2>` : '';
             html = `
-                <div class="top-tit-wrap">
+                <div class="top-tit-wrap" style="margin-top: 40px; padding: 0 20px; text-align: ${align}; box-sizing: border-box;">
                     ${subTitle}
                     ${mainTitle}
                 </div>
@@ -1143,7 +1144,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
         } else if (type === 'title') {
             base.data.subtitle = '';
             base.data.mainTitle = '';
-            base.data.align = 'left';
+            base.data.align = 'center';
         } else if (type === 'tabs') {
             base.data.tabList = [
                 { name: '', targetStep: '1' },
