@@ -1042,7 +1042,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                 <a href="javascript:void(0);" class="btn-back" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: flex-start; text-decoration: none; flex-shrink: 0; margin-right: 0; cursor: default;">
                     <img src="https://cdn.paybooc.co.kr/static/assets/images/comm/ico-back.svg" alt="뒤로가기" style="width: 24px; height: 24px;">
                 </a>
-                <h1 class="tit" style="font-size: 18px; font-weight: 700; line-height: 26px; margin: 0; color: #111827; text-align: left;">이용방법</h1>
+                <h1 class="tit" style="font-family: 'Pretendard', sans-serif; font-size: 18px; font-weight: 700; line-height: 26px; letter-spacing: 0px; margin: 0; padding: 0; color: #111827; text-align: left;">이용방법</h1>
             </header>
         `;
         if (componentsTab1.length === 0 && componentsTab2.length === 0) {
@@ -1295,7 +1295,7 @@ function generateExportHtml(mode = 'view') {
         <a href="javascript:void(0);" class="btn-back" onclick="onBackHistory();" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: flex-start; text-decoration: none; flex-shrink: 0; margin-right: 0;">
             <img src="https://cdn.paybooc.co.kr/static/assets/images/comm/ico-back.svg" alt="뒤로가기" style="width: 24px; height: 24px;">
         </a>
-        <h1 class="tit" style="font-size: 18px; font-weight: 700; line-height: 26px; margin: 0; color: #111827; text-align: left;">이용방법</h1>
+        <h1 class="tit" style="font-family: 'Pretendard', sans-serif; font-size: 18px; font-weight: 700; line-height: 26px; letter-spacing: 0px; margin: 0; padding: 0; color: #111827; text-align: left;">이용방법</h1>
     </header>
 
     <div class="use-guide-wrap">
