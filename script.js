@@ -999,117 +999,75 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                 if (!nextVisibleStep) isLastStep = true;
             }
 
-            if (isExport) {
-                // EXPORT MODE: STRICT COMPLIANCE WITH use_guide.html
-                const wrapperClass = isStep ? `explanation-component has-step${isLastStep ? ' no-line' : ''}` : `explanation-component center`;
+            // Unified HTML generation based on shopping_tutorial.html structure
+            const alignStyle = comp.data.badgeAlign === 'left' ? 'text-align: left;' : 'text-align: center;';
+            const isStandalone = !isStep;
+            const standaloneClass = isStandalone ? ' standalone' : '';
+            
+            let indicatorHtml = '';
+            if (isStep) {
+                indicatorHtml = `
+                    <div class="explanation-indicator">
+                        <div class="step-circle">${comp.data.stepNumber || 1}</div>
+                        <div class="step-line" style="${isLastStep ? 'display: none;' : ''}"></div>
+                    </div>
+                `;
+            }
 
-                let badgeHtml = '';
-                if (!isStep && comp.data.badgeText) {
-                    badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
+            let badgeHtml = '';
+            if (isStandalone && comp.data.badgeText) {
+                badgeHtml = `
+                    <div style="display: flex; justify-content: ${comp.data.badgeAlign === 'left' ? 'flex-start' : 'center'}; margin-top: 10px; margin-bottom: 16px;">
+                        <div style="background-color: var(--theme-color); color: #FFFFFF; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
+                            ${safeText(comp.data.badgeText)}
+                        </div>
+                    </div>
+                `;
+            }
+
+            const titleHtml = comp.data.title ? `<h3 class="explanation-title" style="margin-bottom: 16px; word-break: keep-all; overflow-wrap: anywhere;">${themeSpan(comp.data.title)}</h3>` : '';
+            const imgHtml = comp.data.imageUrl ? `<img class="explanation-image" src="${comp.data.imageUrl}" alt="">` : '';
+
+            let bulletsHtml = '';
+            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
+            if (bList.length > 0) {
+                const lis = bList.filter(b => b.trim() !== '').map(line => {
+                    let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
+                    const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
+                    const closeB = (t.match(/<\/b>/gi) || []).length;
+                    if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                    return `<li>${t}</li>`;
+                }).join('');
+                if(lis) bulletsHtml = `<ul class="explanation-bullets" style="display: block;">${lis}</ul>`;
+            }
+
+            let btnsHtml = '';
+            if (comp.data.btn1 || comp.data.btn2) {
+                btnsHtml = '<div class="explanation-buttons">';
+                if (comp.data.btn1) {
+                    const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
+                    btnsHtml += `<button type="button" class="explanation-btn" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
                 }
-
-                const stepNumHtml = isStep ? `<span class="num">${comp.data.stepNumber || 1}</span>` : '';
-                const titleHtml = comp.data.title ? `<h3 class="explanation-title" id="${comp.id}">${stepNumHtml}${themeSpan(comp.data.title)}</h3>` : '';
-                const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
-
-                let bulletsHtml = '';
-                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-                if (bList.length > 0) {
-                    const lis = bList.filter(b => b.trim() !== '').map(line => {
-                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
-                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                        const closeB = (t.match(/<\/b>/gi) || []).length;
-                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                        return `<li>${t}</li>`;
-                    }).join('');
-                    if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
+                if (comp.data.btn2) {
+                    const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
+                    btnsHtml += `<button type="button" class="explanation-btn" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
                 }
+                btnsHtml += '</div>';
+            }
 
-                let btnsHtml = '';
-                if (comp.data.btn1 || comp.data.btn2) {
-                    btnsHtml = '<div class="btn-wrap">';
-                    if (comp.data.btn1) {
-                        const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
-                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn1Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
-                    }
-                    if (comp.data.btn2) {
-                        const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
-                        btnsHtml += `<button type="button" class="btn-outline full${comp.data.btn2Arrow ? ' has-arr' : ''}" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
-                    }
-                    btnsHtml += '</div>';
-                }
-
-                html = `
-                    <div class="${wrapperClass}">
+            html = `
+                <div class="explanation-component${standaloneClass}" style="position: relative;">
+                    <div id="comp_${comp.id}" style="position: absolute; top: -50px; visibility: hidden; pointer-events: none;"></div>
+                    ${indicatorHtml}
+                    <div class="explanation-content" style="width: 100%; ${alignStyle}">
                         ${badgeHtml}
                         ${titleHtml}
                         ${imgHtml}
                         ${bulletsHtml}
                         ${btnsHtml}
                     </div>
-                `;
-            } else {
-                // PREVIEW MODE: Use flexible styles to support the user's visual expectations
-                // This prevents the "squished" number badge and allows left alignment
-                const alignStyle = comp.data.badgeAlign === 'left' ? 'text-align: left;' : 'text-align: center;';
-                
-                let badgeHtml = '';
-                if (isStep) {
-                    const numText = comp.data.stepNumber || '1';
-                    // If text is short, make it a circle, otherwise a pill
-                    const isCircle = numText.length <= 2;
-                    const style = isCircle 
-                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -40px; top: 0;` 
-                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -100px; top: 0; white-space: nowrap;`;
-                    badgeHtml = `<span style="${style}">${numText}</span>`;
-                } else if (comp.data.badgeText) {
-                    badgeHtml = `<div style="display: inline-block; padding: 4px 16px; border-radius: 20px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px;">${safeText(comp.data.badgeText)}</div>`;
-                }
-
-                let wrapperStyle = `position: relative; padding: 20px 0; ${alignStyle}`;
-                if (isStep) {
-                    const numText = comp.data.stepNumber || '1';
-                    const marginLeft = numText.length <= 2 ? '40px' : '100px';
-                    wrapperStyle = `position: relative; margin-left: ${marginLeft}; padding-bottom: 30px; border-left: ${isLastStep ? 'none' : '1px solid #E7E9EF'}; padding-left: 20px; text-align: left; min-height: 60px;`;
-                }
-
-                const titleHtml = comp.data.title ? `<h3 style="font-size: 18px; line-height: 26px; font-weight: 700; color: #191B1E; margin-bottom: 16px;">${badgeHtml}${themeSpan(comp.data.title)}</h3>` : badgeHtml;
-                const imgHtml = comp.data.imageUrl ? `<div style="margin-bottom: 16px; border-radius: 12px; overflow: hidden;"><img src="${comp.data.imageUrl}" style="max-width: 100%; display: block;"></div>` : '';
-
-                let bulletsHtml = '';
-                const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-                if (bList.length > 0) {
-                    const lis = bList.filter(b => b.trim() !== '').map(line => {
-                        let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
-                        const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                        const closeB = (t.match(/<\/b>/gi) || []).length;
-                        if (openB > closeB) t += '</b>'.repeat(openB - closeB);
-                        return `<li style="position: relative; padding-left: 12px; margin-bottom: 8px; color: #343841; font-size: 16px; line-height: 24px; text-align: left;"><span style="position: absolute; left: 0; top: 9px; width: 3px; height: 3px; border-radius: 50%; background: #A3A8B6;"></span>${t}</li>`;
-                    }).join('');
-                    if(lis) bulletsHtml = `<ul style="list-style: none; padding: 0; margin: 0;">${lis}</ul>`;
-                }
-
-                let btnsHtml = '';
-                if (comp.data.btn1 || comp.data.btn2) {
-                    btnsHtml = '<div style="display: flex; gap: 8px; margin-top: 16px;">';
-                    if (comp.data.btn1) {
-                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn1)}</button>`;
-                    }
-                    if (comp.data.btn2) {
-                        btnsHtml += `<button style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #E7E9EF; background: #fff; font-size: 14px; font-weight: 600;">${safeText(comp.data.btn2)}</button>`;
-                    }
-                    btnsHtml += '</div>';
-                }
-
-                html = `
-                    <div style="${wrapperStyle}">
-                        ${titleHtml}
-                        ${imgHtml}
-                        ${bulletsHtml}
-                        ${btnsHtml}
-                    </div>
-                `;
-            }
+                </div>
+            `;
         } else if (comp.type === 'notice') {
 
             const showBg = comp.data.useBg !== false;
