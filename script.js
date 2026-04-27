@@ -45,17 +45,39 @@ const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
 
 document.addEventListener('DOMContentLoaded', () => {
 
-        const API_BASE = '/api/sync';
+    const API_BASE = '/api/sync';
 
     const StorageDB = {
         init() {
+            try {
+                // Rescue any old data from tutorialAppDB or similar just in case
+                const keys = Object.keys(localStorage);
+                let foundOldData = false;
+                for (let k of keys) {
+                    if (k === 'workspace_components') continue;
+                    const val = localStorage.getItem(k);
+                    if (val && typeof val === 'string' && val.startsWith('[') && val.includes('"id"') && val.includes('"themeColor"')) {
+                        localStorage.setItem('workspace_components', val);
+                        console.log('Restored from old key:', k);
+                        foundOldData = true;
+                        break;
+                    }
+                }
+                
+                // If STILL completely empty, load the db_dump.json backup as a last resort
+                const currentData = localStorage.getItem('workspace_components');
+                if (!currentData || currentData === '[]') {
+                    const fallbackData = [{"id":"comp_p64h9hwn0","title":"쇼핑적립","date":"2026-04-13T00:30:55.482Z","themeColor":"#52C498","componentsTab1":[{"id":"comp_lpendiad3","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_ut4y0d0du","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_rvpjns62n","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"},{"id":"comp_11zlsbr3r","title":"내 화면 (09:31)","date":"2026-04-13T00:31:07.562Z","themeColor":"#27a8f5","componentsTab1":[{"id":"comp_h9ijdd8m9","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_bb1e494w5","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_oke2wa46b","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"}];
+                    localStorage.setItem('workspace_components', JSON.stringify(fallbackData));
+                    console.log('Restored from fallback db_dump.json');
+                }
+            } catch(e) {}
             return Promise.resolve();
         },
         load() {
             try {
-                // Determine if we are running locally or on Vercel
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync' : API_BASE;
+                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_components' : API_BASE + '?key=workspace_components';
                 
                 return fetch(apiUrl)
                     .then(res => {
@@ -74,7 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
             } catch (e) {
                 console.error('StorageDB load error:', e);
-                return Promise.resolve([]);
+                let localData = localStorage.getItem('workspace_components');
+                let parsed = localData ? JSON.parse(localData) : [];
+                return Promise.resolve(Array.isArray(parsed) ? parsed : []);
             }
         },
         save(data) {
@@ -84,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Save to API
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync' : API_BASE;
+                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_components' : API_BASE + '?key=workspace_components';
 
                 return fetch(apiUrl, {
                     method: 'POST',
@@ -94,11 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(res => res.json())
                 .catch(e => {
                     console.error('StorageDB API save error:', e);
-                    return { success: true }; // Don't crash if offline
+                    return { success: true };
                 });
             } catch (e) {
                 console.error('StorageDB save error:', e);
-                return Promise.resolve();
+                return Promise.resolve({ success: true });
             }
         }
     };
@@ -106,18 +130,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const StorageTrash = {
         load() {
             try {
-                const data = localStorage.getItem('workspace_trash');
-                return Promise.resolve(data ? JSON.parse(data) : []);
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_trash' : API_BASE + '?key=workspace_trash';
+                
+                return fetch(apiUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error('API Sync Failed');
+                        return res.json();
+                    })
+                    .then(data => {
+                        return Array.isArray(data) ? data : [];
+                    })
+                    .catch(e => {
+                        let localData = localStorage.getItem('workspace_trash');
+                        let parsed = localData ? JSON.parse(localData) : [];
+                        return Array.isArray(parsed) ? parsed : [];
+                    });
             } catch (e) {
-                return Promise.resolve([]);
+                let localData = localStorage.getItem('workspace_trash');
+                let parsed = localData ? JSON.parse(localData) : [];
+                return Promise.resolve(Array.isArray(parsed) ? parsed : []);
             }
         },
         save(data) {
             try {
                 localStorage.setItem('workspace_trash', JSON.stringify(data || []));
-                return Promise.resolve({ success: true });
+
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_trash' : API_BASE + '?key=workspace_trash';
+
+                return fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data || [])
+                })
+                .then(res => res.json())
+                .catch(e => {
+                    return { success: true };
+                });
             } catch (e) {
-                return Promise.resolve();
+                return Promise.resolve({ success: true });
             }
         }
     };
@@ -420,13 +472,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="non-step-fields" style="display: ${comp.data.isStep ? 'none' : 'block'}; margin-bottom: 12px;">
                     <div class="form-group">
                         <label>뱃지 텍스트 (옵션)</label>
-                        <input type="text" class="bind-txt" data-field="badgeText" placeholder="ex) TIP" value="${(comp.data.badgeText || '').replace(/"/g, '&quot;')}">
+                        <input type="text" class="bind-txt" data-field="badgeText" placeholder="예: 알아두세요!" value="${(comp.data.badgeText || '').replace(/"/g, '&quot;')}">
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>서브타이틀 (옵션)</label>
-                    <input type="text" class="bind-txt" data-field="subtitle" placeholder="서브타이틀을 입력하세요" value="${(comp.data.subtitle || '').replace(/"/g, '&quot;')}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                        <label style="margin: 0; padding-bottom: 4px;">뱃지 정렬</label>
+                        <div class="segmented-control badge-align-control" style="background: #FFFFFF; border: 1px solid #E5E7EB; padding: 2px;">
+                            <button class="seg-btn ${comp.data.badgeAlign !== 'left' ? 'active' : ''}" data-val="center" style="font-size: 13px; padding: 6px 12px;">중앙</button>
+                            <button class="seg-btn ${comp.data.badgeAlign === 'left' ? 'active' : ''}" data-val="left" style="font-size: 13px; padding: 6px 12px;">좌측</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -435,27 +489,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="form-group">
-                    <label>이미지 URL (옵션)</label>
-                    <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://" value="${(comp.data.imageUrl || '').replace(/"/g, '&quot;')}">
+                    <label>이미지 주소 입력 또는 파일 선택</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://... 이미지 URL 주소 입력" style="width: 100%;">
+                        <div class="file-upload-wrapper">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <span class="exp-file-upload-text" style="font-size: 13px; color: #6B7280; font-weight: 500;">내 컴퓨터에서 이미지 업로드</span>
+                            <input type="file" class="exp-image-file-input" accept="image/png,image/jpeg,image/gif,image/webp">
+                        </div>
+                        <p style="font-size: 11px; color: #059669; margin: 4px 0 0 0; display: none;" class="exp-file-warning-msg">✅ 업로드된 파일은 HTML 추출 시 내부에 자동 변환 병합(Base64)되어 단독 파일로 동작하게 됩니다.</p>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>본문 내용 (엔터로 구분, 굵게: &lt;b&gt;텍스트&lt;/b&gt;)</label>
-                    <textarea class="bind-area" data-field="bullets" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${bList.join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    <textarea class="bind-area" data-field="bullets" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${bList.join('\\n').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                 </div>
 
                 <div style="display:flex; gap:12px;">
                     <div class="form-group" style="flex:1;">
                         <label>버튼 1 텍스트</label>
                         <input type="text" class="bind-txt" data-field="btn1" value="${(comp.data.btn1 || '').replace(/"/g, '&quot;')}">
-                        <label style="margin-top:8px;">버튼 1 링크</label>
-                        <input type="text" class="bind-txt" data-field="btn1Link" value="${(comp.data.btn1Link || '').replace(/"/g, '&quot;')}">
                     </div>
+                    <div class="form-group" style="flex:2;">
+                        <label>버튼 1 링크</label>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="text" class="bind-txt" data-field="btn1Link" placeholder="https://" value="${(comp.data.btn1Link || '').replace(/"/g, '&quot;')}" style="flex:1;">
+                            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;">
+                                <input type="checkbox" class="bind-chk" data-field="btn1Arrow" ${comp.data.btn1Arrow ? 'checked' : ''}>
+                                화살표
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:12px;">
                     <div class="form-group" style="flex:1;">
                         <label>버튼 2 텍스트</label>
                         <input type="text" class="bind-txt" data-field="btn2" value="${(comp.data.btn2 || '').replace(/"/g, '&quot;')}">
-                        <label style="margin-top:8px;">버튼 2 링크</label>
-                        <input type="text" class="bind-txt" data-field="btn2Link" value="${(comp.data.btn2Link || '').replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="form-group" style="flex:2;">
+                        <label>버튼 2 링크</label>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="text" class="bind-txt" data-field="btn2Link" placeholder="https://" value="${(comp.data.btn2Link || '').replace(/"/g, '&quot;')}" style="flex:1;">
+                            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;">
+                                <input type="checkbox" class="bind-chk" data-field="btn2Arrow" ${comp.data.btn2Arrow ? 'checked' : ''}>
+                                화살표
+                            </label>
+                        </div>
                     </div>
                 </div>
             `;
@@ -979,8 +1059,8 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                     // If text is short, make it a circle, otherwise a pill
                     const isCircle = numText.length <= 2;
                     const style = isCircle 
-                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -14px; top: 0;` 
-                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -14px; top: 0; white-space: nowrap;`;
+                        ? `display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -40px; top: 0;` 
+                        : `display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; border-radius: 14px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: bold; position: absolute; left: -100px; top: 0; white-space: nowrap;`;
                     badgeHtml = `<span style="${style}">${numText}</span>`;
                 } else if (comp.data.badgeText) {
                     badgeHtml = `<div style="display: inline-block; padding: 4px 16px; border-radius: 20px; background-color: var(--theme-color, #27a8f5); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 16px;">${safeText(comp.data.badgeText)}</div>`;
@@ -1069,7 +1149,7 @@ function renderPreview() {
         [componentsTab1, componentsTab2].forEach((compList, tabIndex) => {
             if (compList.length === 0) return;
             const wrap = document.createElement('div');
-            wrap.className = 'explanation-wrap';\n            wrap.style.padding = '0 20px';
+            wrap.className = 'explanation-wrap';
             if (tabIndex + 1 !== activeTabId) {
                 wrap.style.display = 'none';
             }
