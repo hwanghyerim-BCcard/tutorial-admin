@@ -900,7 +900,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
     <div id="comp_${comp.id}" style="position: absolute; top: -50px; visibility: hidden; pointer-events: none;"></div>
     <video src="${comp.data.url}" class="playable-video" style="width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer;" autoplay loop muted playsinline></video>
     <div class="video-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background-color: rgba(0,0,0,0.1); display: none; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; z-index: 5;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.8;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <img src="https://cdn.paybooc.co.kr/static/assets/images/shopping/ico-play.png" alt="Play" style="width: 64px; height: 64px;">
     </div>
     <div style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 16px 12px 16px; pointer-events: none; z-index: 10;">
         <button class="mute-toggle-btn" style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(25,27,30,0.3); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #FFFFFF; padding: 0; pointer-events: auto; backdrop-filter: blur(4px);">
