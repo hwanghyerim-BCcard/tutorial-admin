@@ -1046,7 +1046,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
     }
 
 
-    function deleteComponent(comp.id) {
+    function deleteComponent(index) {
         if (!confirm('이 컴포넌트를 삭제하시겠습니까?')) return;
         
         let foundIndex = -1;
