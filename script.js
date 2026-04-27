@@ -919,10 +919,16 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
             }
         } else if (comp.type === 'title') {
             const align = comp.data.align || 'center';
-            const subTitle = comp.data.subtitle ? `<p class="sub-txt" style="margin: 0 0 6px 0; color: var(--font-neutral-6, #6B7280); font-size: 16px; line-height: 24px;">${safeText(comp.data.subtitle)}</p>` : '';
-            const mainTitle = comp.data.mainTitle ? `<h2 class="tit" style="margin: 0; color: var(--font-neutral-2, #111827); font-size: 28px; line-height: 36px; font-weight: 700;">${themeSpan(comp.data.mainTitle)}</h2>` : '';
+            const alignItems = align === 'left' ? 'flex-start' : 'center';
+            const subTitle = comp.data.subtitle ? `<p class="sub-txt" style="margin: 0 0 6px 0; padding: 0; text-indent: 0; color: var(--font-neutral-6, #6B7280); font-size: 16px; line-height: 24px;">${safeText(comp.data.subtitle)}</p>` : '';
+            
+            let mTitleText = safeText(comp.data.mainTitle);
+            mTitleText = mTitleText.replace(/\*(.*?)\*/g, `<span style="color: ${currentThemeColor};">$1</span>`);
+            
+            const mainTitle = comp.data.mainTitle ? `<h2 class="tit" style="margin: 0; padding: 0; text-indent: 0; color: var(--font-neutral-2, #111827); font-size: 28px; line-height: 36px; font-weight: 700; word-break: keep-all;">${mTitleText}</h2>` : '';
+            
             html = `
-                <div class="top-tit-wrap" style="margin-top: 40px; padding: 0 20px; text-align: ${align}; box-sizing: border-box;">
+                <div class="top-tit-wrap" style="margin-top: 40px; padding: 0 20px; display: flex; flex-direction: column; align-items: ${alignItems}; text-align: ${align}; box-sizing: border-box; width: 100%;">
                     ${subTitle}
                     ${mainTitle}
                 </div>
