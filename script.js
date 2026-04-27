@@ -972,11 +972,19 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
 
             let badgeHtml = '';
             if (comp.data.badgeText) {
-                badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
+                badgeHtml = `<div class="badge" style="padding: 4px 16px; margin: 10px auto 16px; border-radius: 9999px; background-color: ${currentThemeColor}; color: #FFFFFF; font-size: 14px; font-weight: 700; line-height: 20px; text-align: center; display: inline-block;">${safeText(comp.data.badgeText)}</div>`;
             }
+            
+            const formatExplanationTitle = (txt) => {
+                if(!txt) return '';
+                let s = safeText(txt);
+                s = s.replace(/&lt;b&gt;/gi, '<strong>').replace(/&lt;\/b&gt;/gi, '</strong>');
+                s = s.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+                return s;
+            };
 
-            const titleHtml = comp.data.title ? `<h3 class="explanation-title" ${isExport ? `id="${comp.id}"` : ''}>${themeSpan(comp.data.title)}</h3>` : '';
-            const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
+            const titleHtml = comp.data.title ? `<h3 class="explanation-title" style="margin: 0 0 16px 0; padding: 0; text-align: center; color: var(--font-neutral-2, #111827); font-size: 20px; line-height: 28px; font-weight: 400; word-break: keep-all;" ${isExport ? `id="${comp.id}"` : ''}>${formatExplanationTitle(comp.data.title)}</h3>` : '';
+            const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap" style="width: 100%; margin-bottom: 16px; display: flex; justify-content: center;"><img src="${comp.data.imageUrl}" alt="" style="width: 100%; height: auto; display: block; border-radius: 12px;"></div>` : '';
 
             let bulletsHtml = '';
             const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
@@ -993,7 +1001,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
             }
 
             html = `
-                <div class="${wrapperClass}">
+                <div class="${wrapperClass}" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 20px; box-sizing: border-box;">
                     ${badgeHtml}
                     ${titleHtml}
                     ${imgHtml}
