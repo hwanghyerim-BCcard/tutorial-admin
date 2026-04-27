@@ -896,16 +896,23 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
         if (comp.type === 'video') {
             if (comp.data.url) {
                 html = `
-                    <div class="ad-mov-wrap">
-                        <div class="ad-video">
-                            <video id="onBoarding-${index}" src="${comp.data.url}" class="playable-video" style="width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer;" autoplay loop muted playsinline></video>
-                            <div class="util-wrap">
-                                <button type="button" class="sound on">소리 재생 중. 눌러서 음소거</button>
-                                <button type="button" class="sound off">음소거 상태. 눌러서 해제</button>
-                            </div>
-                            <button type="button" class="btn-play">멈춤 상태. 눌러서 재생</button>
-                        </div>
-                    </div>
+<div style="width: 100%; aspect-ratio: 16 / 9; background-color: rgb(229, 231, 235); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+    <div id="comp_${comp.id}" style="position: absolute; top: -50px; visibility: hidden; pointer-events: none;"></div>
+    <video src="${comp.data.url}" class="playable-video" style="width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer;" autoplay loop muted playsinline></video>
+    <div class="video-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background-color: rgba(0,0,0,0.1); display: none; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; z-index: 5;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.8;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+    </div>
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 16px 12px 16px; pointer-events: none; z-index: 10;">
+        <button class="mute-toggle-btn" style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(25,27,30,0.3); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #FFFFFF; padding: 0; pointer-events: auto; backdrop-filter: blur(4px);">
+            <svg class="icon-mute" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path>
+            </svg>
+            <svg class="icon-unmute" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
+            </svg>
+        </button>
+    </div>
+</div>
                 `;
             } else {
                 html = `<span style="font-size: 15px; font-weight: 500;">(영상 컴포넌트)</span>`;
@@ -1298,59 +1305,51 @@ function generateExportHtml(mode = 'view') {
         });
 
         function setVideoControler() {
-            const videoWrap = document.querySelector('.ad-video');
-            if(!videoWrap) return;
-
-            const video = document.getElementById('onBoarding');
-            const btnSoundOn = videoWrap.querySelector('.sound.on');
-            const btnSoundOff = videoWrap.querySelector('.sound.off');
-            const btnPlay = videoWrap.querySelector('.btn-play');
-            const btnClose = videoWrap.querySelector('.btn-close');
-            if(!video) return;
-
-            const pausedAndShowPlayBtn = () => {
-                video.pause();
-                if (btnPlay) btnPlay.style.display = 'block';
-                videoWrap.classList.add('paused');
-            };
-
-            video.addEventListener('pause', pausedAndShowPlayBtn);
-
-            video.addEventListener('click', () => {
-                if (!video.paused) {
-                    pausedAndShowPlayBtn();
+            const videos = document.querySelectorAll('.playable-video');
+            
+            videos.forEach(video => {
+                const container = video.parentElement;
+                const overlay = container.querySelector('.video-overlay');
+                const muteBtn = container.querySelector('.mute-toggle-btn');
+                
+                if (overlay) {
+                    const pauseVideo = () => {
+                        video.pause();
+                        overlay.style.display = 'flex';
+                    };
+                    
+                    video.addEventListener('pause', pauseVideo);
+                    
+                    video.addEventListener('click', () => {
+                        if (!video.paused) {
+                            pauseVideo();
+                        }
+                    });
+                    
+                    overlay.addEventListener('click', () => {
+                        video.play();
+                        overlay.style.display = 'none';
+                    });
+                }
+                
+                if (muteBtn) {
+                    const iconMute = muteBtn.querySelector('.icon-mute');
+                    const iconUnmute = muteBtn.querySelector('.icon-unmute');
+                    
+                    muteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // prevent clicking through to the video container
+                        if (video.muted) {
+                            video.muted = false;
+                            if(iconMute) iconMute.style.display = 'none';
+                            if(iconUnmute) iconUnmute.style.display = 'block';
+                        } else {
+                            video.muted = true;
+                            if(iconMute) iconMute.style.display = 'block';
+                            if(iconUnmute) iconUnmute.style.display = 'none';
+                        }
+                    });
                 }
             });
-
-            if (btnPlay) {
-                btnPlay.addEventListener('click', () => {
-                    video.play();
-                    btnPlay.style.display = 'none';
-                    videoWrap.classList.remove('paused');
-                });
-            }
-
-            if (btnSoundOn) {
-                btnSoundOn.addEventListener('click', function () {
-                    video.muted = true;
-                    this.style.display = 'none';
-                    if (btnSoundOff) btnSoundOff.style.display = 'block';
-                });
-            }
-
-            if (btnSoundOff) {
-                btnSoundOff.addEventListener('click', function () {
-                    video.muted = false;
-                    this.style.display = 'none';
-                    if (btnSoundOn) btnSoundOn.style.display = 'block';
-                });
-            }
-
-            if (btnClose) {
-                btnClose.addEventListener('click', () => {
-                    videoWrap.remove();
-                });
-            }
         }
     </script>
 </body>
