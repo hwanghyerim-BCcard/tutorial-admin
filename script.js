@@ -41,7 +41,6 @@ window.switchPreviewTab = function(tabNum, btn) {
         }
     }
 };
-const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -49,131 +48,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const StorageDB = {
         init() {
-            try {
-                // Rescue any old data from tutorialAppDB or similar just in case
-                const keys = Object.keys(localStorage);
-                let foundOldData = false;
-                for (let k of keys) {
-                    if (k === 'workspace_components') continue;
-                    const val = localStorage.getItem(k);
-                    if (val && typeof val === 'string' && val.startsWith('[') && val.includes('"id"') && val.includes('"themeColor"')) {
-                        localStorage.setItem('workspace_components', val);
-                        console.log('Restored from old key:', k);
-                        foundOldData = true;
-                        break;
-                    }
-                }
-                
-                // If STILL completely empty, load the db_dump.json backup as a last resort
-                const currentData = localStorage.getItem('workspace_components');
-                if (!currentData || currentData === '[]') {
-                    const fallbackData = [{"id":"comp_p64h9hwn0","title":"쇼핑적립","date":"2026-04-13T00:30:55.482Z","themeColor":"#52C498","componentsTab1":[{"id":"comp_lpendiad3","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_ut4y0d0du","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_rvpjns62n","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"},{"id":"comp_11zlsbr3r","title":"내 화면 (09:31)","date":"2026-04-13T00:31:07.562Z","themeColor":"#27a8f5","componentsTab1":[{"id":"comp_h9ijdd8m9","type":"video","data":{"visible":true,"url":"https://tutorial-admin.vercel.app/video/sample1.mp4 ","moreLink":""}},{"id":"comp_bb1e494w5","type":"title","data":{"visible":true,"subtitle":"서브타이틀","mainTitle":"메인타이틀","align":"left"}},{"id":"comp_oke2wa46b","type":"explanation","data":{"visible":true,"isStep":true,"stepNumber":"1","badgeText":"","badgeAlign":"center","titleWeight":"bold","subtitle":"","title":"메인문구","imageUrl":"","bulletList":[""],"btn1":"","btn1Link":"","btn1Arrow":false,"btn2":"","btn2Link":"","btn2Arrow":false}}],"componentsTab2":[],"tab1Name":"이용 가이드","tab2Name":"유의사항"}];
-                    localStorage.setItem('workspace_components', JSON.stringify(fallbackData));
-                    console.log('Restored from fallback db_dump.json');
-                }
-            } catch(e) {}
             return Promise.resolve();
         },
         load() {
-            try {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_components' : API_BASE + '?key=workspace_components';
-                
-                return fetch(apiUrl)
-                    .then(res => {
-                        if (!res.ok) throw new Error('API Sync Failed');
-                        return res.json();
-                    })
-                    .then(data => {
-                        return Array.isArray(data) ? data : [];
-                    })
-                    .catch(e => {
-                        console.error('StorageDB API load error:', e);
-                        // Fallback to local storage if API fails
-                        let localData = localStorage.getItem('workspace_components');
-                        let parsed = localData ? JSON.parse(localData) : [];
-                        return Array.isArray(parsed) ? parsed : [];
-                    });
-            } catch (e) {
-                console.error('StorageDB load error:', e);
-                let localData = localStorage.getItem('workspace_components');
-                let parsed = localData ? JSON.parse(localData) : [];
-                return Promise.resolve(Array.isArray(parsed) ? parsed : []);
-            }
+            return fetch(API_BASE + '?key=workspace_components', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => {
+                    if(!res.ok) throw new Error("API not connected");
+                    return res.json();
+                })
+                .catch(err => { 
+                    console.error('Sync Error', err); 
+                    return []; 
+                });
         },
         save(data) {
-            try {
-                // Save to localStorage as a backup
-                localStorage.setItem('workspace_components', JSON.stringify(data || []));
-
-                // Save to API
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_components' : API_BASE + '?key=workspace_components';
-
-                return fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data || [])
-                })
-                .then(res => res.json())
-                .catch(e => {
-                    console.error('StorageDB API save error:', e);
-                    return { success: true };
-                });
-            } catch (e) {
-                console.error('StorageDB save error:', e);
-                return Promise.resolve({ success: true });
-            }
+            return fetch(API_BASE + '?key=workspace_components', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => { console.error('Sync Error', err); return Promise.resolve(); });
         }
     };
 
     const StorageTrash = {
         load() {
-            try {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_trash' : API_BASE + '?key=workspace_trash';
-                
-                return fetch(apiUrl)
-                    .then(res => {
-                        if (!res.ok) throw new Error('API Sync Failed');
-                        return res.json();
-                    })
-                    .then(data => {
-                        return Array.isArray(data) ? data : [];
-                    })
-                    .catch(e => {
-                        let localData = localStorage.getItem('workspace_trash');
-                        let parsed = localData ? JSON.parse(localData) : [];
-                        return Array.isArray(parsed) ? parsed : [];
-                    });
-            } catch (e) {
-                let localData = localStorage.getItem('workspace_trash');
-                let parsed = localData ? JSON.parse(localData) : [];
-                return Promise.resolve(Array.isArray(parsed) ? parsed : []);
-            }
+            return fetch(API_BASE + '?key=workspace_trash', {
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => res.ok ? res.json() : [])
+                .catch(err => []);
         },
         save(data) {
-            try {
-                localStorage.setItem('workspace_trash', JSON.stringify(data || []));
-
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-                const apiUrl = isLocal ? 'https://tutorial-admin.vercel.app/api/sync?key=workspace_trash' : API_BASE + '?key=workspace_trash';
-
-                return fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data || [])
-                })
-                .then(res => res.json())
-                .catch(e => {
-                    return { success: true };
-                });
-            } catch (e) {
-                return Promise.resolve({ success: true });
-            }
+            return fetch(API_BASE + '?key=workspace_trash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data || [])
+            }).then(res => res.json()).catch(err => Promise.resolve());
         }
     };
 
+    function executeLocalMigration() {
+        // Only run once if local data exists and needs to go to cloud
+    }
+
+    function dataURItoBlobUrl(dataURI) {
+        try {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            const blob = new Blob([ab], {type: mimeString});
+            return URL.createObjectURL(blob);
+        } catch(e) {
+            return '';
+        }
+    }
+
+    // --- State Management ---
+    const generateId = () => 'comp_' + Math.random().toString(36).substr(2, 9);
     let componentsTab1 = [];
     let componentsTab2 = [];
     let activeTabId = 1;
@@ -454,93 +391,136 @@ document.addEventListener('DOMContentLoaded', () => {
                         <textarea class="bind-area" data-field="mainTitle" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;"></textarea>
                     </div>
                 `;
-    
-                } else if (comp.type === 'explanation') {
-            const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
-            card.innerHTML = `
-                <div style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
-                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
-                        <input type="checkbox" class="bind-chk" data-field="isStep" ${comp.data.isStep ? 'checked' : ''}>
-                        스텝형 화면 (번호 표시)
-                    </label>
-                    <div style="display: ${comp.data.isStep ? 'flex' : 'none'}; align-items:center; gap:6px;" class="step-num-wrap">
-                        <span style="font-size:13px;">스텝 번호:</span>
-                        <input type="text" class="bind-txt" data-field="stepNumber" value="${comp.data.stepNumber || '1'}" style="width: 60px; padding: 4px; border: 1px solid #E5E7EB; border-radius: 4px;">
-                    </div>
-                </div>
-
-                <div class="non-step-fields" style="display: ${comp.data.isStep ? 'none' : 'block'}; margin-bottom: 12px;">
-                    <div class="form-group">
+            } else if (comp.type === 'explanation') {
+                card.innerHTML = `
+                    <div class="form-group badge-settings-container">
                         <label>뱃지 텍스트 (옵션)</label>
-                        <input type="text" class="bind-txt" data-field="badgeText" placeholder="예: 알아두세요!" value="${(comp.data.badgeText || '').replace(/"/g, '&quot;')}">
+                        <input type="text" class="bind-txt" data-field="badgeText" placeholder="예: 첫번째 방법">
                     </div>
+                    <div class="form-group">
+                        <label>타이틀 (옵션)</label>
+                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요. (엔터로 줄바꿈, *태그로 강조 표기 가능)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                            <span>이미지 (옵션)</span>
+                        </label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div class="input-with-actions" style="display: flex; gap: 8px;">
+                                <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://..." style="flex: 1;">
+                            </div>
+                            <div class="file-upload-wrapper exp-file-upload-wrapper">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                <span class="exp-file-upload-text" style="font-size: 13px; color: #6B7280; font-weight: 500;">내 컴퓨터에서 이미지 업로드 (.png, .jpg)</span>
+                                <input type="file" class="exp-image-file-input" accept="image/png,image/jpeg,image/gif,image/webp">
+                            </div>
+                            <p style="font-size: 11px; color: #059669; margin: 4px 0 0 0; display: none;" class="exp-file-warning-msg">✅ 첨부된 이미지는 HTML 추출 시 내부에 코드 형태로 영구 병합됩니다.</p>
+                        </div>
+                    </div>
+                    <div class="form-group bullet-list-group">
+                        <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span>설명 항목</span>
+                            <button class="action-btn add-bullet-btn" style="width: auto; padding: 4px 10px; font-size: 12px; height: auto; white-space: nowrap; flex-shrink: 0;" title="항목 추가">+ 추가</button>
+                        </label>
+                        <div class="bullet-inputs-container" style="display: flex; flex-direction: column; gap: 8px;">
+                            ${(comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : [''])).map((line) => `
+                                <div class="bullet-input-row" style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px;">
+                                    <div style="width: 4px; height: 4px; background-color: #6B7280; border-radius: 50%; flex-shrink: 0; margin: 15px 4px 0 4px;"></div>
+                                    <textarea class="bind-bullet-txt" placeholder="항목을 입력해주세요. (엔터로 줄바꿈)" rows="2" style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                                    <button class="action-btn remove-bullet-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px; color: #ef4444; margin-top: 2px;" title="삭제">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (comp.type === 'tabs') {
+                card.innerHTML = `
+                    <div class="form-group tab-list-group">
+                        <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span>탭 항목 관리</span>
+                            <button class="action-btn add-tab-btn" style="width: auto; padding: 4px 10px; font-size: 12px; height: auto; white-space: nowrap; flex-shrink: 0;" title="탭 추가">+ 탭 추가</button>
+                        </label>
+                        <div class="tab-inputs-container" style="display: flex; flex-direction: column; gap: 8px;">
+                            ${(comp.data.tabList || []).map((tab) => `
+                                <div class="tab-input-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                                    <div style="width: 4px; height: 4px; background-color: #6B7280; border-radius: 50%; flex-shrink: 0; margin: 0 4px;"></div>
+                                    <input type="text" class="bind-tab-name" value="${tab.name.replace(/"/g, '&quot;')}" placeholder="항목을 입력해주세요." style="flex: 1; min-width: 0; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000;">
+                                    <select class="bind-tab-target" style="width: 140px; border-radius: 8px; padding: 9px 32px 9px 12px; border: 1px solid #E5E7EB; font-size: 13px; color: #000; box-sizing: border-box; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                                        <option value="">대상 선택...</option>
+                                        ${components.filter(c => c.id !== comp.id).map(c => `<option value="${c.id}" ${tab.targetStep === c.id ? 'selected' : ''}>${getComponentLabel(c).replace(/"/g, '&quot;')}</option>`).join('')}
+                                    </select>
+                                    <button class="action-btn remove-tab-btn" style="padding: 0; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px; color: #ef4444;" title="삭제">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        </div>
+                    </div>
+                `;
+            } else if (comp.type === 'concept') {
+                const currentAlign = comp.data.align || 'left';
+                card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
-                        <label style="margin: 0; padding-bottom: 4px;">뱃지 정렬</label>
-                        <div class="segmented-control badge-align-control" style="background: #FFFFFF; border: 1px solid #E5E7EB; padding: 2px;">
-                            <button class="seg-btn ${comp.data.badgeAlign !== 'left' ? 'active' : ''}" data-val="center" style="font-size: 13px; padding: 6px 12px;">중앙</button>
-                            <button class="seg-btn ${comp.data.badgeAlign === 'left' ? 'active' : ''}" data-val="left" style="font-size: 13px; padding: 6px 12px;">좌측</button>
+                        <label style="margin: 0; padding-bottom: 4px;">텍스트 정렬 설정</label>
+                        <div class="segmented-control align-toggle-control" style="background: #FFFFFF; border: 1px solid #E5E7EB; padding: 2px;">
+                            <button class="seg-btn ${currentAlign !== 'center' ? 'active' : ''}" data-val="left" style="font-size: 13px; padding: 6px 12px;">좌측</button>
+                            <button class="seg-btn ${currentAlign === 'center' ? 'active' : ''}" data-val="center" style="font-size: 13px; padding: 6px 12px;">중앙</button>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>메인문구 (테마컬러 강조: *텍스트*)</label>
-                    <input type="text" class="bind-txt" data-field="title" value="${(comp.data.title || '').replace(/"/g, '&quot;')}">
-                </div>
-
-                <div class="form-group">
-                    <label>이미지 주소 입력 또는 파일 선택</label>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <input type="text" class="bind-txt" data-field="imageUrl" placeholder="https://... 이미지 URL 주소 입력" style="width: 100%;">
-                        <div class="file-upload-wrapper">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            <span class="exp-file-upload-text" style="font-size: 13px; color: #6B7280; font-weight: 500;">내 컴퓨터에서 이미지 업로드</span>
-                            <input type="file" class="exp-image-file-input" accept="image/png,image/jpeg,image/gif,image/webp">
+                    <div class="form-group">
+                        <label>타이틀 (옵션)</label>
+                        <textarea class="bind-area" data-field="title" placeholder="항목을 입력해주세요." rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>본문 내용 (필수)</label>
+                        <textarea class="bind-area" data-field="bodyText" placeholder="항목을 입력해주세요. (엔터로 줄바꿈, <b>태그로 굵게 표기 가능)" rows="3" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.bodyText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    </div>
+                    <div class="form-row two-cols">
+                        <div class="form-group">
+                            <label>버튼 텍스트 (옵션)</label>
+                            <input type="text" class="bind-txt" data-field="buttonText" placeholder="입력 시 하단 버튼 생성 (예: 자세히보기 >)">
                         </div>
-                        <p style="font-size: 11px; color: #059669; margin: 4px 0 0 0; display: none;" class="exp-file-warning-msg">✅ 업로드된 파일은 HTML 추출 시 내부에 자동 변환 병합(Base64)되어 단독 파일로 동작하게 됩니다.</p>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>본문 내용 (엔터로 구분, 굵게: &lt;b&gt;텍스트&lt;/b&gt;)</label>
-                    <textarea class="bind-area" data-field="bullets" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${bList.join('\\n').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                </div>
-
-                <div style="display:flex; gap:12px;">
-                    <div class="form-group" style="flex:1;">
-                        <label>버튼 1 텍스트</label>
-                        <input type="text" class="bind-txt" data-field="btn1" value="${(comp.data.btn1 || '').replace(/"/g, '&quot;')}">
-                    </div>
-                    <div class="form-group" style="flex:2;">
-                        <label>버튼 1 링크</label>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <input type="text" class="bind-txt" data-field="btn1Link" placeholder="https://" value="${(comp.data.btn1Link || '').replace(/"/g, '&quot;')}" style="flex:1;">
-                            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;">
-                                <input type="checkbox" class="bind-chk" data-field="btn1Arrow" ${comp.data.btn1Arrow ? 'checked' : ''}>
-                                화살표
-                            </label>
+                        <div class="form-group">
+                            <label>버튼 링크 (옵션)</label>
+                            <input type="text" class="bind-txt" data-field="buttonUrl" placeholder="https://...">
                         </div>
                     </div>
-                </div>
-                <div style="display:flex; gap:12px;">
-                    <div class="form-group" style="flex:1;">
-                        <label>버튼 2 텍스트</label>
-                        <input type="text" class="bind-txt" data-field="btn2" value="${(comp.data.btn2 || '').replace(/"/g, '&quot;')}">
-                    </div>
-                    <div class="form-group" style="flex:2;">
-                        <label>버튼 2 링크</label>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <input type="text" class="bind-txt" data-field="btn2Link" placeholder="https://" value="${(comp.data.btn2Link || '').replace(/"/g, '&quot;')}" style="flex:1;">
-                            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;">
-                                <input type="checkbox" class="bind-chk" data-field="btn2Arrow" ${comp.data.btn2Arrow ? 'checked' : ''}>
-                                화살표
-                            </label>
                         </div>
                     </div>
-                </div>
-            `;
-} else if (comp.type === 'notice') {
-
+                `;
+            } else if (comp.type === 'tabDivider') {
+                card.innerHTML = `
+                    <div style="padding:16px; background-color:#F9FAFB; border-radius:8px; margin-bottom:12px; color:#1e40af; font-size:13px; line-height:1.5;">
+                        <b style="font-size: 14px;">화면 분할 기준점 📌</b><br>
+                        이 컴포넌트를 기준으로, <b>위에 있는 모든 내용들은 첫 번째 탭</b>에 담기고,<br>
+                        <b>아래에 추가되는 내용들은 두 번째 탭</b>에 담겨 서로 다른 화면으로 분리 동작하게 됩니다. (탭 버튼은 화면 맨 위에 자동 생성됩니다.)
+                    </div>
+                    <div class="form-row two-cols" style="margin-top: 12px;">
+                        <div class="form-group">
+                            <label>첫 번째 탭 이름 (왼쪽)</label>
+                            <input type="text" class="bind-txt" data-field="tab1Name" placeholder="예: 기존 화면">
+                        </div>
+                        <div class="form-group">
+                            <label>두 번째 탭 이름 (오른쪽)</label>
+                            <input type="text" class="bind-txt" data-field="tab2Name" placeholder="예: 새로운 화면 (우측 탭)">
+                        </div>
+                    </div>
+                `;
+            } else if (comp.type === 'faq') {
+                card.innerHTML = `
+                    <div class="form-group">
+                        <label>질문 (Q)</label>
+                        <textarea class="bind-area" data-field="question" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="2" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.question || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>답변 내용 (A) (필수)</label>
+                        <textarea class="bind-area" data-field="answer" placeholder="항목을 입력해주세요. (엔터로 줄바꿈 가능)" rows="4" style="width: 100%; border-radius: 8px; padding: 10px 14px; border: 1px solid #E5E7EB; font-size: 14px; color: #000; font-family: inherit; resize: vertical; outline: none;">${(comp.data.answer || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    </div>
+                `;
+            } else if (comp.type === 'notice') {
                 card.innerHTML = `
                     <div class="form-group" style="display: none;">
                         <label>타이틀</label>
@@ -711,9 +691,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Action Buttons
-            header.querySelector('.move-up').addEventListener('click', () => moveComponent(index, -1));
-            header.querySelector('.move-down').addEventListener('click', () => moveComponent(index, 1));
-            header.querySelector('.delete-btn').addEventListener('click', () => deleteComponent(index));
+            header.querySelector('.move-up').addEventListener('click', () => moveComponent(comp.id, -1));
+            header.querySelector('.move-down').addEventListener('click', () => moveComponent(comp.id, 1));
+            header.querySelector('.delete-btn').addEventListener('click', () => deleteComponent(comp.id));
 
             // Tabs Dynamic List Logic
             const addTabBtn = card.querySelector('.add-tab-btn');
@@ -910,29 +890,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
 function generateComponentHtml(comp, index, components, isExport = false, currentThemeColor = '#23B6FF') {
         let html = '';
-        const safeText = (txt) => {
-            if (!txt) return '';
-            let s = txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-            s = s.replace(/&lt;b(?![a-zA-Z])&gt;/gi, '<b>').replace(/&lt;\/b&gt;/gi, '</b>');
-            return s;
-        };
-        const themeSpan = (txt) => safeText(txt).replace(/\*(.*?)\*/g, '<b>$1</b>');
+        const safeText = (txt) => txt ? txt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/\n/g, '<br>') : '';
+        const themeSpan = (txt) => safeText(txt).replace(/\*(.*?)\*/g, '<strong>$1</strong>');
 
         if (comp.type === 'video') {
             if (comp.data.url) {
-                let moreBtnHtml = '';
-                if (comp.data.btnType !== 'none') {
-                    const linkAttr = comp.data.btnLink ? `onclick="window.open('${comp.data.btnLink}', '_blank')"` : '';
-                    moreBtnHtml = `<button type="button" class="btn-more" ${linkAttr}>더보기</button>`;
-                }
                 html = `
                     <div class="ad-mov-wrap">
                         <div class="ad-video">
-                            <video id="onBoarding-${index}" src="${comp.data.url}" class="playable-video" autoplay loop muted playsinline></video>
+                            <video id="onBoarding-${index}" src="${comp.data.url}" class="playable-video" style="width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer;" autoplay loop muted playsinline></video>
                             <div class="util-wrap">
                                 <button type="button" class="sound on">소리 재생 중. 눌러서 음소거</button>
                                 <button type="button" class="sound off">음소거 상태. 눌러서 해제</button>
-                                ${moreBtnHtml}
                             </div>
                             <button type="button" class="btn-play">멈춤 상태. 눌러서 재생</button>
                         </div>
@@ -984,92 +953,40 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
                     </div>
                 </div>
             `;
-
         } else if (comp.type === 'explanation') {
-            const isStep = comp.data.isStep;
-            let isLastStep = false;
-            if (isStep) {
-                let nextVisibleStep = null;
-                for (let i = index + 1; i < components.length; i++) {
-                    if (components[i].type === 'explanation' && components[i].data.visible && components[i].data.isStep) {
-                        nextVisibleStep = components[i];
-                        break;
-                    }
-                }
-                if (!nextVisibleStep) isLastStep = true;
-            }
-
-            // Unified HTML generation based on shopping_tutorial.html structure
-            const alignStyle = comp.data.badgeAlign === 'left' ? 'text-align: left;' : 'text-align: center;';
-            const isStandalone = !isStep;
-            const standaloneClass = isStandalone ? ' standalone' : '';
-            
-            let indicatorHtml = '';
-            if (isStep) {
-                indicatorHtml = `
-                    <div class="explanation-indicator">
-                        <div class="step-circle">${comp.data.stepNumber || 1}</div>
-                        <div class="step-line" style="${isLastStep ? 'display: none;' : ''}"></div>
-                    </div>
-                `;
-            }
+            const wrapperClass = 'explanation-component center';
 
             let badgeHtml = '';
-            if (isStandalone && comp.data.badgeText) {
-                badgeHtml = `
-                    <div style="display: flex; justify-content: ${comp.data.badgeAlign === 'left' ? 'flex-start' : 'center'}; margin-top: 10px; margin-bottom: 16px;">
-                        <div style="background-color: var(--theme-color); color: #FFFFFF; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-family: Pretendard, sans-serif;">
-                            ${safeText(comp.data.badgeText)}
-                        </div>
-                    </div>
-                `;
+            if (comp.data.badgeText) {
+                badgeHtml = `<div class="badge">${safeText(comp.data.badgeText)}</div>`;
             }
 
-            const titleHtml = comp.data.title ? `<h3 class="explanation-title" style="margin-bottom: 16px; word-break: keep-all; overflow-wrap: anywhere;">${themeSpan(comp.data.title)}</h3>` : '';
-            const imgHtml = comp.data.imageUrl ? `<img class="explanation-image" src="${comp.data.imageUrl}" alt="">` : '';
+            const titleHtml = comp.data.title ? `<h3 class="explanation-title" ${isExport ? `id="${comp.id}"` : ''}>${themeSpan(comp.data.title)}</h3>` : '';
+            const imgHtml = comp.data.imageUrl ? `<div class="explanation-image-wrap"><img src="${comp.data.imageUrl}" alt=""></div>` : '';
 
             let bulletsHtml = '';
             const bList = comp.data.bulletList || (comp.data.bullets ? comp.data.bullets.split('\n') : []);
             if (bList.length > 0) {
                 const lis = bList.filter(b => b.trim() !== '').map(line => {
-                    let t = line.trim().replace(/\\n/g, '<br>').replace(/\\n/g, '<br>');
-                    const openB = (t.match(/<b(?![a-zA-Z])/gi) || []).length;
-                    const closeB = (t.match(/<\/b>/gi) || []).length;
-                    if (openB > closeB) t += '</b>'.repeat(openB - closeB);
+                    let t = line.trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                    t = t.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+                    const openB = (t.match(/<strong(?![a-zA-Z])/gi) || []).length;
+                    const closeB = (t.match(/<\/strong>/gi) || []).length;
+                    if (openB > closeB) t += '</strong>'.repeat(openB - closeB);
                     return `<li>${t}</li>`;
                 }).join('');
-                if(lis) bulletsHtml = `<ul class="explanation-bullets" style="display: block;">${lis}</ul>`;
-            }
-
-            let btnsHtml = '';
-            if (comp.data.btn1 || comp.data.btn2) {
-                btnsHtml = '<div class="explanation-buttons">';
-                if (comp.data.btn1) {
-                    const linkAttr = comp.data.btn1Link ? `onclick="window.open('${comp.data.btn1Link}', '_blank')"` : '';
-                    btnsHtml += `<button type="button" class="explanation-btn" ${linkAttr}><span>${safeText(comp.data.btn1)}</span></button>`;
-                }
-                if (comp.data.btn2) {
-                    const linkAttr = comp.data.btn2Link ? `onclick="window.open('${comp.data.btn2Link}', '_blank')"` : '';
-                    btnsHtml += `<button type="button" class="explanation-btn" ${linkAttr}><span>${safeText(comp.data.btn2)}</span></button>`;
-                }
-                btnsHtml += '</div>';
+                if(lis) bulletsHtml = `<ul class="explanation-bullets">${lis}</ul>`;
             }
 
             html = `
-                <div class="explanation-component${standaloneClass}" style="position: relative;">
-                    <div id="comp_${comp.id}" style="position: absolute; top: -50px; visibility: hidden; pointer-events: none;"></div>
-                    ${indicatorHtml}
-                    <div class="explanation-content" style="width: 100%; ${alignStyle}">
-                        ${badgeHtml}
-                        ${titleHtml}
-                        ${imgHtml}
-                        ${bulletsHtml}
-                        ${btnsHtml}
-                    </div>
+                <div class="${wrapperClass}">
+                    ${badgeHtml}
+                    ${titleHtml}
+                    ${imgHtml}
+                    ${bulletsHtml}
                 </div>
             `;
         } else if (comp.type === 'notice') {
-
             const showBg = comp.data.useBg !== false;
             const titleHtml = comp.data.title || '유의사항';
             let bulletsHtml = '';
@@ -1094,7 +1011,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
         return html;
     }
 
-function renderPreview() {
+    function renderPreview() {
         const previewCanvas = document.getElementById('previewCanvas');
         if (!previewCanvas) return;
         
@@ -1128,6 +1045,89 @@ function renderPreview() {
         videos.forEach(v => v.play().catch(e => {}));
     }
 
+
+    function deleteComponent(comp.id) {
+        if (!confirm('이 컴포넌트를 삭제하시겠습니까?')) return;
+        
+        let foundIndex = -1;
+        let tab = 1;
+        
+        for (let i = 0; i < componentsTab1.length; i++) {
+            if (componentsTab1[i].id === index) {
+                foundIndex = i;
+                break;
+            }
+        }
+        
+        if (foundIndex !== -1) {
+            componentsTab1.splice(foundIndex, 1);
+        } else {
+            for (let i = 0; i < componentsTab2.length; i++) {
+                if (componentsTab2[i].id === index) {
+                    foundIndex = i;
+                    tab = 2;
+                    break;
+                }
+            }
+            if (foundIndex !== -1) {
+                componentsTab2.splice(foundIndex, 1);
+            }
+        }
+        
+        // Try global components array as fallback
+        if (foundIndex === -1) {
+            let globalIdx = components.findIndex(c => c.id === index || c === index);
+            if (globalIdx !== -1) {
+                components.splice(globalIdx, 1);
+            }
+        }
+        
+        renderEditor();
+        triggerAutoSave();
+    }
+
+    function moveComponent(index, direction) {
+        let compList = null;
+        let foundIndex = -1;
+        
+        for (let i = 0; i < componentsTab1.length; i++) {
+            if (componentsTab1[i].id === index) {
+                compList = componentsTab1;
+                foundIndex = i;
+                break;
+            }
+        }
+        
+        if (!compList) {
+            for (let i = 0; i < componentsTab2.length; i++) {
+                if (componentsTab2[i].id === index) {
+                    compList = componentsTab2;
+                    foundIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        if (!compList && components.length > 0) {
+            let globalIdx = components.findIndex(c => c.id === index || c === index);
+            if (globalIdx !== -1) {
+                compList = components;
+                foundIndex = globalIdx;
+            }
+        }
+        
+        if (!compList || foundIndex === -1) return;
+        
+        const newIndex = foundIndex + direction;
+        if (newIndex < 0 || newIndex >= compList.length) return;
+        
+        const temp = compList[foundIndex];
+        compList[foundIndex] = compList[newIndex];
+        compList[newIndex] = temp;
+        
+        renderEditor();
+        triggerAutoSave();
+    }
     function addComponent(type) {
         const base = { id: generateId(), type, data: { visible: true } };
         if (type === 'video') {
@@ -1143,21 +1143,10 @@ function renderPreview() {
                 { name: '', targetStep: '2' }
             ];
         } else if (type === 'explanation') {
-            base.data.isStep = true;
-            base.data.stepNumber = (components.filter(c => c.type === 'explanation').length + 1).toString();
             base.data.badgeText = '';
-            base.data.badgeAlign = 'center';
-            base.data.titleWeight = 'bold';
-            base.data.subtitle = '';
             base.data.title = '';
             base.data.imageUrl = '';
             base.data.bulletList = [''];
-            base.data.btn1 = '';
-            base.data.btn1Link = '';
-            base.data.btn1Arrow = false;
-            base.data.btn2 = '';
-            base.data.btn2Link = '';
-            base.data.btn2Arrow = false;
         } else if (type === 'tabDivider') {
             base.data.tab1Name = '기존 컴포넌트들';
             base.data.tab2Name = '새로운 영역';
@@ -1965,6 +1954,7 @@ function generateExportHtml(mode = 'view') {
 
     // --- Initialization ---
     StorageDB.init().then(() => {
+        executeLocalMigration();
         renderSidebarLibrary();
         renderTrashList();
         addComponent('video');
