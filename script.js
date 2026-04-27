@@ -1001,7 +1001,7 @@ function generateComponentHtml(comp, index, components, isExport = false, curren
             }
 
             html = `
-                <div class="${wrapperClass}" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 20px; box-sizing: border-box;">
+                <div class="${wrapperClass}" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 20px; margin-top: 24px; box-sizing: border-box;">
                     ${badgeHtml}
                     ${titleHtml}
                     ${imgHtml}
@@ -1283,10 +1283,12 @@ function generateExportHtml(mode = 'view') {
         }
     </style>
 </head>
-<body class="bg-gray">
-    <header class="renew21--header">
-        <a href="#" class="btn-back" onclick="onBackHistory();">뒤로</a>
-        <h1 class="tit">이용 가이드</h1>
+<body class="bg-gray" style="margin: 0; padding: 0;">
+    <header class="renew21--header" style="height: 56px; display: flex; align-items: center; position: relative; background: #fff; border-bottom: 1px solid #f3f4f6;">
+        <a href="javascript:void(0);" class="btn-back" onclick="onBackHistory();" style="position: absolute; left: 16px; top: 0; bottom: 0; display: flex; align-items: center; text-decoration: none;">
+            <img src="https://cdn.paybooc.co.kr/static/assets/images/comm/ico-back.svg" alt="뒤로가기" style="width: 24px; height: 24px;">
+        </a>
+        <h1 class="tit" style="font-size: 18px; font-weight: 700; line-height: 26px; margin: 0 auto; color: #111827;">이용방법</h1>
     </header>
 
     <div class="use-guide-wrap">
